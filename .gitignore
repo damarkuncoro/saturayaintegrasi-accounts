@@ -42,3 +42,7 @@ bundle_cache/
 
 # Testing
 /apps/accounts/tmp/screenshots/
+/playwright-report/
+/test-results/
+/qa/playwright-accounts/playwright-report/
+/qa/playwright-accounts/test-results/
