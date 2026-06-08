@@ -12,8 +12,8 @@ cleanup() {
 # Register cleanup trap to ensure cleanup on script exit
 trap cleanup EXIT
 
-echo "🚀 Starting test dependencies (database, Redis, OpenSearch)..."
-docker compose -f ../../infra/compose/docker-compose.test.yml up -d db-test redis-test opensearch-test
+echo "🚀 Starting test dependencies (database, Redis)..."
+docker compose -f ../../infra/compose/docker-compose.test.yml up -d db-test redis-test
 
 echo "📦 Preparing database..."
 docker compose -f ../../infra/compose/docker-compose.test.yml run --rm accounts-app-test bundle exec rails db:test:prepare

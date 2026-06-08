@@ -24,7 +24,20 @@ RUN apt-get update -qq && \
     libasound2 \
     libpango-1.0-0 \
     libcairo2 \
+    libxfixes3 \
+    libx11-6 \
+    libx11-xcb1 \
+    libxcb1 \
+    libxcursor1 \
+    libxext6 \
+    libxi6 \
+    libxtst6 \
+    libfontconfig1 \
+    libxss1 \
+    libxdamage1 \
+    libxkbcommon0 \
+    libgbm1 \
     && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Pre-install playwright browser driver and Chromium browser
-# RUN npm install -g playwright && npx playwright install-deps chromium && npx playwright install chromium
+RUN bundle exec playwright install chromium

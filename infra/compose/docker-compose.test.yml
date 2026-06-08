@@ -12,7 +12,7 @@ services:
         condition: service_healthy
     environment:
       RAILS_ENV: test
-      DATABASE_URL: postgresql://postgres:password@db-test:5432/accounts_test
+      DATABASE_URL: postgresql://postgres:password@db-test:5432/satu_raya_test
       REDIS_URL: redis://redis-test:6379/0
       SECRET_KEY_BASE: test_secret_key_not_used_in_production
     volumes:
@@ -33,7 +33,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: accounts_test
+      POSTGRES_DB: satu_raya_test
     tmpfs:
       - /var/lib/postgresql/data
     healthcheck:
@@ -45,6 +45,11 @@ services:
   redis-test:
     image: redis:7-alpine
     container_name: satu-raya-redis-test
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   bundle_cache_test:
