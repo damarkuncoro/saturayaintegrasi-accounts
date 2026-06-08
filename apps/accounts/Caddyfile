@@ -1,4 +1,4 @@
-{$APP_DOMAIN:satu-raya.dev}, {$APP_HOST:accounts.satu-raya.dev}, {$JOBS_HOST:jobs.satu-raya.dev}, localhost {
+{$APP_DOMAIN:satu-raya.dev}, {$APP_HOST:accounts.satu-raya.dev}, localhost {
     reverse_proxy app:3000
     tls internal
 }

@@ -1,78 +1,4 @@
 services:
-  jobs-app:
-    build:
-      context: ../../
-      dockerfile: apps/jobs/Dockerfile
-    image: satu-raya-jobs:prod-v1.0
-    container_name: satu-raya-jobs-prod
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      opensearch:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_production
-      RAILS_ENV: production
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-      REDIS_URL: redis://redis:6379/0
-      ELASTICSEARCH_URL: http://opensearch:9200
-    ports:
-      - "3000:3000"
-    volumes:
-      - ../../apps/jobs:/rails
-      - bundle_cache:/usr/local/bundle
-      - shared_storage:/rails/storage
-
-  business-app:
-    build:
-      context: ../../
-      dockerfile: apps/business/Dockerfile
-    image: satu-raya-business:prod-v1.0
-    container_name: satu-raya-business-prod
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      opensearch:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_production
-      RAILS_ENV: production
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-      REDIS_URL: redis://redis:6379/0
-      ELASTICSEARCH_URL: http://opensearch:9200
-    ports:
-      - "3003:3000"
-    volumes:
-      - ../../apps/business:/rails
-      - bundle_cache:/usr/local/bundle
-      - shared_storage:/rails/storage
-
   accounts-app:
     build:
       context: ../../
@@ -95,14 +21,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      opensearch:
-        condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_production
+      DATABASE_URL: postgresql://postgres:password@db:5432/accounts_production
       RAILS_ENV: production
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
       REDIS_URL: redis://redis:6379/0
-      ELASTICSEARCH_URL: http://opensearch:9200
     ports:
       - "3002:3000"
     volumes:
@@ -111,260 +34,68 @@ services:
       - shared_storage:/rails/storage
       - ../../packages/commons:/packages/commons
       - ../../packages/system:/packages/system
-      - ../../packages/communication:/packages/communication
       - ../../packages/identity:/packages/identity
       - ../../packages/identity-client:/packages/identity-client
       - ../../packages/identity-ui:/packages/identity-ui
       - ../../packages/ui:/packages/ui
-      - ../../packages/core-domain:/packages/core-domain
+      - ../../packages/navigation:/packages/navigation
 
-  core-app:
-    build:
-      context: ../../
-      dockerfile: apps/core/Dockerfile
-    image: satu-raya-core:prod-v1.0
-    container_name: satu-raya-core-prod
-    deploy:
-      resources:
-        limits:
-          cpus: '0.50'
-          memory: 512M
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_production
-      RAILS_ENV: production
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-      REDIS_URL: redis://redis:6379/0
-    ports:
-      - "3004:3000"
-    volumes:
-      - ../../apps/core:/rails
-      - bundle_cache:/usr/local/bundle
-      - shared_storage:/rails/storage
-
-  training-app:
-    build:
-      context: ../../
-      dockerfile: apps/training/Dockerfile
-    image: satu-raya-training:dev-v1.0
-    container_name: satu-raya-training-dev
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_production
-      RAILS_ENV: production
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-      APP_DOMAIN: ${APP_DOMAIN:-satu-raya.dev}
-      HMAC_SECRET: ${HMAC_SECRET}
-    ports:
-      - "3005:3000"
-    volumes:
-      - ../../apps/training:/rails
-      - bundle_cache:/usr/local/bundle
-
-  jobs-worker:
-    image: satu-raya-jobs:prod-v1.0
-    container_name: satu-raya-jobs-worker-prod
+  accounts-worker:
+    image: satu-raya-accounts:prod-v1.0
+    container_name: satu-raya-accounts-worker-prod
     command: bundle exec rake solid_queue:start
     depends_on:
-      - jobs-app
+      - accounts-app
     environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_production
-      ELASTICSEARCH_URL: http://opensearch:9200
+      DATABASE_URL: postgresql://postgres:password@db:5432/accounts_production
       RAILS_ENV: production
       BUNDLE_WITHOUT: ""
     volumes:
-      - ../../apps/jobs:/rails
-      - bundle_cache:/usr/local/bundle
-
-  business-worker:
-    image: satu-raya-business:prod-v1.0
-    container_name: satu-raya-business-worker-prod
-    command: bundle exec rake solid_queue:start
-    depends_on:
-      - business-app
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_production
-      ELASTICSEARCH_URL: http://opensearch:9200
-      RAILS_ENV: production
-      BUNDLE_WITHOUT: ""
-    volumes:
-      - ../../apps/business:/rails
+      - ../../apps/accounts:/rails
       - bundle_cache:/usr/local/bundle
 
   db:
     image: postgres:16-alpine
-    container_name: satu-raya-db-prod
+    container_name: satu-raya-db
     environment:
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: satu_raya_production
-    volumes:
-      - pg_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
-    container_name: satu-raya-redis-prod
-    volumes:
-      - redis_data:/data
+    container_name: satu-raya-redis
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
-
-  opensearch:
-    image: opensearchproject/opensearch:2.13.0
-    container_name: satu-raya-opensearch-prod
-    environment:
-      - discovery.type=single-node
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Secure#Pass99!
-      - plugins.security.disabled=true
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-    volumes:
-      - opensearch_data:/usr/share/opensearch/data
     ports:
-      - "9200:9200"
-      - "9600:9600"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
-      interval: 10s
-      timeout: 10s
-      retries: 15
-      start_period: 60s
-    networks:
-      - default
-
-  mailpit:
-    image: axllent/mailpit:latest
-    container_name: satu-raya-mailpit-prod
-    ports:
-      - "1025:1025"
-      - "8025:8025"
-    networks:
-      - default
+      - "6379:6379"
 
   caddy:
     image: caddy:2-alpine
-    container_name: satu-raya-caddy-prod
-    restart: unless-stopped
+    container_name: satu-raya-proxy
     ports:
       - "80:80"
       - "443:443"
-      - "443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
-      - jobs-app
-      - business-app
-    networks:
-      - default
-
-  db-backup:
-    image: prodrigestivill/postgres-backup-local:16
-    container_name: satu-raya-db-backup-prod
-    restart: unless-stopped
-    environment:
-      POSTGRES_HOST: db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: satu_raya_production
-      SCHEDULE: "@daily"
-      BACKUP_KEEP_MINS: 1440
-      BACKUP_KEEP_DAYS: 7
-      BACKUP_KEEP_WEEKS: 4
-      BACKUP_KEEP_MONTHS: 12
-    volumes:
-      - ./backups:/backups
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - default
-
-  standardization-api:
-    build:
-      context: ../../
-      dockerfile: apps/standardization/Dockerfile
-    image: satu-raya-standardization:prod-v1.0
-    container_name: satu-raya-standardization-prod
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    environment:
-      DATABASE_URL: postgresql://postgres:password@standardization-db:5432/standardization_production
-      RAILS_ENV: production
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
-    ports:
-      - "3001:3000"
-    depends_on:
-      standardization-db:
-        condition: service_healthy
-    networks:
-      - default
-
-  standardization-db:
-    image: postgres:16-alpine
-    container_name: satu-raya-standardization-db-prod
-    environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: standardization_production
-    volumes:
-      - standardization_pg_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    networks:
-      - default
-
-  dozzle:
-    image: amir20/dozzle:latest
-    container_name: satu-raya-logs
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - "8080:8080"
-    environment:
-      - DOZZLE_LEVEL=info
-    restart: unless-stopped
-    networks:
-      - default
+      - accounts-app
 
 volumes:
-  pg_data:
-  redis_data:
-  opensearch_data:
+  postgres_data:
   bundle_cache:
+  shared_storage:
   caddy_data:
   caddy_config:
-  standardization_pg_data:
-  standardization_bundle_cache:
-  shared_storage:

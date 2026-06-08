@@ -1,68 +1,4 @@
 services:
-  jobs-app:
-    container_name: satu-raya-jobs-dev
-    image: satu-raya-jobs:dev-v1.0
-    build:
-      context: ../../
-      dockerfile: apps/jobs/Dockerfile
-      target: development
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_jobs_development
-      RAILS_ENV: development
-      SECRET_KEY_BASE: development_secret_key_not_used_in_production
-      REDIS_URL: redis://redis:6379/0
-      APP_HOST: jobs.satu-raya.dev
-      APP_PORT: 3000
-      APP_PROTOCOL: https
-      SMTP_ADDRESS: mailpit
-      SMTP_PORT: 1025
-      SMTP_DOMAIN: satu-raya.dev
-      SMTP_USER_NAME: ""
-      SMTP_PASSWORD: ""
-      SMTP_AUTHENTICATION: ""
-      SMTP_ENABLE_STARTTLS_AUTO: "false"
-    volumes:
-      - ../../apps/jobs:/rails
-      - bundle_cache:/usr/local/bundle
-      - ../../packages:/packages
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
-  business-app:
-    container_name: satu-raya-business-dev
-    image: satu-raya-business:dev-v1.0
-    build:
-      context: ../../
-      dockerfile: apps/business/Dockerfile
-      target: development
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_business_development
-      RAILS_ENV: development
-      SECRET_KEY_BASE: development_secret_key_not_used_in_production
-      REDIS_URL: redis://redis:6379/0
-      APP_HOST: business.satu-raya.dev
-      APP_PORT: 3000
-      APP_PROTOCOL: https
-      SMTP_ADDRESS: mailpit
-      SMTP_PORT: 1025
-      SMTP_DOMAIN: satu-raya.dev
-      SMTP_USER_NAME: ""
-      SMTP_PASSWORD: ""
-      SMTP_AUTHENTICATION: ""
-      SMTP_ENABLE_STARTTLS_AUTO: "false"
-    volumes:
-      - ../../apps/business:/rails
-      - bundle_cache:/usr/local/bundle
-      - ../../packages:/packages
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
   accounts-app:
     container_name: satu-raya-accounts-dev
     image: satu-raya-accounts:dev-v1.0
@@ -88,145 +24,31 @@ services:
     volumes:
       - ../../apps/accounts:/rails
       - bundle_cache:/usr/local/bundle
-      - ../../apps/core/storage:/rails/storage
-      - ../../packages:/packages
+      - shared_storage:/rails/storage
+      - ../../packages/commons:/packages/commons
+      - ../../packages/system:/packages/system
+      - ../../packages/identity:/packages/identity
+      - ../../packages/identity-client:/packages/identity-client
+      - ../../packages/identity-ui:/packages/identity-ui
+      - ../../packages/ui:/packages/ui
+      - ../../packages/navigation:/packages/navigation
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
-
-  core-app:
-    container_name: satu-raya-core-dev
-    image: satu-raya-core:dev-v1.0
-    build:
-      context: ../../
-      dockerfile: apps/core/Dockerfile
-      target: development
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_core_development
-      RAILS_ENV: development
-      SECRET_KEY_BASE: development_secret_key_not_used_in_production
-      REDIS_URL: redis://redis:6379/0
-      APP_HOST: core.satu-raya.dev
-      APP_PORT: 3000
-      APP_PROTOCOL: https
-    volumes:
-      - ../../apps/core:/rails
-      - bundle_cache:/usr/local/bundle
-      - ../../packages:/packages
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-
-  training-app:
-    container_name: satu-raya-training-dev
-    image: satu-raya-training:dev-v1.0
-    build:
-      context: ../../
-      dockerfile: apps/training/Dockerfile
-      target: development
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_training_development
-      RAILS_ENV: development
-      SECRET_KEY_BASE: development_secret_key_not_used_in_production
-      APP_HOST: training.satu-raya.dev
-      APP_PORT: 3000
-      APP_PROTOCOL: https
-      APP_DOMAIN: satu-raya.dev
-      HMAC_SECRET: development_hmac_secret_not_used_in_production
-      SMTP_ADDRESS: mailpit
-      SMTP_PORT: 1025
-      SMTP_DOMAIN: satu-raya.dev
-      SMTP_USER_NAME: ""
-      SMTP_PASSWORD: ""
-      SMTP_AUTHENTICATION: ""
-      SMTP_ENABLE_STARTTLS_AUTO: "false"
-    volumes:
-      - ../../apps/training:/rails
-      - bundle_cache:/usr/local/bundle
-      - ../../packages:/packages
-    depends_on:
-      db:
-        condition: service_healthy
-
-  jobs-worker:
-    container_name: satu-raya-jobs-worker-dev
-    image: satu-raya-jobs:dev-v1.0
-    command: bundle exec rake solid_queue:start
-    depends_on:
-      - jobs-app
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_jobs_development
-      RAILS_ENV: development
-    volumes:
-      - ../../apps/jobs:/rails
-      - bundle_cache:/usr/local/bundle
-      - ../../packages:/packages
-
-  business-worker:
-    container_name: satu-raya-business-worker-dev
-    image: satu-raya-business:dev-v1.0
-    command: bundle exec rake solid_queue:start
-    depends_on:
-      - business-app
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_business_development
-      RAILS_ENV: development
-    volumes:
-      - ../../apps/business:/rails
-      - bundle_cache:/usr/local/bundle
-      - ../../packages:/packages
-
-  redis:
-    container_name: satu-raya-redis-dev
-    image: redis:7-alpine
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   db:
-    container_name: satu-raya-db-dev
-    environment:
-      POSTGRES_DB: satu-raya.development
+    ports:
+      - "5432:5432"
 
-  db-backup:
-    container_name: satu-raya-db-backup-dev
-    environment:
-      POSTGRES_DB: satu-raya.development
-
-  opensearch:
-    container_name: satu-raya-opensearch-dev
+  redis:
+    ports:
+      - "6379:6379"
 
   mailpit:
-    container_name: satu-raya-mailpit-dev
-
-  caddy:
-    container_name: satu-raya-caddy-dev
-
-  standardization-api:
-    container_name: satu-raya-standardization-dev
-    image: satu-raya-standardization:dev-v1.0
-    build:
-      context: ../../
-      dockerfile: apps/standardization/Dockerfile
-      target: development
-    environment:
-      DATABASE_URL: postgresql://postgres:password@standardization-db:5432/standardization_development
-      RAILS_ENV: development
-      SECRET_KEY_BASE: development_secret_key_not_used_in_production
-    volumes:
-      - ../../apps/standardization:/rails
-      - standardization_bundle_cache:/usr/local/bundle
-      - ../../packages:/packages
-
-  standardization-db:
-    container_name: satu-raya-standardization-db-dev
-    environment:
-      POSTGRES_DB: standardization_development
+    image: axllent/mailpit
+    container_name: satu-raya-mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"

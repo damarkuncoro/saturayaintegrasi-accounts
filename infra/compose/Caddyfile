@@ -3,27 +3,7 @@ accounts.satu-raya.dev {
     tls internal
 }
 
-satu-raya.dev, jobs.satu-raya.dev, localhost {
-    reverse_proxy jobs-app:3000
-    tls internal
-}
-
-business.satu-raya.dev {
-    reverse_proxy business-app:3000
-    tls internal
-}
-
-core.satu-raya.dev {
-    reverse_proxy core-app:3000
-    tls internal
-}
-
-standardization.satu-raya.dev {
-    reverse_proxy standardization-api:3000
-    tls internal
-}
-
-training.satu-raya.dev {
-    reverse_proxy training-app:3000
+localhost {
+    reverse_proxy accounts-app:3000
     tls internal
 }
