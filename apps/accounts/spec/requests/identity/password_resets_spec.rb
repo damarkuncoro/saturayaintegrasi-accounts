@@ -11,11 +11,14 @@ RSpec.describe 'Identity::PasswordResets', type: :request do
   end
 
   def create_password_reset_token(user, expires_at: 2.hours.from_now)
+    token_raw = SecureRandom.hex(32)
+    token_digest = Digest::SHA256.hexdigest(token_raw)
     user.password_reset_tokens.create!(
       tenant: user.tenant,
-      token_digest: SecureRandom.hex(32),
+      token_digest: token_digest,
       expires_at: expires_at
     )
+    Struct.new(:token_digest).new(token_raw)
   end
 
   describe 'GET /identity/password_reset/new' do

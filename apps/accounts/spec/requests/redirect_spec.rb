@@ -2,6 +2,7 @@ require 'rails_helper'
 
 # We define a temporary controller to test redirection logic in ApplicationController
 class TestRedirectsController < ApplicationController
+  skip_before_action :require_current_tenant!, raise: false
   allow_unauthenticated_access only: :redirect_test
 
   def redirect_test

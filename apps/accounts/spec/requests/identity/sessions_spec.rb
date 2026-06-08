@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Sessions', type: :request do
-  let(:tenant) { create(:tenant, domain: "www.example.com") }
+  let!(:tenant) { create(:tenant, domain: "www.example.com") }
   let(:user) { create(:user, password: "Secret1*3*5*", password_confirmation: "Secret1*3*5*", tenant: tenant, verified: true) }
 
   before do

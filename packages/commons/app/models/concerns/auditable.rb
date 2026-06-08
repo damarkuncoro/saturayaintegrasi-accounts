@@ -4,7 +4,7 @@ module Auditable
   extend ActiveSupport::Concern
 
   included do
-    has_many :audit_logs, as: :auditable, class_name: "AuditLog"
+    has_many :audit_logs, as: :auditable, class_name: "System::AuditLog"
   end
 
   def log_audit(action, user: nil, metadata: {})

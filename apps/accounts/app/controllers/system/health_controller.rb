@@ -1,6 +1,7 @@
 module System
   class HealthController < ApplicationController
   allow_unauthenticated_access
+  skip_before_action :require_current_tenant!, raise: false
   skip_before_action :authenticate_api_user!, raise: false
   skip_after_action :verify_authorized, raise: false
   skip_after_action :verify_policy_scoped, raise: false

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Auth cookie configuration", type: :request do
-  let(:tenant) { create(:tenant) }
+  let(:tenant) { create(:tenant, domain: "cookie.example.com") }
   let(:password) { "Secret1*3*5*" }
   let(:user) { create(:user, password: password, password_confirmation: password, tenant: tenant, verified: true) }
 
@@ -15,6 +15,7 @@ RSpec.describe "Auth cookie configuration", type: :request do
   end
 
   it "uses the configured auth session cookie name for request authentication" do
+    host! "cookie.example.com"
     post sign_in_path, params: { email: user.email, password: password }
 
     expect(response).to redirect_to("/dashboard")

@@ -126,9 +126,10 @@ RSpec.describe "Accounts main scenarios", type: :request do
   end
 
   it "runs 2FA setup, login challenge, and secure disable" do
-    tenant = create(:tenant)
+    tenant = create(:tenant, domain: "two-fa.example.com")
     user = create(:user, password: password, password_confirmation: password, tenant: tenant, verified: true)
 
+    host! "two-fa.example.com"
     sign_in_as(user)
     get two_factor_settings_path
     setup_code = ROTP::TOTP.new(user.reload.otp_secret, issuer: SatuRayaIdentityClient::Identity::BrandConfig.name).now

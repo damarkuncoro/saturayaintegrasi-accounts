@@ -17,7 +17,7 @@ module Identity
           
           user.log_audit("mfa_enabled", metadata: { type: "totp" })
           
-          Core::Result.success({ backup_codes: backup_codes })
+          Core::Result.success({ backup_codes: backup_codes }, meta: { backup_codes: backup_codes })
         end
       else
         Core::Result.failure("Kode OTP tidak valid.")

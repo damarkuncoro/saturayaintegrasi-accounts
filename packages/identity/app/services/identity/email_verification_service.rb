@@ -40,7 +40,7 @@ module Identity
       user = verification_token.user
       
       Identity::User.transaction do
-        user.update!(email_verified_at: Time.current)
+        user.update!(email_verified_at: Time.current, verified: true)
         verification_token.mark_used!
         
         # Log audit
