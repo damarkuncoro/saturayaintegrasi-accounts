@@ -42,7 +42,7 @@ RSpec.describe 'Sessions', type: :request do
 
   describe 'POST /login' do
     context 'with valid credentials' do
-      it 'signs in and redirects to worker dashboard' do
+      it 'signs in and redirects to user dashboard' do
         post sign_in_path, params: { email: user.email, password: "Secret1*3*5*" }
         expect(response).to redirect_to("/dashboard")
 

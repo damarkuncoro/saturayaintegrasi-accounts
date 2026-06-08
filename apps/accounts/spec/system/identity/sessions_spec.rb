@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "User Sessions", type: :system do
   let(:tenant) { create(:tenant) }
-  let(:user) { create(:user, :worker, tenant: tenant, verified: true) }
+  let(:user) { create(:user, tenant: tenant, verified: true) }
 
   before do
     # Ensure there's a clean slate before each test run

@@ -28,7 +28,7 @@ RSpec.describe 'Identity::EmailVerifications', type: :request do
 
   describe 'GET /identity/email_verification' do
     context 'with a valid token' do
-      it 'verifies the email and redirects to worker dashboard' do
+      it 'verifies the email and redirects to user dashboard' do
         token = user.email_verification_tokens.create!(
           tenant: tenant,
           token_digest: SecureRandom.hex(32),

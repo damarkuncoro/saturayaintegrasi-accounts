@@ -22,7 +22,7 @@ RSpec.describe 'Registrations', type: :request do
 
   describe 'POST /register' do
     context 'with valid user params' do
-      it 'creates a new user and redirects to worker dashboard' do
+      it 'creates a new user and redirects to user dashboard' do
         expect {
           post sign_up_path, params: {
             user: {

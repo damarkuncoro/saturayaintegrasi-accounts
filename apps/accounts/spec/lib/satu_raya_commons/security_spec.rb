@@ -24,7 +24,7 @@ RSpec.describe "SatuRayaCommons::Security" do
   end
 
   describe "JwtCodec" do
-    let(:payload_hash) { { "user_id" => "user-123", "role" => "worker" } }
+    let(:payload_hash) { { "user_id" => "user-123", "role" => "user" } }
 
     it "encodes payload into a valid signed JWT" do
       token = SatuRayaCommons::Security::JwtCodec.encode(payload_hash, secret)
@@ -37,7 +37,7 @@ RSpec.describe "SatuRayaCommons::Security" do
       decoded = SatuRayaCommons::Security::JwtCodec.decode(token, secret)
       expect(decoded).to be_present
       expect(decoded["user_id"]).to eq("user-123")
-      expect(decoded["role"]).to eq("worker")
+      expect(decoded["role"]).to eq("user")
       expect(decoded["exp"]).to be_present
     end
 

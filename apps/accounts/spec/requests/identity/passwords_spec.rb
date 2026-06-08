@@ -21,7 +21,7 @@ RSpec.describe 'Passwords', type: :request do
 
   describe 'PATCH /password' do
     context 'with valid current password (challenge) and new password' do
-      it 'updates the password and redirects to worker dashboard' do
+      it 'updates the password and redirects to user dashboard' do
         patch password_path, params: {
           password_challenge: "Secret1*3*5*",
           password: "NewPass123!@#",

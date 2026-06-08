@@ -7,7 +7,7 @@ RSpec.describe "User Registrations", type: :system do
     Capybara.reset_sessions!
   end
 
-  it "registers a new worker account successfully and redirects to dashboard" do
+  it "registers a new account successfully and redirects to dashboard" do
     visit sign_up_path
 
     # Fill in the form fields using exact Rails field names
@@ -15,9 +15,6 @@ RSpec.describe "User Registrations", type: :system do
     fill_in "user[last_name]", with: "Nixon"
     fill_in "user[email]", with: "lazaronixon@hey.com"
     fill_in "user[phone]", with: "08123456789"
-    
-    # Select the worker role from the dropdown
-    select "Saya sedang mencari kerja (Pekerja)", from: "user[role]"
 
     fill_in "user[password]", with: "Secret1*3*5*"
     fill_in "user[password_confirmation]", with: "Secret1*3*5*"

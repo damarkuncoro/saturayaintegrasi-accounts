@@ -7,17 +7,6 @@
           <%= brand_config.name %> adalah platform identitas dan akses terpadu yang aman dan terpercaya.
         </p>
       </div>
-      
-      <% unless ENV["APP_NAME"] == "accounts" %>
-        <div>
-          <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Layanan</h3>
-          <ul class="space-y-2.5 text-sm font-semibold text-slate-500">
-            <li><%= link_to "Cari Lowongan", jobs_url_for("/jobs"), class: "hover:text-indigo-600 transition-colors" %></li>
-            <li><%= link_to "Portal Perusahaan", business_portal_url("/"), class: "hover:text-indigo-600 transition-colors" %></li>
-            <li><%= link_to "Standardisasi Kompetensi", standardization_url_for("/"), class: "hover:text-indigo-600 transition-colors" rescue "Standardisasi Kompetensi" %></li>
-          </ul>
-        </div>
-      <% end %>
 
       <div>
         <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Bantuan</h3>

@@ -21,7 +21,7 @@ RSpec.describe 'Identity::Emails', type: :request do
 
   describe 'PATCH /identity/email' do
     context 'with correct password challenge' do
-      it 'updates the email and redirects to worker dashboard' do
+      it 'updates the email and redirects to user dashboard' do
         patch identity_email_path, params: { email: "new_email@hey.com", password_challenge: "Secret1*3*5*" }
         expect(response).to redirect_to("/dashboard")
       end

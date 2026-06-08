@@ -29,10 +29,7 @@ module AuthenticationHelpers
 
   def dashboard_path_for(user)
     return admin_dashboard_path if user.admin?
-    return employer_dashboard_path if user.employer?
-    return worker_dashboard_path if user.worker?
-
-    root_path
+    return "/dashboard"
   end
 end
 
