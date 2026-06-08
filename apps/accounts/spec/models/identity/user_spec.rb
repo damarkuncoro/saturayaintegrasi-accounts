@@ -33,7 +33,7 @@ RSpec.describe Identity::User, type: :model do
   end
 
   describe "enums" do
-    it { should define_enum_for(:role).with_values(worker: 0, employer: 1, admin: 2).backed_by_column_of_type(:integer) }
+    it { should define_enum_for(:role).with_values(user: 0, admin: 1, support: 2).backed_by_column_of_type(:integer) }
   end
 
   describe "normalizations" do
@@ -114,16 +114,10 @@ RSpec.describe Identity::User, type: :model do
       expect(Identity::User.active).to include(active)
     end
 
-    it ".workers returns only workers" do
-      worker = create(:user, :worker)
-      _employer = create(:user, :employer)
-      expect(Identity::User.workers).to include(worker)
-    end
-
-    it ".employers returns only employers" do
-      employer = create(:user, :employer)
-      _worker = create(:user, :worker)
-      expect(Identity::User.employers).to include(employer)
+    it ".admins returns only admins" do
+      admin = create(:user, :admin)
+      _user = create(:user)
+      expect(Identity::User.admins).to include(admin)
     end
   end
 end

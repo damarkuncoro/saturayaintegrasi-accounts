@@ -54,23 +54,7 @@ RSpec.describe 'Registrations', type: :request do
           }
         }.to change(Identity::User, :count).by(1)
 
-        expect(Identity::User.find_by(email: 'admin-attempt@example.com')).to be_worker
-      end
-
-      it 'allows public registration as an employer' do
-        post sign_up_path, params: {
-          user: {
-            email: 'employer@example.com',
-            password: 'Secret1*3*5*',
-            password_confirmation: 'Secret1*3*5*',
-            first_name: 'Employer',
-            last_name: 'User',
-            phone: '1234567890',
-            role: 'employer'
-          }
-        }
-
-        expect(Identity::User.find_by(email: 'employer@example.com')).to be_employer
+        expect(Identity::User.find_by(email: 'admin-attempt@example.com')).to be_user
       end
     end
 

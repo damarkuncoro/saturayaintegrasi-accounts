@@ -17,7 +17,7 @@ RSpec.describe UseCases::PublishUserSyncEvent, type: :model do
             email: "sync_test@example.com",
             first_name: "John",
             last_name: "Doe",
-            role: "worker",
+            role: "user",
             active: true
           )
         )

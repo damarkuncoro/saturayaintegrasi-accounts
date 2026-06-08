@@ -113,7 +113,7 @@ COPY packages/identity-ui /packages/identity-ui
 COPY packages/ui /packages/ui
 COPY packages/navigation /packages/navigation
 COPY apps/accounts/Gemfile apps/accounts/Gemfile.lock ./
-COPY apps/accounts/vendor/* ./vendor/
+COPY apps/accounts/vendor/ ./vendor/
 RUN bundle install --jobs 4 --retry 3 && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache
 

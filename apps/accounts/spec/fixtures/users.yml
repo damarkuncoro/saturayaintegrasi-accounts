@@ -7,7 +7,7 @@ lazaro_nixon:
   first_name: Lazaro
   last_name: Nixon
   phone: "1234567890"
-  role: worker
+  role: user
   active: true
   tenant: one
   verified: true

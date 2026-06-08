@@ -7,7 +7,7 @@ FactoryBot.define do
     password { "Password123!456" }
     password_confirmation { "Password123!456" }
     phone { Faker::PhoneNumber.phone_number }
-    role { :worker }
+    role { :user }
     verified { false }
     active { true }
 
@@ -19,13 +19,9 @@ FactoryBot.define do
       email { "admin@example.com" }
     end
 
-    trait :employer do
-      role { :employer }
+    trait :support do
+      role { :support }
       verified { true }
-    end
-
-    trait :worker do
-      role { :worker }
     end
 
     trait :unverified do
@@ -44,7 +40,7 @@ FactoryBot.define do
   factory :user_permission, class: "Identity::UserPermission" do
     tenant
     user
-    resource_type { "Attendance::Worksite" }
-    action { "manage" }
+    resource_type { "Identity::User" }
+    action { "read" }
   end
 end

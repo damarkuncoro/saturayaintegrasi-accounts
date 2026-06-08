@@ -16,11 +16,11 @@ class UserMailerPreview < ActionMailer::Preview
     tenant = System::Tenant.first || System::Tenant.create!(name: "Demo", slug: "demo")
     Identity::User.new(
       tenant: tenant,
-      email: "worker@example.com",
+      email: "user@example.com",
       first_name: "John",
       last_name: "Doe",
-      role: "worker",
-      username: "worker_john"
+      role: "user",
+      username: "user_john"
     )
   end
 end

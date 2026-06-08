@@ -26,7 +26,7 @@ RSpec.describe "Accounts main scenarios", type: :request do
 
     registered_user = Identity::User.find_by!(email: "public-admin-attempt@example.com")
     expect(response).to redirect_to("/dashboard")
-    expect(registered_user).to be_worker
+    expect(registered_user).to be_user
 
     delete sign_out_path
 

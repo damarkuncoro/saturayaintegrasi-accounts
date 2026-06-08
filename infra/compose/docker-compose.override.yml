@@ -9,7 +9,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_accounts_development
       RAILS_ENV: development
-      SECRET_KEY_BASE: development_secret_key_not_used_in_production
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-development_secret_key_not_used_in_production}
       REDIS_URL: redis://redis:6379/0
       APP_HOST: accounts.satu-raya.dev
       APP_PORT: 3000
