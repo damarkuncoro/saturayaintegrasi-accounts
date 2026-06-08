@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
   spec.email       = ["support@saturaya.id"]
   spec.summary     = "Reusable identity domain package for Satu Raya Integrasi"
   spec.description = "Identity domain models, use cases, services, and integration boundaries for Satu Raya Integrasi products."
-  spec.homepage    = "https://github.com/damarkuncoro/satu-raya"
+  spec.homepage    = "https://github.com/damarkuncoro/saturayaintegrasi-accounts"
   spec.license     = "Nonstandard"
 
   spec.files = Dir["{app,config,db,lib}/**/*", "README.md"]

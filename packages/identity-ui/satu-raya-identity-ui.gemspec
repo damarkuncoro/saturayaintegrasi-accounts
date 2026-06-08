@@ -6,6 +6,7 @@ Gem::Specification.new do |spec|
   spec.authors = ["Satu Raya Integrasi"]
   spec.email = ["dev@saturaya.id"]
   spec.summary = "UI components and views for Satu Raya Identity (IAM)"
+  spec.homepage = "https://github.com/damarkuncoro/saturayaintegrasi-accounts"
   spec.license = "MIT"
 
   spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]

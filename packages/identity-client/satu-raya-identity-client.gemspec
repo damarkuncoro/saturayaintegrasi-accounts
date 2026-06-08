@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
   spec.email       = ["support@saturaya.id"]
   spec.summary     = "Client SDK for Satu Raya Accounts identity integration"
   spec.description = "OIDC/OAuth client helpers, token verification, and Rails integration utilities for apps using Satu Raya Accounts."
-  spec.homepage    = "https://github.com/damarkuncoro/satu-raya"
+  spec.homepage    = "https://github.com/damarkuncoro/saturayaintegrasi-accounts"
   spec.license     = "Nonstandard"
 
   spec.files = Dir["{app,config,db,lib}/**/*", "README.md"]

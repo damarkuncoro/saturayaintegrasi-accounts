@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
   spec.email       = ["support@saturaya.id"]
   spec.summary     = "Shared Core DDD Layers for Satu Raya Integrasi monorepo"
   spec.description = "Shared Entities, Value Objects, Repositories, Services, and Use Cases for Satu Raya Integrasi."
-  spec.homepage    = "https://github.com/damarkuncoro/satukerja"
+  spec.homepage    = "https://github.com/damarkuncoro/saturayaintegrasi-accounts"
   spec.license     = "Nonstandard"
 
   spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
