@@ -44,7 +44,7 @@
       <%= render "shared/components/form_select", 
                  f: form, 
                  field: :role, 
-                 collection: [[t("registrations.new.role_worker"), "worker"], [t("registrations.new.role_employer"), "employer"]] %>
+                 collection: [[SatuRayaIdentityClient::Identity::BrandConfig.role_worker_label, "worker"], [SatuRayaIdentityClient::Identity::BrandConfig.role_employer_label, "employer"]] %>
     <% end %>
 
     <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">

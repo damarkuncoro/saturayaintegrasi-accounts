@@ -31,13 +31,6 @@ module UseCases
           end
 
           if user.save
-            # Provision profiles in Core when a synced user is saved
-            # Resilient check for cross-package extensions
-            if user.respond_to?(:worker?) && user.worker? && user.respond_to?(:worker_profile) && !user.worker_profile
-              user.create_worker_profile! if user.respond_to?(:create_worker_profile!)
-            elsif user.respond_to?(:employer?) && user.employer? && user.respond_to?(:employer_profile) && !user.employer_profile
-              user.create_employer_profile!(company_name: user.full_name) if user.respond_to?(:create_employer_profile!)
-            end
             ::Core::Result.success(user)
           else
             ::Core::Result.failure("Gagal melakukan sinkronisasi user: #{user.errors.full_messages.join(', ')}")

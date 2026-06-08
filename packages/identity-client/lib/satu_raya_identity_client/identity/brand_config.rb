@@ -77,6 +77,14 @@ module SatuRayaIdentityClient
           env("BRAND_SUPPORT_EMAIL", "support@satu-raya.id")
         end
 
+        def role_worker_label
+          env("BRAND_ROLE_WORKER_LABEL", "Pekerja")
+        end
+
+        def role_employer_label
+          env("BRAND_ROLE_EMPLOYER_LABEL", "Pemberi Kerja")
+        end
+
         def smtp_from
           env("SMTP_FROM", support_email)
         end
