@@ -2,7 +2,7 @@ module Services
   module System
   class AuditLogger
     # Mencatat aktivitas ke dalam ::System::AuditLog
-    # @param action [String] Nama aksi (misal: "worker_assigned")
+    # @param action [String] Nama aksi (misal: "user_registered")
     # @param auditable [ActiveRecord::Base, Object] Objek yang diaudit
     # @param metadata [Hash] Data tambahan dalam format JSON
     # @param changes [Hash] Perubahan data (audited_changes)

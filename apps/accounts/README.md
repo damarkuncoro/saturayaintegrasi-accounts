@@ -21,7 +21,7 @@ Accounts tidak menyimpan domain bisnis utama seperti lowongan kerja, profil peke
 
 ## Tanggung Jawab Service
 
-- Registrasi akun publik untuk role `worker` dan `employer`.
+- Registrasi akun publik.
 - Login, logout, session aktif, dan revocation session.
 - Multi-tenant identity berdasarkan tenant/domain.
 - Email verification dan perubahan email dengan status verifikasi.
@@ -77,9 +77,8 @@ packages/commons/app/models/system/audit_log.rb
 
 1. User membuka `/register`.
 2. `Identity::RegistrationsController#create` mengambil tenant dari request.
-3. Parameter role publik dibatasi hanya `worker` atau `employer`; role sensitif seperti `admin` tidak bisa dibuat dari form publik.
-4. `UseCases::Identity::Register` membuat `Identity::User`.
-5. Session baru dibuat dan user diarahkan ke dashboard sesuai konteks.
+3. `UseCases::Identity::Register` membuat `Identity::User`.
+4. Session baru dibuat dan user diarahkan ke dashboard.
 
 ### Login
 

@@ -52,23 +52,23 @@ module SatuRayaCommons
             u.verified = true
           end
 
-          # Employer
-          ::Identity::User.find_or_create_by!(email: "employer@#{tenant.slug}.com") do |u|
+          # Support
+          ::Identity::User.find_or_create_by!(email: "support@#{tenant.slug}.com") do |u|
             u.tenant = tenant
             u.password = "Password123!456"
-            u.first_name = "Employer"
+            u.first_name = "Support"
             u.last_name = tenant.name
-            u.role = :employer
+            u.role = :support
             u.verified = true
           end
 
-          # Worker
-          ::Identity::User.find_or_create_by!(email: "worker@#{tenant.slug}.com") do |u|
+          # Regular User
+          ::Identity::User.find_or_create_by!(email: "user@#{tenant.slug}.com") do |u|
             u.tenant = tenant
             u.password = "Password123!456"
-            u.first_name = "Worker"
+            u.first_name = "User"
             u.last_name = tenant.name
-            u.role = :worker
+            u.role = :user
             u.verified = true
           end
         end

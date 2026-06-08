@@ -26,7 +26,7 @@ module UseCases
           u.last_name = normalize_text(auth.info.last_name || (auth.info.name.to_s.split(" ").last rescue nil))
           u.password = SecureRandom.hex(16)
           u.verified = true
-          u.role ||= :worker
+          u.role ||= :user
         end
 
         if user.save

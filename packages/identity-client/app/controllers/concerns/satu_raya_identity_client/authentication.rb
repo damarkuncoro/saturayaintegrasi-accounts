@@ -15,17 +15,7 @@ module SatuRayaIdentityClient
     end
 
     def authenticated_dashboard_path
-      return identity_dashboard_url if request.host == brand_config.accounts_host
-
-      if System::Current.user&.employer?
-        business_portal_url(:employer_dashboard)
-      elsif System::Current.user&.worker?
-        jobs_url_for("/dashboard")
-      elsif System::Current.user&.admin?
-        business_portal_url(:admin_dashboard)
-      else
-        identity_dashboard_url
-      end
+      identity_dashboard_url
     end
 
     private

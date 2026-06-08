@@ -62,7 +62,7 @@ module Services
       end
 
       def reserved_subdomains
-        %w[www api admin accounts app jobs business assets static]
+        %w[www api admin accounts app assets static]
       end
     end
   end

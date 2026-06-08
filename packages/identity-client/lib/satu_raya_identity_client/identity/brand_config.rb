@@ -29,24 +29,8 @@ module SatuRayaIdentityClient
           env("ACCOUNTS_SUBDOMAIN", DEFAULT_ACCOUNTS_SUBDOMAIN)
         end
 
-        def jobs_host
-          env("JOBS_HOST", "jobs.#{app_domain}")
-        end
-
-        def jobs_url
-          "https://#{jobs_host}"
-        end
-
-        def business_host
-          env("BUSINESS_HOST", "business.#{app_domain}")
-        end
-
-        def business_url
-          "https://#{business_host}"
-        end
-
-        def standardization_host
-          env("STANDARDIZATION_HOST", "standardization.#{app_domain}")
+        def user_sync_url
+          ENV["USER_SYNC_URL"].presence
         end
 
         def primary_color
@@ -114,10 +98,7 @@ module SatuRayaIdentityClient
 
           [
             app_domain,
-            accounts_host,
-            jobs_host,
-            business_host,
-            standardization_host
+            accounts_host
           ].uniq
         end
 

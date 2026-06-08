@@ -28,7 +28,7 @@ module UseCases
       user = tenant.users.new(params)
       
       # Set default role jika tidak diberikan
-      user.role ||= :worker
+      user.role ||= :user
 
       if user.save
         # 1. Catat riwayat password
