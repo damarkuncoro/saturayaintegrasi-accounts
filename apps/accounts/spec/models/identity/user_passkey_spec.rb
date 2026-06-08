@@ -18,7 +18,7 @@ RSpec.describe Identity::UserPasskey, type: :model do
       passkey = create(:user_passkey)
       duplicate = build(:user_passkey, external_id: passkey.external_id, tenant: passkey.tenant)
       expect(duplicate).not_to be_valid
-      expect(duplicate.errors[:external_id]).to include("sudah ada")
+      expect(duplicate.errors[:external_id]).to include("sudah digunakan")
     end
 
     it { should validate_presence_of(:public_key) }

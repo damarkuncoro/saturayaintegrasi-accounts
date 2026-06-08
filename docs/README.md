@@ -1,47 +1,37 @@
-# Satu Raya Documentation Hub
+# Satu Raya Accounts Documentation Hub
 
-Selamat datang di pusat dokumentasi monorepo Satu Raya. Dokumen ini dirancang untuk membantu pengembang, PM, dan DevOps memahami arsitektur, standar, dan cara kerja ekosistem Satu Raya.
+Selamat datang di pusat dokumentasi layanan **Satu Raya Accounts (IAM)**. Repository ini berfokus pada penyediaan layanan manajemen identitas, otentikasi, dan otorisasi terpusat (Identity and Access Management) untuk seluruh ekosistem Satu Raya.
 
 ## 🚀 Getting Started
 
-Jika Anda baru bergabung atau baru melakukan setup di mesin lokal, mulailah dari sini:
+Untuk memulai pengembangan lokal, silakan pelajari panduan penyiapan service Accounts:
 
-| Topik | Deskripsi |
-| --- | --- |
-| [Workspace Organization](development/workspace-organization.md) | Penjelasan struktur folder monorepo dan prinsip kerja. |
-| [Developer Setup Guide](development/rails-implementation-guide.md) | Langkah-langkah instalasi dan menjalankan stack development. |
-| [CLI bin/sk Guide](development/workspace-organization.md#tooling-terpadu) | Cara menggunakan alat bantu `bin/sk` untuk produktivitas. |
-| [API Documentation Hub](api/index.html) | Portal Swagger/OpenAPI untuk seluruh layanan. |
+- **Setup & Panduan Kerja**: [Panduan Lengkap apps/accounts](../apps/accounts/README.md) — Menjelaskan tech stack, ERD database, setup local development, testing, seeding data, dan endpoint API utama.
 
-## 🏗 Architecture & Standards
+## 🏗 Arsitektur & Spesifikasi IAM (Accounts Architecture)
 
-Memahami bagaimana Satu Raya dibangun dan bagaimana menjaga kualitas kode.
+Dokumentasi arsitektur teknis yang menjelaskan bagaimana sistem IAM beroperasi secara internal maupun berinteraksi dengan service lainnya:
 
-- **UI & Frontend**: [UI System Architecture](architecture/ui-system.md) (Contract/Base/Skin pattern).
-- **Communication**: [Service Communication Map](architecture/service-map.md) (HMAC, Event Bus).
-- **Standards**: [Unified API Response](architecture/api-responses.md) & [Error Codes](api/error-codes.md).
-- **Testing**: [Commons Testing Guide](architecture/commons-testing.md) & [Definition of Done](development/definition-of-done.md).
-- **Scaling**: [Scaling Roadmap](architecture/scaling.md) untuk pertumbuhan tinggi.
+- [Arsitektur Sistem (Overview)](accounts/ARCHITECTURE.md) — Penjelasan mengenai strategi Single Sign-On (SSO) lintas subdomain, resolusi multi-tenancy, dan siklus hidup user.
+- [Kontrak API & Otorisasi](accounts/API-CONTRACT.md) — Detail spesifikasi pertukaran data (boundary contract), skema tabel `service_clients` internal, dan token introspection endpoint.
+- [Kontrak Event Asinkron](accounts/EVENT-CONTRACT.md) — Spesifikasi payload event-driven identity sync, katalog event, dan verifikasi integritas menggunakan signature HMAC-SHA256.
+- [Spesifikasi Keamanan](accounts/SECURITY.md) — Protokol pengamanan sistem, checklist keamanan wajib (MFA, rate limit, CORS, open redirect safeguard), dan arsitektur Refresh Token Rotation (RTR).
+- [Roadmap Implementasi](accounts/ROADMAP.md) — Garis waktu pengembangan fungsionalitas Accounts dalam 4 fase utama.
 
-## 🛠 Technical Execution
+## 📦 Distribusi & Reusability (Docker Packaging)
 
-- [Implementation Status](development/implementation-status.md) - Status nyata fitur saat ini.
-- [Developer Implementation Backlog](development/developer-implementation-backlog.md) - Prioritas kerja teknis.
-- [Engineering Implementation Guide](development/engineering-implementation-guide.md) - Best practices Ruby/Rails di Satu Raya.
+Informasi mengenai bagaimana service Accounts dibangun untuk dapat digunakan kembali (reusable) bagi berbagai penyewa/brand dengan satu basis kode yang sama:
 
-## 💼 Product & Business
+- [Reusable Docker Image Guide](architecture/reusable-accounts-docker-image.md) — Panduan runbook docker multi-stage build, minimal environment variables untuk kustomisasi brand, isolasi database, boundary dependency package internal, dan tingkat kustomisasi tampilan (views customization).
 
-Dokumentasi mengenai strategi pilot, MVP, dan roadmap komersial.
+## 📂 Pustaka & Paket Internal (Workspace Packages)
 
-- [Commercial MVP Scope](product/commercial-mvp.md)
-- [Pilot Readiness Checklist](product/pilot-readiness-checklist.md)
-- [Commercial Pricing Packages](product/commercial-pricing-packages.md)
-- [Strategic Expansion Roadmap](product/strategic-expansion-roadmap.md)
+Workspace ini berisi beberapa gem internal (packages) yang membagi fungsionalitas dan logika agar tetap termodulasi dengan baik:
 
-## 📂 Archive & History
-
-- [ADR (Architecture Decision Records)](adr/) - Sejarah keputusan arsitektur.
-- [Legacy Documentation](archive/) - Briefing lama, laporan reorganisasi, dan sejarah schema.
+- [packages/commons](../packages/commons/README.md) — Primitif netral dan utilitas bersama lintas aplikasi.
+- [packages/identity](../packages/identity/README.md) — Logika inti domain identity yang bersifat reusable.
+- [packages/identity-client](../packages/identity-client/README.md) — SDK integrasi otentikasi untuk aplikasi klien yang ingin berintegrasi dengan Accounts.
+- [packages/ui](../packages/ui/README.md) — Komponen UI bersama (shared) non-otentikasi.
 
 ---
 *Gunakan `bin/sk docs` untuk membuka dokumentasi ini di browser lokal Anda.*

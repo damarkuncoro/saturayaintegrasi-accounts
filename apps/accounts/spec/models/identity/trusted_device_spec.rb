@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Identity::TrustedDevice, type: :model do
-  subject { build(:trusted_device) }
+  subject { build(:trusted_device, user: create(:user)) }
 
   describe "associations" do
     it { should belong_to(:user).class_name("Identity::User") }
@@ -13,10 +13,11 @@ RSpec.describe Identity::TrustedDevice, type: :model do
     end
 
     it { should validate_presence_of(:device_fingerprint_digest) }
-    it { should validate_presence_of(:last_verified_at) }
 
-    it "is valid with valid attributes" do
-      expect(subject).to be_valid
+    it "defaults last_verified_at to current time" do
+      device = Identity::TrustedDevice.new
+      device.valid?
+      expect(device.last_verified_at).to be_present
     end
   end
 

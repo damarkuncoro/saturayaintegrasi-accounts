@@ -10,7 +10,7 @@ module Identity
     belongs_to :user, class_name: "Identity::User"
 
     before_validation :normalize_fields
-    before_validation on: :create do
+    before_validation do
       self.tenant ||= user&.tenant
       self.last_verified_at ||= Time.current
     end
