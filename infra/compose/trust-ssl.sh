@@ -8,7 +8,7 @@ echo "🔒 Memulai Otomatisasi Trust SSL Certificate Caddy lokal"
 echo "=========================================================="
 
 # 1. Pastikan container Caddy sedang berjalan
-if ! docker ps | grep -q satu-raya-caddy-dev; then
+if ! docker ps | grep -q satu-raya-proxy; then
   echo "⚠️  Container Caddy tidak terdeteksi aktif. Mencoba menyalakan..."
   docker compose up -d caddy
   sleep 2
@@ -16,7 +16,7 @@ fi
 
 # 2. Salin sertifikat root dari container Caddy ke folder lokal
 echo "📥 Mengambil Root CA certificate dari container Caddy..."
-docker cp satu-raya-caddy-dev:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
+docker cp satu-raya-proxy:/data/caddy/pki/authorities/local/root.crt ./caddy-root.crt
 
 # 3. Masukkan ke dalam macOS System Keychain sebagai tepercaya
 echo "🔑 Memasukkan sertifikat ke macOS System Keychain..."

@@ -1,0 +1,44 @@
+# Dependency directories
+node_modules/
+vendor/bundle/
+.bundle/
+bundle_cache/
+
+# Rails specific
+/apps/accounts/log/*.log
+/apps/accounts/tmp/
+/apps/accounts/public/assets
+/apps/accounts/public/packs
+/apps/accounts/public/packs-test
+/apps/accounts/node_modules
+/apps/accounts/storage/
+/apps/accounts/config/master.key
+/apps/accounts/config/credentials/*.key
+/apps/accounts/config/initializers/secret_token.rb
+/apps/accounts/config/secrets.yml
+
+# Environment files
+.env
+.env.*
+!.env.example
+/infra/compose/.env
+/apps/accounts/.env
+
+# Infrastructure
+/infra/compose/backups/
+/infra/compose/caddy_data/
+/infra/compose/caddy_config/
+/infra/compose/postgres_data/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Coverage
+/apps/accounts/coverage/
+
+# Testing
+/apps/accounts/tmp/screenshots/

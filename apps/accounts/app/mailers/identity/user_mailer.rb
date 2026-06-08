@@ -1,6 +1,6 @@
 module Identity
   class UserMailer < ApplicationMailer
-    helper :brand_view
+    helper SatuRayaIdentityUi::BrandViewHelper
 
     def password_reset_instructions(user, token)
       @user = user

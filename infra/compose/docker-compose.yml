@@ -1,3 +1,5 @@
+name: satu-raya-accounts
+
 services:
   accounts-app:
     build:
