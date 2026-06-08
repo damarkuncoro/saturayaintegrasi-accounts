@@ -1,0 +1,20 @@
+<div class="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-6">
+  <div class="max-w-md w-full text-center">
+    <div class="mb-8">
+      <span class="inline-flex items-center justify-center h-20 w-20 rounded-full bg-rose-100 text-rose-600">
+        <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </span>
+    </div>
+    <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight sm:text-5xl mb-4 font-heading">500</h1>
+    <h2 class="text-2xl font-bold text-slate-800 mb-4 font-heading">Kesalahan Sistem</h2>
+    <p class="text-slate-600 mb-8 leading-relaxed">
+      Terjadi kesalahan internal pada sistem kami. Tim teknis telah diberitahu dan sedang memperbaikinya.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <%= render "shared/components/button", label: "Coba Lagi", path: request.path, variant: :secondary, class_name: "w-full sm:w-auto" %>
+      <%= render "shared/components/button", label: "Kembali ke Beranda", path: "/", variant: :primary, class_name: "w-full sm:w-auto" %>
+    </div>
+  </div>
+</div>

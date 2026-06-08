@@ -1,0 +1,98 @@
+<div class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+  <!-- Profile Header -->
+  <div class="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6">
+    <div class="flex items-center gap-6">
+      <div class="h-20 w-20 rounded-2xl flex items-center justify-center text-white text-3xl font-black shadow-lg" style="background-color: var(--brand-primary, #4f46e5)">
+        <%= @user.first_name[0] %><%= @user.last_name[0] rescue "" %>
+      </div>
+      <div>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight"><%= @user.first_name %> <%= @user.last_name %></h1>
+        <p class="text-slate-500 font-medium"><%= @user.email %></p>
+        <div class="mt-2 flex gap-2">
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-100">
+            <%= @user.role.titleize %>
+          </span>
+          <% if @user.verified? %>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
+              <%= t("home.dashboard.verified") %>
+            </span>
+          <% else %>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
+              <%= t("home.dashboard.unverified") %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-3">
+      <%= link_to t("home.dashboard.edit_profile"), identity_account_path, class: "px-6 py-2.5 bg-white text-slate-700 font-bold rounded-xl border border-slate-200 hover:bg-slate-50 transition-all text-sm" %>
+      <%= button_to t("home.dashboard.sign_out"), sign_out_path, method: :delete, class: "px-6 py-2.5 bg-rose-50 text-rose-600 font-bold rounded-xl border border-rose-100 hover:bg-rose-100 transition-all text-sm" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Security Card -->
+    <div class="lg:col-span-1 space-y-6">
+      <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100">
+        <h3 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+          <svg class="h-5 w-5" style="color: var(--brand-primary, #4f46e5)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          <%= t("home.dashboard.account_security") %>
+        </h3>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div>
+              <p class="text-sm font-bold text-slate-800"><%= t("home.dashboard.two_factor_auth") %></p>
+              <p class="text-xs text-slate-500"><%= @user.otp_required_for_login? ? t("home.dashboard.active") : t("home.dashboard.inactive") %></p>
+            </div>
+            <%= link_to t("home.dashboard.configure"), two_factor_settings_path, class: "text-xs font-black text-indigo-600 hover:underline" %>
+          </div>
+          <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div>
+              <p class="text-sm font-bold text-slate-800"><%= t("home.dashboard.password") %></p>
+              <p class="text-xs text-slate-500"><%= t("home.dashboard.last_changed") %>: <%= format_date(@user.updated_at) %></p>
+            </div>
+            <%= link_to t("home.dashboard.change"), edit_password_path, class: "text-xs font-black text-indigo-600 hover:underline" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sessions Card -->
+    <div class="lg:col-span-2 bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-black text-slate-900 flex items-center gap-2">
+          <svg class="h-5 w-5" style="color: var(--brand-primary, #4f46e5)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          <%= t("home.dashboard.recent_sessions") %>
+        </h3>
+        <%= link_to t("home.dashboard.view_all"), sessions_path, class: "text-xs font-black text-indigo-600 hover:underline" %>
+      </div>
+      
+      <div class="space-y-4">
+        <% @sessions.each do |session| %>
+          <div class="flex items-center justify-between p-4 bg-slate-50/50 rounded-2xl border border-slate-100">
+            <div class="flex items-center gap-4">
+              <div class="h-10 w-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-bold text-slate-800"><%= session.user_agent.to_s.split.first.presence || "Unknown device" %></p>
+                <p class="text-[10px] text-slate-400 font-medium">IP: <%= session.ip_address.presence || "Unknown" %> • <%= time_ago_in_words(session.created_at) %> yang lalu</p>
+              </div>
+            </div>
+            <% if session == System::Current.session %>
+              <span class="px-2 py-1 rounded-md text-[9px] font-black uppercase" style="background-color: var(--brand-primary, #4f46e5); color: white; opacity: 0.9"><%= t("home.dashboard.this_session") %></span>
+            <% else %>
+              <%= button_to t("home.dashboard.logout"), session_path(session), method: :delete, class: "text-[10px] font-black text-rose-600 hover:text-rose-700" %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

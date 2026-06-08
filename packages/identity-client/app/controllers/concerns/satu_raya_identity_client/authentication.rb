@@ -1,0 +1,96 @@
+module SatuRayaIdentityClient
+  module Authentication
+    extend ActiveSupport::Concern
+    include SatuRayaNavigation::NavigationHelpers
+
+    included do
+      before_action :require_authentication
+      helper_method :authenticated_dashboard_path
+    end
+
+    class_methods do
+      def allow_unauthenticated_access(**options)
+        skip_before_action :require_authentication, **options
+      end
+    end
+
+    def authenticated_dashboard_path
+      return identity_dashboard_url if request.host == brand_config.accounts_host
+
+      if System::Current.user&.employer?
+        business_portal_url(:employer_dashboard)
+      elsif System::Current.user&.worker?
+        jobs_url_for("/dashboard")
+      elsif System::Current.user&.admin?
+        business_portal_url(:admin_dashboard)
+      else
+        identity_dashboard_url
+      end
+    end
+
+    private
+
+    def require_authentication
+      authenticated? || request_authentication
+    end
+
+    def request_authentication
+      session[:return_to_after_authenticating] = request.url
+      config = SatuRayaIdentityClient.configuration || SatuRayaIdentityClient::Configuration.new
+      
+      # Prefer configured accounts_url, fallback to helper
+      login_url = if config.accounts_url.present?
+                    "#{config.accounts_url}/login"
+                  else
+                    accounts_url_for("/login")
+                  end
+                  
+      redirect_to login_url, allow_other_host: true
+    end
+
+    def after_authentication_url
+      SatuRayaIdentityClient::Identity::RedirectValidator.safe_url(
+        session.delete(:return_to_after_authenticating),
+        fallback: authenticated_dashboard_path
+      )
+    end
+
+    def redirect_if_authenticated
+      if authenticated?
+        redirect_to authenticated_dashboard_path, allow_other_host: true
+      end
+    end
+
+    def start_new_session_for(user)
+      user.sessions.create!(
+        tenant: user.tenant || System::Current.tenant,
+        user_agent: request.user_agent,
+        ip_address: request.ip
+      ).tap do |session|
+        System::Current.session = session
+        cookies.signed.permanent[auth_session_cookie_name] = session_cookie_options(session.id)
+      end
+    end
+
+    def terminate_session
+      System::Current.session.destroy
+      cookies.delete(auth_session_cookie_name, domain: session_cookie_domain)
+    end
+
+    def session_cookie_options(value)
+      { value: value, httponly: true, same_site: :lax, domain: session_cookie_domain }
+    end
+
+    def auth_session_cookie_name
+      brand_config.auth_session_cookie_name
+    end
+
+    def trusted_device_cookie_name
+      brand_config.trusted_device_cookie_name
+    end
+
+    def session_cookie_domain
+      brand_config.session_cookie_domain
+    end
+  end
+end

@@ -1,0 +1,65 @@
+<%= render "shared/components/card", padding: "p-8 sm:p-10" do %>
+  <%= form_with(model: user, scope: :user, url: sign_up_path, class: "space-y-8") do |form| %>
+    <% if user.errors.any? %>
+      <div class="bg-rose-50 border-l-4 border-rose-500 p-4 mb-8 rounded-r-xl">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-rose-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-bold text-rose-800"><%= t("registrations.new.errors_occurred", count: user.errors.count) %></h3>
+            <div class="mt-2 text-sm text-rose-700">
+              <ul class="list-disc pl-5 space-y-1">
+                <% user.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+      <%= render "shared/components/form_field", label: t("registrations.new.first_name"), name: :first_name, required: true do %>
+        <%= render "shared/components/form_input", f: form, field: :first_name, placeholder: t("registrations.new.first_name_placeholder"), data: { autofocus: true } %>
+      <% end %>
+
+      <%= render "shared/components/form_field", label: t("registrations.new.last_name"), name: :last_name, required: true do %>
+        <%= render "shared/components/form_input", f: form, field: :last_name, placeholder: t("registrations.new.last_name_placeholder") %>
+      <% end %>
+    </div>
+
+    <%= render "shared/components/form_field", label: t("registrations.new.email"), name: :email, required: true do %>
+      <%= render "shared/components/form_input", f: form, field: :email, type: :email, placeholder: t("registrations.new.email_placeholder") %>
+    <% end %>
+
+    <%= render "shared/components/form_field", label: t("registrations.new.phone"), name: :phone, required: true, hint: t("registrations.new.phone_hint") do %>
+      <%= render "shared/components/form_input", f: form, field: :phone, placeholder: "08123456789" %>
+    <% end %>
+
+    <%= render "shared/components/form_field", label: t("registrations.new.role"), name: :role, required: true do %>
+      <%= render "shared/components/form_select", 
+                 f: form, 
+                 field: :role, 
+                 collection: [[t("registrations.new.role_worker"), "worker"], [t("registrations.new.role_employer"), "employer"]] %>
+    <% end %>
+
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2">
+      <%= render "shared/components/form_field", label: t("registrations.new.password"), name: :password, required: true, hint: t("registrations.new.password_hint") do %>
+        <%= render "shared/components/form_input", f: form, field: :password, type: :password, placeholder: "••••••••••••" %>
+      <% end %>
+
+      <%= render "shared/components/form_field", label: t("registrations.new.password_confirmation"), name: :password_confirmation, required: true do %>
+        <%= render "shared/components/form_input", f: form, field: :password_confirmation, type: :password, placeholder: "••••••••••••" %>
+      <% end %>
+    </div>
+
+    <div>
+      <%= form.submit t("registrations.new.submit"), 
+          class: "w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-lg text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all active:scale-95 uppercase tracking-widest font-heading cursor-pointer" %>
+    </div>
+  <% end %>
+<% end %>

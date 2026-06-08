@@ -1,0 +1,55 @@
+services:
+  # Deployment accounts untuk brand "Kacang Goreng"
+  # Menggunakan image yang sama dengan Satu Raya, tetapi konfigurasi berbeda.
+  accounts-kacanggoreng:
+    image: ghcr.io/satu-raya-integrasi/accounts:latest
+    restart: unless-stopped
+    environment:
+      RAILS_ENV: production
+      APP_NAME: accounts
+      APP_HOST: accounts.kacanggoreng.com
+      APP_DOMAIN: kacanggoreng.com
+      FORCE_SSL: "true"
+
+      # Branding Configuration
+      BRAND_NAME: "Kacang Goreng"
+      BRAND_SLUG: "kacanggoreng"
+      BRAND_PRIMARY_COLOR: "#D97706" # Amber-600
+      BRAND_LOGO_URL: "https://assets.kacanggoreng.com/logo.png"
+      BRAND_PRIVACY_URL: "https://kacanggoreng.com/privacy"
+      BRAND_TERMS_URL: "https://kacanggoreng.com/terms"
+
+      # Database & Redis (Terisolasi per brand)
+      DATABASE_URL: "postgresql://user:pass@postgres:5432/kacanggoreng_accounts_production"
+      REDIS_URL: "redis://redis:6379/0"
+      REDIS_NAMESPACE: "kacanggoreng_accounts"
+
+      # Secrets (Wajib unik per deployment)
+      SECRET_KEY_BASE: "${KACANGGORENG_SECRET_KEY_BASE}"
+      
+      # OIDC/JWT Configuration
+      JWT_ISSUER: "https://accounts.kacanggoreng.com"
+      OIDC_ISSUER: "https://accounts.kacanggoreng.com"
+
+      # Email Configuration
+      SMTP_FROM: "no-reply@kacanggoreng.com"
+      SMTP_HOST: "smtp.sendgrid.net"
+      SMTP_PORT: "587"
+      SMTP_USER: "${SMTP_USER}"
+      SMTP_PASS: "${SMTP_PASS}"
+
+      # Security
+      ALLOWED_REDIRECT_HOSTS: "app.kacanggoreng.com,admin.kacanggoreng.com"
+      CORS_ALLOWED_ORIGINS: "https://app.kacanggoreng.com,https://admin.kacanggoreng.com"
+      SESSION_COOKIE_NAME: "_kacanggoreng_accounts_session"
+      AUTH_SESSION_COOKIE_NAME: "kacanggoreng_session_id"
+      TRUSTED_DEVICE_COOKIE_NAME: "kacanggoreng_remember_device"
+      SESSION_COOKIE_DOMAIN: ".kacanggoreng.com"
+
+    ports:
+      - "3003:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

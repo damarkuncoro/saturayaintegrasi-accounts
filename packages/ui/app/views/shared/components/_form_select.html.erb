@@ -1,0 +1,16 @@
+<%
+  form = local_assigns.fetch(:f)
+  field = local_assigns.fetch(:field)
+  select_classes = [
+    "block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm transition-colors",
+    "focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100",
+    local_assigns[:class_name]
+  ].compact.join(" ")
+%>
+
+<%= form.select(
+      field,
+      local_assigns.fetch(:collection),
+      local_assigns.fetch(:options, {}),
+      local_assigns.fetch(:html_options, {}).merge(class: select_classes)
+    ) %>

@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+lazaro_nixon:
+  email: lazaronixon@hotmail.com
+  username: lazaronixon
+  password_digest: "$2a$12$QN2cE/29TAnMeIaKUSosqeUxrUA3OvdBTayGqK.EwNRMW4O7G1Lka"
+  first_name: Lazaro
+  last_name: Nixon
+  phone: "1234567890"
+  role: worker
+  active: true
+  tenant: one
+  verified: true

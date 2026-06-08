@@ -1,0 +1,40 @@
+<footer class="mt-auto border-t border-slate-200 bg-white py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div class="col-span-1 md:col-span-2">
+        <span class="text-xl font-black bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent tracking-tighter"><%= brand_config.name %></span>
+        <p class="mt-4 text-slate-500 text-sm leading-relaxed max-w-sm font-medium">
+          <%= brand_config.name %> adalah platform identitas dan akses terpadu yang aman dan terpercaya.
+        </p>
+      </div>
+      
+      <% unless ENV["APP_NAME"] == "accounts" %>
+        <div>
+          <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Layanan</h3>
+          <ul class="space-y-2.5 text-sm font-semibold text-slate-500">
+            <li><%= link_to "Cari Lowongan", jobs_url_for("/jobs"), class: "hover:text-indigo-600 transition-colors" %></li>
+            <li><%= link_to "Portal Perusahaan", business_portal_url("/"), class: "hover:text-indigo-600 transition-colors" %></li>
+            <li><%= link_to "Standardisasi Kompetensi", standardization_url_for("/"), class: "hover:text-indigo-600 transition-colors" rescue "Standardisasi Kompetensi" %></li>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Bantuan</h3>
+        <ul class="space-y-2.5 text-sm font-semibold text-slate-500">
+          <li><%= link_to "Pusat Bantuan", "#", class: "hover:text-indigo-600 transition-colors" %></li>
+          <li><%= link_to "Kontak Kami", "#", class: "hover:text-indigo-600 transition-colors" %></li>
+          <li><%= link_to "Dokumentasi API", accounts_url_for("/api-docs"), class: "hover:text-indigo-600 transition-colors" %></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="mt-12 pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-xs font-bold text-slate-400">&copy; <%= Time.current.year %> <%= brand_config.name %>. Seluruh hak cipta dilindungi.</p>
+      <div class="flex items-center gap-6 text-xs font-bold text-slate-400">
+        <%= link_to "Ketentuan Layanan", brand_config.terms_url || "#", class: "hover:text-slate-600 transition-colors" %>
+        <%= link_to "Kebijakan Privasi", brand_config.privacy_url || "#", class: "hover:text-slate-600 transition-colors" %>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+# Configuration
+IMAGE_NAME=${IMAGE_NAME:-"ghcr.io/satu-raya-integrasi/accounts"}
+TAG=${TAG:-"latest"}
+DOCKERFILE="apps/accounts/Dockerfile"
+
+echo "🚀 Building reusable accounts image: ${IMAGE_NAME}:${TAG}..."
+
+# Build from the root directory to include packages
+docker build -t "${IMAGE_NAME}:${TAG}" -f "${DOCKERFILE}" .
+
+echo "✅ Build successful!"
+echo ""
+echo "To push the image, run:"
+echo "docker push ${IMAGE_NAME}:${TAG}"

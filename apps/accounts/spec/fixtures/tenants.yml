@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: "Test Tenant One"
+  slug: test-tenant-one
+  domain: "tenant1.example.com"
+  plan: starter
+  active: true
+
+two:
+  name: "Test Tenant Two"
+  slug: test-tenant-two
+  domain: "tenant2.example.com"
+  plan: pro
+  active: true

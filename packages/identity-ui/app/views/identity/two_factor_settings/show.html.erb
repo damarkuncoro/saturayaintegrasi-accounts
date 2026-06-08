@@ -1,0 +1,101 @@
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <%= render "shared/components/card", padding: "p-8 md:p-12" do %>
+    <div class="flex items-center gap-6 mb-12">
+      <div class="h-16 w-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 border border-indigo-100 shadow-sm">
+        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      </div>
+      <div>
+        <%= render "shared/components/section_header", 
+                   title: t("two_factor_settings.show.title"), 
+                   class_name: "mb-0" do %>
+          <%= t("two_factor_settings.show.description") %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+      <div class="space-y-6">
+        <% if @backup_codes.present? %>
+          <div class="p-8 bg-amber-50 border border-amber-200 rounded-[2rem] space-y-6 shadow-sm">
+            <div class="flex items-center gap-4 text-amber-800">
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              <h3 class="font-bold"><%= t("two_factor_settings.show.backup_codes_title") %></h3>
+            </div>
+            <p class="text-sm text-amber-700 leading-relaxed">
+              <%= t("two_factor_settings.show.backup_codes_desc").html_safe %>
+            </p>
+            <div class="grid grid-cols-2 gap-4">
+              <% @backup_codes.each do |code| %>
+                <div class="bg-white px-4 py-3 rounded-xl border border-amber-100 text-center font-mono font-bold text-amber-900 shadow-sm">
+                  <%= code %>
+                </div>
+              <% end %>
+            </div>
+            <button onclick="window.print()" class="w-full py-3 rounded-xl bg-amber-200 text-amber-900 text-xs font-black uppercase tracking-widest hover:bg-amber-300 transition-colors">
+              <%= t("two_factor_settings.show.print_pdf") %>
+            </button>
+          </div>
+        <% end %>
+
+        <% if @user.otp_required_for_login? %>
+          <%= render "shared/components/badge", label: t("two_factor_settings.show.status_active"), color: :emerald, size: :sm %>
+          
+          <div class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-800"><%= t("two_factor_settings.show.account_secure_title") %></h2>
+            <p class="text-sm text-slate-500 leading-relaxed">
+              <%= t("two_factor_settings.show.account_secure_desc") %>
+            </p>
+          </div>
+
+          <%= form_with url: disable_two_factor_settings_path, method: :post, class: "space-y-4 pt-4", data: { turbo: false } do |f| %>
+            <div>
+              <%= f.label :otp_code, t("two_factor_settings.show.otp_code_label"), class: "block text-xs font-black uppercase tracking-[0.16em] text-slate-500 mb-2" %>
+              <%= f.text_field :otp_code, autocomplete: "one-time-code", inputmode: "numeric", class: "w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold focus:border-indigo-500 focus:ring-indigo-500", required: true %>
+            </div>
+            <div>
+              <%= f.label :password_challenge, t("two_factor_settings.show.password_challenge_label"), class: "block text-xs font-black uppercase tracking-[0.16em] text-slate-500 mb-2" %>
+              <%= f.password_field :password_challenge, autocomplete: "current-password", class: "w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold focus:border-indigo-500 focus:ring-indigo-500", required: true %>
+            </div>
+            <%= f.submit t("two_factor_settings.show.disable_button"), class: "w-full sm:w-auto px-8 py-4 rounded-2xl bg-rose-600 text-white text-sm font-black shadow-xl shadow-rose-200 hover:bg-rose-700 transition-all cursor-pointer" %>
+          <% end %>
+        <% else %>
+          <%= render "shared/components/badge", label: t("two_factor_settings.show.status_inactive"), color: :slate, size: :sm %>
+          
+          <div class="space-y-4">
+            <h2 class="text-xl font-bold text-slate-800"><%= t("two_factor_settings.show.activate_now_title") %></h2>
+            <p class="text-sm text-slate-500 leading-relaxed">
+              <%= t("two_factor_settings.show.activate_now_desc") %>
+            </p>
+          </div>
+
+          <%= form_with url: enable_two_factor_settings_path, method: :post, class: "space-y-4 pt-4", data: { turbo: false } do |f| %>
+            <div>
+              <%= f.label :otp_code, t("two_factor_settings.show.otp_from_app_label"), class: "block text-xs font-black uppercase tracking-[0.16em] text-slate-500 mb-2" %>
+              <%= f.text_field :otp_code, autocomplete: "one-time-code", inputmode: "numeric", class: "w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold focus:border-indigo-500 focus:ring-indigo-500", required: true %>
+            </div>
+            <div>
+              <%= f.label :password_challenge, t("two_factor_settings.show.password_challenge_label"), class: "block text-xs font-black uppercase tracking-[0.16em] text-slate-500 mb-2" %>
+              <%= f.password_field :password_challenge, autocomplete: "current-password", class: "w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold focus:border-indigo-500 focus:ring-indigo-500", required: true %>
+            </div>
+            <%= f.submit t("two_factor_settings.show.enable_button"), class: "w-full sm:w-auto px-8 py-4 rounded-2xl bg-indigo-600 text-white text-sm font-black shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all cursor-pointer" %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <div class="flex justify-center">
+        <% if @user.otp_secret.present? %>
+          <div class="p-6 bg-white border border-slate-100 rounded-[2rem] shadow-xl shadow-slate-100/50 opacity-60">
+             <%= @user.otp_qr_code.html_safe %>
+          </div>
+        <% else %>
+          <div class="w-full aspect-square max-w-[280px] p-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center text-center">
+            <div class="h-16 w-16 bg-white rounded-2xl flex items-center justify-center text-slate-200 shadow-sm mb-6">
+              <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+            </div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] leading-loose"><%= t("two_factor_settings.show.qr_placeholder").html_safe %></p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

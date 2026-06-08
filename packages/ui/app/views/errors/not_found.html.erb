@@ -1,0 +1,19 @@
+<div class="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-6">
+  <div class="max-w-md w-full text-center">
+    <div class="mb-8">
+      <span class="inline-flex items-center justify-center h-20 w-20 rounded-full bg-indigo-100 text-indigo-600">
+        <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </span>
+    </div>
+    <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight sm:text-5xl mb-4 font-heading">404</h1>
+    <h2 class="text-2xl font-bold text-slate-800 mb-4 font-heading">Halaman Tidak Ditemukan</h2>
+    <p class="text-slate-600 mb-8 leading-relaxed">
+      Maaf, halaman yang Anda cari tidak ada atau telah dipindahkan ke alamat lain.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <%= render "shared/components/button", label: "Kembali ke Beranda", path: "/", variant: :primary, class_name: "w-full sm:w-auto" %>
+    </div>
+  </div>
+</div>

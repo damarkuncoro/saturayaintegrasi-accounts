@@ -1,0 +1,24 @@
+<%
+  field_name = local_assigns.fetch(:name)
+  wrapper_classes = [
+    "space-y-2",
+    local_assigns[:class_name]
+  ].compact.join(" ")
+%>
+
+<div class="<%= wrapper_classes %>">
+  <div class="flex items-center justify-between gap-3">
+    <label for="<%= field_name %>" class="block text-sm font-black text-slate-700">
+      <%= local_assigns.fetch(:label) %>
+      <% if local_assigns[:required] %>
+        <span class="text-rose-500">*</span>
+      <% end %>
+    </label>
+  </div>
+
+  <%= yield %>
+
+  <% if local_assigns[:hint].present? %>
+    <p class="text-xs font-semibold leading-5 text-slate-500"><%= local_assigns[:hint] %></p>
+  <% end %>
+</div>

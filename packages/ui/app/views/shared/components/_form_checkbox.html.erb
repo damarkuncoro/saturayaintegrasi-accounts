@@ -1,0 +1,22 @@
+<%
+  form = local_assigns.fetch(:f)
+  field = local_assigns.fetch(:field)
+  variant = local_assigns.fetch(:variant, :simple).to_sym
+  wrapper_classes = [
+    (variant == :card ? "rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" : "flex items-start gap-3"),
+    local_assigns[:class_name]
+  ].compact.join(" ")
+  checkbox_classes = "mt-0.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+%>
+
+<label class="<%= wrapper_classes %>">
+  <div class="<%= variant == :card ? "flex items-start gap-3" : "contents" %>">
+    <%= form.check_box field, class: checkbox_classes %>
+    <span class="block">
+      <span class="text-sm font-black text-slate-700"><%= local_assigns.fetch(:label) %></span>
+      <% if local_assigns[:description].present? %>
+        <span class="mt-1 block text-xs font-semibold leading-5 text-slate-500"><%= local_assigns[:description] %></span>
+      <% end %>
+    </span>
+  </div>
+</label>

@@ -1,0 +1,5 @@
+PIN,DateTime,Status
+PIN123,2026-05-26 08:00:00,clock_in
+PIN123,2026-05-26 17:05:00,clock_out
+PIN124,2026-05-26 08:10:00,masuk
+PIN124,2026-05-26 17:00:00,pulang

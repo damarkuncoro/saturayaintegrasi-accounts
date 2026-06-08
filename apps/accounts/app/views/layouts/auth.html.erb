@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html class="h-full bg-slate-50">
+  <head>
+    <title><%= content_for(:title) || "Accounts | #{brand_config.name}" %></title>
+    <%= render "satu_raya_ui/layouts/head" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+
+    <style>
+      :root {
+        --brand-primary: <%= brand_config.primary_color %>;
+      }
+    </style>
+  </head>
+
+  <body class="h-full flex flex-col antialiased">
+    <%# Auth layout typically doesn't have the main navbar to keep users focused %>
+    <%= render "satu_raya_ui/layouts/flash" %>
+
+    <main class="flex-grow">
+      <% case brand_config.auth_layout_variant %>
+      <% when "split" %>
+        <div class="min-h-screen flex">
+          <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+            <div class="mx-auto w-full max-w-sm lg:w-96">
+              <%= yield %>
+            </div>
+          </div>
+          <div class="hidden lg:block relative w-0 flex-1">
+            <%= render_brand_partial "identity/hero_image" %>
+          </div>
+        </div>
+      <% when "compact" %>
+        <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+          <div class="max-w-md w-full space-y-8">
+            <%= yield %>
+          </div>
+        </div>
+      <% else # centered (default) %>
+        <div class="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+          <%= render_brand_partial "identity/background" %>
+          <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+             <%= yield %>
+          </div>
+        </div>
+      <% end %>
+    </main>
+
+    <footer class="py-6 px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-center space-x-6 text-sm text-slate-500">
+        <%= link_to "Privacy Policy", brand_config.privacy_url || "#", class: "hover:text-slate-900" %>
+        <%= link_to "Terms of Service", brand_config.terms_url || "#", class: "hover:text-slate-900" %>
+        <span>&copy; <%= Time.current.year %> <%= brand_config.name %></span>
+      </div>
+    </footer>
+  </body>
+</html>

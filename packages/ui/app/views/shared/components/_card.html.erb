@@ -1,0 +1,13 @@
+<%
+  card_classes = [
+    "bg-white border border-slate-100 shadow-sm",
+    local_assigns.fetch(:rounded, "rounded-3xl"),
+    local_assigns.fetch(:padding, "p-6"),
+    ("transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/70" if local_assigns[:hover]),
+    local_assigns[:class_name]
+  ].compact.join(" ")
+%>
+
+<div class="<%= card_classes %>">
+  <%= yield %>
+</div>

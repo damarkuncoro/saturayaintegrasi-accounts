@@ -1,0 +1,11 @@
+<p><%= t("mailers.user_mailer.email_verification.greeting") %></p>
+
+<p><%= t("mailers.user_mailer.email_verification.instruction", email: @user.email, brand_name: @brand_config.name) %></p>
+
+<div style="text-align: center; margin: 30px 0;">
+  <%= link_to t("mailers.user_mailer.email_verification.action"), identity_email_verification_url(sid: @token), class: "button" %>
+</div>
+
+<hr>
+
+<p><%= t("mailers.user_mailer.email_verification.support") %></p>

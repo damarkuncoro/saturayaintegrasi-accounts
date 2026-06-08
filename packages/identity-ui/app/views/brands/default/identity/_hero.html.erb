@@ -1,0 +1,21 @@
+<div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+  <div class="flex justify-center">
+    <% if brand_config.logo_url.present? %>
+      <%= image_tag brand_config.logo_url, alt: brand_config.name, class: "h-16 w-auto" %>
+    <% else %>
+      <div class="h-16 w-16 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-xl shadow-indigo-200/50">
+        <svg class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      </div>
+    <% end %>
+  </div>
+  <h2 class="mt-8 text-center text-3xl font-black font-heading text-slate-900 tracking-tight">
+    <%= local_assigns[:title] %>
+  </h2>
+  <% if local_assigns[:subtitle].present? %>
+    <p class="mt-3 text-center text-sm text-slate-500 font-semibold">
+      <%= local_assigns[:subtitle] %>
+    </p>
+  <% end %>
+</div>

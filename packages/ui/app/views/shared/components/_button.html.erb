@@ -1,0 +1,19 @@
+<%
+  button = SatuRayaCommons::UI::Contract::Button.new(
+    label: local_assigns.fetch(:label),
+    path: local_assigns.fetch(:path),
+    method: local_assigns.fetch(:method, :get),
+    variant: local_assigns.fetch(:variant, :primary),
+    target: local_assigns[:target],
+    aria_label: local_assigns[:aria_label],
+    class_name: local_assigns[:class_name],
+    data: local_assigns.fetch(:data, {})
+  )
+  skin = SatuRayaCommons::UI::Skins::Button.new(button)
+%>
+
+<% if button.method.to_sym == :get %>
+  <%= link_to button.label, button.path, **skin.render_attributes %>
+<% else %>
+  <%= button_to button.label, button.path, method: button.method, form: { class: "inline" }, **skin.render_attributes %>
+<% end %>

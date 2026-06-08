@@ -1,0 +1,83 @@
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <%= render "shared/components/card", padding: "p-8 md:p-12" do %>
+    <div class="flex items-center gap-6 mb-12">
+      <div class="h-16 w-16 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-600 border border-slate-100 shadow-sm">
+        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      </div>
+      <div>
+        <h1 class="text-3xl font-black text-slate-800 tracking-tight mb-1"><%= t("accounts.show.title") %></h1>
+        <p class="text-slate-500 font-medium"><%= t("accounts.show.description") %></p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div class="lg:col-span-2 space-y-12">
+        <!-- Profile Info -->
+        <section>
+          <h2 class="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mb-6"><%= t("accounts.show.profile_section") %></h2>
+          <%= form_with model: @user, url: identity_account_path, method: :patch, class: "space-y-6" do |f| %>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <%= f.label :first_name, class: "block text-xs font-black uppercase tracking-widest text-slate-500 mb-2" %>
+                <%= f.text_field :first_name, class: "w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold focus:border-indigo-500 focus:ring-indigo-500" %>
+              </div>
+              <div>
+                <%= f.label :last_name, class: "block text-xs font-black uppercase tracking-widest text-slate-500 mb-2" %>
+                <%= f.text_field :last_name, class: "w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold focus:border-indigo-500 focus:ring-indigo-500" %>
+              </div>
+            </div>
+            <div>
+              <%= f.label :phone, class: "block text-xs font-black uppercase tracking-widest text-slate-500 mb-2" %>
+              <%= f.telephone_field :phone, class: "w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold focus:border-indigo-500 focus:ring-indigo-500" %>
+            </div>
+            <div class="pt-4">
+              <%= f.submit t("accounts.show.save_button"), class: "px-8 py-4 rounded-2xl bg-slate-800 text-white text-sm font-black shadow-xl shadow-slate-200 hover:bg-slate-900 transition-all cursor-pointer" %>
+            </div>
+          <% end %>
+        </section>
+
+        <!-- Danger Zone -->
+        <section class="pt-12 border-t border-slate-100">
+          <h2 class="text-sm font-black uppercase tracking-[0.2em] text-rose-400 mb-6"><%= t("accounts.show.danger_zone") %></h2>
+          <div class="p-8 bg-rose-50 border border-rose-100 rounded-[2rem] space-y-6">
+            <div>
+              <h3 class="text-rose-900 font-bold mb-1"><%= t("accounts.show.deactivate_title") %></h3>
+              <p class="text-sm text-rose-700 leading-relaxed"><%= t("accounts.show.deactivate_desc") %></p>
+            </div>
+            
+            <%= form_with url: deactivate_identity_account_path, method: :post, class: "space-y-4" do |f| %>
+              <div>
+                <%= f.label :password_challenge, t("accounts.show.password_confirm_label"), class: "block text-xs font-black uppercase tracking-widest text-rose-600 mb-2" %>
+                <%= f.password_field :password_challenge, class: "w-full rounded-2xl border border-rose-200 px-4 py-3 text-sm font-semibold focus:border-rose-500 focus:ring-rose-500 bg-white", required: true %>
+              </div>
+              <%= f.submit t("accounts.show.deactivate_button"), class: "w-full sm:w-auto px-8 py-4 rounded-2xl bg-rose-600 text-white text-sm font-black shadow-xl shadow-rose-200 hover:bg-rose-700 transition-all cursor-pointer", data: { confirm: t("accounts.show.confirm_deactivate") } %>
+            <% end %>
+          </div>
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-8">
+        <div class="p-8 bg-slate-50 rounded-[2rem] border border-slate-100">
+          <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-4"><%= t("accounts.show.account_details") %></h3>
+          <dl class="space-y-4">
+            <div>
+              <dt class="text-[10px] font-black uppercase text-slate-400"><%= t("accounts.show.email_label") %></dt>
+              <dd class="text-sm font-bold text-slate-700"><%= @user.email %></dd>
+            </div>
+            <div>
+              <dt class="text-[10px] font-black uppercase text-slate-400"><%= t("accounts.show.role_label") %></dt>
+              <dd class="inline-block mt-1 px-3 py-1 bg-white rounded-lg border border-slate-200 text-[10px] font-black uppercase text-slate-600">
+                <%= @user.role.titleize %>
+              </dd>
+            </div>
+          </dl>
+          <div class="mt-8 pt-8 border-t border-slate-200 space-y-3">
+             <%= link_to t("accounts.show.change_password_link"), edit_identity_password_path, class: "block text-xs font-bold text-indigo-600 hover:text-indigo-700" %>
+             <%= link_to t("accounts.show.mfa_settings_link"), two_factor_settings_path, class: "block text-xs font-bold text-indigo-600 hover:text-indigo-700" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

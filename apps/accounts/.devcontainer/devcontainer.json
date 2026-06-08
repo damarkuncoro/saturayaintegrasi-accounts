@@ -1,0 +1,30 @@
+{
+  "name": "Satukerja Core Dev Container",
+  "dockerComposeFile": ["../docker-compose.yml", "../docker-compose.override.yml"],
+  "service": "app",
+  "workspaceFolder": "/rails",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Shopify.ruby-lsp",
+        "castwide.solargraph",
+        "kaiwood.endwise",
+        "rebornix.ruby",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "ruby.useBundler": true,
+        "[ruby]": {
+          "editor.defaultFormatter": "Shopify.ruby-lsp"
+        }
+      }
+    }
+  },
+
+  "forwardPorts": [3000],
+  "postCreateCommand": "bundle install && rails db:prepare",
+  "remoteUser": "root"
+}

@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+# Make sure we are in the satu-raya-accounts directory
+cd "$(dirname "$0")/.."
+
+cleanup() {
+  echo "🧹 Cleaning up test environment..."
+  docker compose -f ../../infra/compose/docker-compose.test.yml down
+}
+
+# Register cleanup trap to ensure cleanup on script exit
+trap cleanup EXIT
+
+echo "🚀 Starting test dependencies (database, Redis, OpenSearch)..."
+docker compose -f ../../infra/compose/docker-compose.test.yml up -d db-test redis-test opensearch-test
+
+echo "📦 Preparing database..."
+docker compose -f ../../infra/compose/docker-compose.test.yml run --rm accounts-app-test bundle exec rails db:test:prepare
+
+echo "🧪 Running backend tests..."
+docker compose -f ../../infra/compose/docker-compose.test.yml run --rm accounts-app-test bundle exec rspec --tag ~type:system "$@"
+

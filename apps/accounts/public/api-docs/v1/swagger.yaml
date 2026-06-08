@@ -1,0 +1,447 @@
+---
+openapi: 3.0.1
+info:
+  title: Accounts API V1
+  version: v1
+  description: REST API documentation for the Identity platform. All authenticated
+    API endpoints require a valid JWT token.
+paths:
+  "/api/v1/auth/login":
+    post:
+      summary: Authenticates a user and returns a JWT token
+      tags:
+      - Authentication
+      parameters:
+      - name: X-Tenant-Slug
+        in: header
+        required: true
+        description: Tenant unique identifier
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Authenticated successfully
+        '401':
+          description: Invalid credentials
+        '404':
+          description: Tenant not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: Password123!
+              required:
+              - email
+              - password
+  "/api/v1/employer_profiles":
+    get:
+      summary: Retrieves employer profiles
+      tags:
+      - Employer Profiles
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized
+    post:
+      summary: Creates a new employer profile
+      tags:
+      - Employer Profiles
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: Employer profile created
+        '422':
+          description: Unprocessable content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employer_profile:
+                  type: object
+                  properties:
+                    company_name:
+                      type: string
+                      example: Acme Corporation
+                    company_description:
+                      type: string
+                      example: Top tech company.
+                    industry:
+                      type: string
+                      example: Technology
+                    website:
+                      type: string
+                      example: https://example.com
+                    company_size:
+                      type: string
+                      example: 50-100
+                    address:
+                      type: string
+                      example: Jakarta, Indonesia
+                  required:
+                  - company_name
+  "/api/v1/employer_profiles/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: Employer profile ID
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Retrieves a specific employer profile
+      tags:
+      - Employer Profiles
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Employer profile found
+        '404':
+          description: Employer profile not found
+    put:
+      summary: Updates an existing employer profile
+      tags:
+      - Employer Profiles
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: Employer profile updated
+        '404':
+          description: Employer profile not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                employer_profile:
+                  type: object
+                  properties:
+                    company_name:
+                      type: string
+                      example: Acme Corp Updated
+                    company_description:
+                      type: string
+                      example: Updated tech profile.
+                    industry:
+                      type: string
+                      example: Technology
+    delete:
+      summary: Deletes an employer profile
+      tags:
+      - Employer Profiles
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: Employer profile deleted
+        '404':
+          description: Employer profile not found
+  "/api/v1/partner/courses":
+    get:
+      summary: Retrieves all training courses
+      tags:
+      - Partner API
+      security:
+      - partner_key: []
+      responses:
+        '200':
+          description: courses found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    title:
+                      type: string
+                    provider_name:
+                      type: string
+                    kbji_code:
+                      type: string
+                    price:
+                      type: number
+                    duration:
+                      type: string
+                    level:
+                      type: string
+                    active:
+                      type: boolean
+        '401':
+          description: unauthorized
+    post:
+      summary: Creates a new training course
+      tags:
+      - Partner API
+      security:
+      - partner_key: []
+      parameters: []
+      responses:
+        '201':
+          description: course created
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                provider_name:
+                  type: string
+                description:
+                  type: string
+                url:
+                  type: string
+                kbji_code:
+                  type: string
+                price:
+                  type: number
+                duration:
+                  type: string
+                level:
+                  type: string
+                active:
+                  type: boolean
+              required:
+              - title
+              - provider_name
+              - kbji_code
+  "/api/v1/standardizations":
+    get:
+      summary: Retrieves BPS standardizations (KBJI, KBLI, KBKI)
+      tags:
+      - Standardizations
+      parameters:
+      - name: type
+        in: query
+        description: kbji, kbli, or kbki
+        required: true
+        schema:
+          type: string
+      - name: version
+        in: query
+        description: e.g. 2015, 2014, 2002
+        required: false
+        schema:
+          type: string
+      - name: commodity_type
+        in: query
+        description: barang or jasa (KBKI only)
+        required: false
+        schema:
+          type: string
+      - name: q
+        in: query
+        description: search query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: standardizations found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    code:
+                      type: string
+                    title:
+                      type: string
+                    description:
+                      type: string
+                      nullable: true
+                    version:
+                      type: string
+                    level:
+                      type: integer
+                    commodity_type:
+                      type: string
+                      nullable: true
+  "/api/v1/worker_profiles":
+    get:
+      summary: Retrieves worker profiles
+      tags:
+      - Worker Profiles
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: skills
+        in: query
+        required: false
+        description: Filter by specific skill
+        schema:
+          type: string
+      - name: available
+        in: query
+        required: false
+        description: Filter by availability (true/false)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+        '401':
+          description: Unauthorized
+    post:
+      summary: Creates a new worker profile
+      tags:
+      - Worker Profiles
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: Profile created successfully
+        '422':
+          description: Unprocessable content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                worker_profile:
+                  type: object
+                  properties:
+                    bio:
+                      type: string
+                      example: Expert ruby developer.
+                    hourly_rate:
+                      type: integer
+                      example: 50
+                    location:
+                      type: string
+                      example: San Francisco, CA
+                    experience_years:
+                      type: integer
+                      example: 5
+                    available_for_work:
+                      type: boolean
+                      example: true
+                    skills:
+                      type: array
+                      items:
+                        type: string
+                      example:
+                      - ruby
+                      - rails
+                  required:
+                  - bio
+                  - hourly_rate
+                  - location
+                  - experience_years
+  "/api/v1/worker_profiles/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: Worker profile ID
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Retrieves a specific worker profile
+      tags:
+      - Worker Profiles
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Worker profile found
+        '404':
+          description: Profile not found
+    put:
+      summary: Updates an existing worker profile
+      tags:
+      - Worker Profiles
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: Worker profile updated
+        '404':
+          description: Profile not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                worker_profile:
+                  type: object
+                  properties:
+                    bio:
+                      type: string
+                      example: Updated bio description.
+                    hourly_rate:
+                      type: integer
+                      example: 60
+                    location:
+                      type: string
+                      example: Boston, MA
+                    experience_years:
+                      type: integer
+                      example: 6
+                    available_for_work:
+                      type: boolean
+                      example: false
+    delete:
+      summary: Deletes a worker profile
+      tags:
+      - Worker Profiles
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: Worker profile deleted
+        '404':
+          description: Profile not found
+servers:
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: accounts.satu-raya.dev
+      description: The brand's accounts host (e.g. accounts.brand.com)
+- url: /
+- url: http://localhost:3000
+components:
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'Insert JWT token in format: Bearer <token>'
+    partner_key:
+      type: apiKey
+      name: X-Partner-Key
+      in: header
+      description: API Key for Partner Portal

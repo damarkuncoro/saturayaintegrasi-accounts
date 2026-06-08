@@ -1,0 +1,28 @@
+class ApplicationController < ActionController::Base
+  include SatuRayaCommons::ErrorHandler
+  include SatuRayaCommons::ApiResponder
+  include SatuRayaIdentityClient::ControllerUtils
+  include SatuRayaIdentityClient::Authentication
+  include Pundit::Authorization
+  # include Pagy::Backend
+
+  allow_browser versions: :modern
+
+  layout :resolve_layout
+
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
+  private
+
+  def resolve_layout
+    if self.class.name.start_with?("Identity::") && !request.xhr?
+      "auth"
+    else
+      "application"
+    end
+  end
+
+  def require_current_tenant!
+    System::Current.tenant || raise(ActionController::BadRequest, "Tenant is not configured for #{request.host}")
+  end
+end

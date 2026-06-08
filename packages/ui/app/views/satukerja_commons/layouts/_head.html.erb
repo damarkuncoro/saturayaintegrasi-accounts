@@ -1,0 +1,56 @@
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#4f46e5">
+
+<%= csrf_meta_tags %>
+<%= csp_meta_tag %>
+<%= action_cable_meta_tag %>
+
+<link rel="icon" href="/icon.png" type="image/png">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon.png">
+
+<!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          heading: ['Outfit', 'sans-serif'],
+        },
+        colors: {
+          brand: {
+            primary: '#4f46e5',
+            secondary: '#7c3aed',
+            success: '#059669',
+            danger: '#e11d48',
+          },
+        },
+      },
+    },
+  }
+</script>
+
+<style>
+  :root {
+    --brand-primary: #4f46e5;
+    --brand-secondary: #7c3aed;
+  }
+  
+  .bg-glow-orb {
+    filter: blur(80px);
+    z-index: -1;
+  }
+
+  .glass-header {
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+  }
+</style>

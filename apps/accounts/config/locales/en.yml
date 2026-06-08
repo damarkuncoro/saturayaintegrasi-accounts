@@ -1,0 +1,162 @@
+# Files in the config/locales directory are used for internationalization and
+# are automatically loaded by Rails. If you want to use locales other than
+# English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t "hello"
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t("hello") %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more about the API, please read the Rails Internationalization guide
+# at https://guides.rubyonrails.org/i18n.html.
+#
+# Be aware that YAML interprets the following case-insensitive strings as
+# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
+# must be quoted to be interpreted as strings. For example:
+#
+#     en:
+#       "yes": yup
+#       enabled: "ON"
+
+en:
+  hello: "Hello world"
+  sessions:
+    new:
+      title: "Sign in to %{brand_name}"
+      no_account: "Don't have an account?"
+      register_now: "Register now"
+      email: "Email Address"
+      password: "Password"
+      remember_me: "Remember me"
+      forgot_password: "Forgot password?"
+      submit: "Sign In Now"
+      or_sign_in_with: "Or sign in with"
+  registrations:
+    new:
+      title: "Register New Account"
+      has_account: "Already have an account?"
+      sign_in_here: "sign in here"
+      errors_occurred:
+        one: "There is %{count} error:"
+        other: "There are %{count} errors:"
+      first_name: "First Name"
+      first_name_placeholder: "Example: John"
+      last_name: "Last Name"
+      last_name_placeholder: "Example: Doe"
+      email: "Email Address"
+      email_placeholder: "name@company.com"
+      phone: "Phone Number / WA"
+      phone_hint: "Use international or local format (08...)"
+      role: "Register as:"
+      role_worker: "I am looking for work (Worker)"
+      role_employer: "I am looking for workers (Employer)"
+      password: "Password"
+      password_hint: "Minimum 12 characters with a combination of numbers and symbols."
+      password_confirmation: "Confirm Password"
+      submit: "Register Now"
+  home:
+    dashboard:
+      edit_profile: "Edit Profile"
+      sign_out: "Sign Out"
+      account_security: "Account Security"
+      two_factor_auth: "Two-Factor Auth"
+      active: "Active"
+      inactive: "Inactive"
+      configure: "Configure"
+      password: "Password"
+      last_changed: "Last changed"
+      change: "Change"
+      recent_sessions: "Recent Device Sessions"
+      view_all: "View All"
+      this_session: "This Session"
+      logout: "Logout"
+      verified: "Verified"
+      unverified: "Unverified"
+  two_factor_settings:
+    show:
+      title: "Two-Factor Security (2FA)"
+      description: "Protect your account with an extra layer of security."
+      backup_codes_title: "Save Your Backup Codes"
+      backup_codes_desc: "If you lose access to your authenticator app, you can use one of these codes to sign in. <strong>Save these codes in a safe place.</strong>"
+      print_pdf: "Print or Save PDF"
+      status_active: "Status: Active"
+      status_inactive: "Status: Inactive"
+      account_secure_title: "Your Account is Secure"
+      account_secure_desc: "Two-factor authentication is currently active. Every time you sign in, you will be asked to enter a code from your authenticator app."
+      activate_now_title: "Activate Now"
+      activate_now_desc: "Use an authenticator app (like Google Authenticator or Microsoft Authenticator) to scan the QR code and get a verification code."
+      otp_code_label: "OTP Code"
+      otp_from_app_label: "OTP Code from app"
+      password_challenge_label: "Account password"
+      disable_button: "Disable 2FA"
+      enable_button: "Activate 2FA Now"
+      qr_placeholder: "QR Code will appear<br>after activation"
+  two_factor_challenges:
+    new:
+      title: "Two-Factor Verification"
+      description: "Enter the 6-digit code from your authenticator app."
+      otp_code_label: "Verification Code"
+      remember_device: "Trust this device for 30 days"
+      submit: "Verify & Sign In"
+      back_to_login: "Back to Login"
+  sessions:
+    index:
+      title: "Devices & Sessions"
+      user_agent: "User Agent"
+      ip_address: "IP Address"
+      created_at: "Created at"
+      logout_button: "Log out"
+      back_button: "Back"
+  passwords:
+    edit:
+      title: "Change Your Password"
+      description: "Ensure your account is using a long, random password to stay secure."
+      password_challenge_label: "Current Password"
+      password_label: "New Password"
+      password_hint: "12 characters minimum."
+      password_confirmation_label: "Confirm New Password"
+      submit: "Save Changes"
+      back_button: "Back"
+  accounts:
+    show:
+      title: "Account Settings"
+      description: "Manage your profile information and account security settings."
+      profile_section: "Profile Information"
+      save_button: "Save Changes"
+      danger_zone: "Danger Zone"
+      deactivate_title: "Deactivate Account"
+      deactivate_desc: "Deactivating your account will revoke all active sessions and prevent further logins until the account is reactivated by an admin. Your data will not be deleted."
+      password_confirm_label: "Confirm Your Password"
+      deactivate_button: "Deactivate Account Now"
+      confirm_deactivate: "Are you sure you want to deactivate your account?"
+      account_details: "Account Details"
+      email_label: "Email Address"
+      role_label: "Role / Account Type"
+      change_password_link: "Change password"
+      mfa_settings_link: "Two-Factor Settings (2FA)"
+  mailers:
+
+    user_mailer:
+      password_reset:
+        subject: "Reset your password at %{brand_name}"
+        greeting: "Hello,"
+        instruction: "You are receiving this email because we received a password reset request for your account %{email} at %{brand_name}."
+        action: "Reset My Password"
+        disclaimer: "If you did not request a password reset, you can safely ignore this email. This link will expire in 20 minutes."
+        support: "Have questions or need help? Reply to this email and our support team will assist you."
+      email_verification:
+        subject: "Verify your email at %{brand_name}"
+        greeting: "Hello,"
+        instruction: "Thank you for joining %{brand_name}. This email is sent to confirm that %{email} is the email address you want to use for your account."
+        action: "Yes, Verify My Email"
+        support: "Have questions or need help? Reply to this email and our support team will assist you."
+

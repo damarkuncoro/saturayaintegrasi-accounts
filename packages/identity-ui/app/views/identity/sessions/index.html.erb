@@ -1,0 +1,51 @@
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <div class="flex items-center justify-between mb-12">
+    <div>
+      <%= render "shared/components/section_header", 
+                 title: t("sessions.index.title"), 
+                 class_name: "mb-0" %>
+    </div>
+    <%= link_to t("sessions.index.back_button"), identity_dashboard_path, class: "text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors" %>
+  </div>
+
+  <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-100">
+        <thead class="bg-slate-50/50">
+          <tr>
+            <th class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest"><%= t("sessions.index.user_agent") %></th>
+            <th class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest"><%= t("sessions.index.ip_address") %></th>
+            <th class="px-8 py-5 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest"><%= t("sessions.index.created_at") %></th>
+            <th class="px-8 py-5"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50">
+          <% @sessions.each do |session| %>
+            <tr class="<%= "bg-indigo-50/30" if session == System::Current.session %>">
+              <td class="px-8 py-6">
+                <div class="flex items-center gap-4">
+                  <div class="h-10 w-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  </div>
+                  <div>
+                    <p class="text-sm font-bold text-slate-800"><%= session.user_agent.to_s.split.first.presence || "Unknown device" %></p>
+                    <p class="text-[11px] text-slate-400 font-medium max-w-xs truncate"><%= session.user_agent %></p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-8 py-6 text-sm font-semibold text-slate-600 font-mono"><%= session.ip_address %></td>
+              <td class="px-8 py-6 text-sm font-semibold text-slate-500"><%= format_datetime(session.created_at) %></td>
+              <td class="px-8 py-6 text-right">
+                <% if session == System::Current.session %>
+                  <span class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase bg-indigo-100 text-indigo-700"><%= t("home.dashboard.this_session") %></span>
+                <% else %>
+                  <%= button_to t("sessions.index.logout_button"), session_path(session), method: :delete, class: "text-xs font-black text-rose-600 hover:text-rose-700 transition-colors uppercase tracking-widest" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

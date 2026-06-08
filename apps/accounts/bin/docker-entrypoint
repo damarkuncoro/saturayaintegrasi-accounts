@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+# Remove stale PID file
+rm -f /rails/tmp/pids/server.pid
+
+# Skip bundle check/install in production to speed up boot
+if [ "$RAILS_ENV" != "production" ]; then
+  bundle check || bundle install
+fi
+
+# If running the rails server then create or migrate existing database
+# In production, we might want to skip this if migrations are handled externally
+if [[ "${*}" == *"rails server"* ]] || [[ "${*}" == *"thrust"* ]]; then
+  if [ "$SKIP_DB_PREPARE" != "true" ]; then
+    echo "⚙️ Preparing database..."
+    ./bin/rails db:prepare
+  fi
+fi
+
+exec "$@"

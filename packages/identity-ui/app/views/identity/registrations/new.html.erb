@@ -1,0 +1,8 @@
+<%= render_brand_partial "identity/hero", title: t("registrations.new.title"), subtitle: capture { %>
+  <%= t("registrations.new.has_account") %>
+  <%= link_to t("registrations.new.sign_in_here"), sign_in_path, class: "font-bold text-indigo-600 hover:text-indigo-500 transition-colors" %>
+<% } %>
+
+<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-2xl relative z-10">
+  <%= render "identity/shared/register_form", user: @user %>
+</div>

@@ -1,0 +1,8 @@
+<%= render_brand_partial "identity/hero", title: t("sessions.new.title", brand_name: brand_config.name), subtitle: capture { %>
+  <%= t("sessions.new.no_account") %>
+  <%= link_to t("sessions.new.register_now"), sign_up_path, class: "font-black text-indigo-600 hover:text-indigo-500 transition-colors" %>
+<% } %>
+
+<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4 sm:px-0">
+  <%= render "identity/shared/login_form" %>
+</div>

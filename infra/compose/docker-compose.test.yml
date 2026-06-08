@@ -1,0 +1,125 @@
+services:
+  jobs-app-test:
+    build:
+      context: ../../
+      dockerfile: infra/compose/Dockerfile.jobs-test
+    image: satu-raya-jobs:test-v1.0
+    container_name: satu-raya-jobs-test
+    depends_on:
+      db-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+      opensearch-test:
+        condition: service_started
+    environment:
+      RAILS_ENV: test
+      DATABASE_URL: postgresql://postgres:password@db-test:5432/satu_raya_test
+      REDIS_URL: redis://redis-test:6379/0
+      ELASTICSEARCH_URL: http://opensearch-test:9200
+      SECRET_KEY_BASE: test_secret_key_not_used_in_production
+    volumes:
+      - ../../apps/jobs:/rails
+      - bundle_cache_test:/usr/local/bundle
+      - ../../packages/commons:/packages/commons
+
+  business-app-test:
+    build:
+      context: ../../
+      dockerfile: infra/compose/Dockerfile.business-test
+    image: satu-raya-business:test-v1.0
+    container_name: satu-raya-business-test
+    depends_on:
+      db-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+      opensearch-test:
+        condition: service_started
+    environment:
+      RAILS_ENV: test
+      DATABASE_URL: postgresql://postgres:password@db-test:5432/satu_raya_test
+      REDIS_URL: redis://redis-test:6379/0
+      ELASTICSEARCH_URL: http://opensearch-test:9200
+      SECRET_KEY_BASE: test_secret_key_not_used_in_production
+    volumes:
+      - ../../apps/business:/rails
+      - bundle_cache_test:/usr/local/bundle
+      - ../../packages/commons:/packages/commons
+
+  accounts-app-test:
+    build:
+      context: ../../
+      dockerfile: infra/compose/Dockerfile.accounts-test
+    image: satu-raya-accounts:test-v1.0
+    container_name: satu-raya-accounts-test
+    depends_on:
+      db-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+      opensearch-test:
+        condition: service_started
+    environment:
+      RAILS_ENV: test
+      DATABASE_URL: postgresql://postgres:password@db-test:5432/satu_raya_test
+      REDIS_URL: redis://redis-test:6379/0
+      ELASTICSEARCH_URL: http://opensearch-test:9200
+      SECRET_KEY_BASE: test_secret_key_not_used_in_production
+    volumes:
+      - ../../apps/accounts:/rails
+      - bundle_cache_test:/usr/local/bundle
+      - ../../packages/commons:/packages/commons
+      - ../../packages/system:/packages/system
+      - ../../packages/communication:/packages/communication
+      - ../../packages/identity:/packages/identity
+      - ../../packages/identity-client:/packages/identity-client
+      - ../../packages/identity-ui:/packages/identity-ui
+      - ../../packages/ui:/packages/ui
+      - ../../packages/core-domain:/packages/core-domain
+
+
+  db-test:
+    image: postgres:16-alpine
+    container_name: satu-raya-db-test
+    command: postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: satu_raya_test
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis-test:
+    image: redis:7-alpine
+    container_name: satu-raya-redis-test
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  opensearch-test:
+    image: opensearchproject/opensearch:2.13.0
+    container_name: satu-raya-opensearch-test
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=Secure#Pass99!
+      - plugins.security.disabled=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+    tmpfs:
+      - /usr/share/opensearch/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200/_cluster/health" ]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+      start_period: 60s
+
+volumes:
+  bundle_cache_test:
