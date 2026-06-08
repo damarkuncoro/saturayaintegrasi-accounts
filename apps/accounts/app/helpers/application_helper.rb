@@ -8,4 +8,8 @@ module ApplicationHelper
     return "-" if time.blank?
     l(time, format: format)
   end
+  def format_rupiah(number)
+    return "Rp 0" if number.blank?
+    "Rp #{number.to_s.gsub(/(\d)(?=(\d\d\d)+(?!\d))/, '\\1.')}"
+  end
 end
