@@ -5,6 +5,8 @@ services:
       dockerfile: infra/compose/Dockerfile.accounts-test
     image: satu-raya-accounts:test-v1.0
     container_name: satu-raya-accounts-test
+    extra_hosts:
+      - "company.satu-raya.test:127.0.0.1"
     depends_on:
       db-test:
         condition: service_healthy

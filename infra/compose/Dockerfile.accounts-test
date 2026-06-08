@@ -40,4 +40,4 @@ RUN apt-get update -qq && \
     && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Pre-install playwright browser driver and Chromium browser
-RUN bundle exec playwright install chromium
+RUN npx playwright@1.60.0 install chromium
