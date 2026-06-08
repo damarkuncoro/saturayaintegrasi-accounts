@@ -95,12 +95,10 @@ RSpec.describe SatuRayaIdentityClient::Identity::BrandConfig do
     it "builds default hosts from APP_DOMAIN" do
       ENV["APP_DOMAIN"] = "kacanggoreng.com"
 
-      expect(described_class.allowed_redirect_hosts).to include(
+      expect(described_class.allowed_redirect_hosts).to eq([
         "kacanggoreng.com",
-        "accounts.kacanggoreng.com",
-        "jobs.kacanggoreng.com",
-        "business.kacanggoreng.com"
-      )
+        "accounts.kacanggoreng.com"
+      ])
     end
 
     it "uses the explicit redirect host allowlist" do

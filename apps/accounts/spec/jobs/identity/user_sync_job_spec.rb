@@ -7,6 +7,7 @@ RSpec.describe Identity::UserSyncJob, type: :job do
 
   describe "#perform" do
     before do
+      stub_const('ENV', ENV.to_h.merge('USER_SYNC_URL' => 'http://app:3000'))
       stub_request(:post, "http://app:3000/api/internal/users/sync")
         .to_return(status: 200, body: { status: "success" }.to_json, headers: {})
     end
