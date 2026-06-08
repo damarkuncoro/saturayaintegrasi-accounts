@@ -41,6 +41,9 @@ services:
       - ../../packages/navigation:/packages/navigation
 
   accounts-worker:
+    build:
+      context: ../../
+      dockerfile: apps/accounts/Dockerfile
     image: satu-raya-accounts:prod-v1.0
     container_name: satu-raya-accounts-worker-prod
     command: bundle exec rake solid_queue:start
@@ -64,8 +67,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -77,8 +78,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    ports:
-      - "6379:6379"
 
   caddy:
     image: caddy:2-alpine

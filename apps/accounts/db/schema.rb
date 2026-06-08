@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_02_050000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -39,7 +39,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_050000) do
     t.string "auditable_type"
     t.jsonb "audited_changes", default: {}, null: false
     t.datetime "created_at", null: false
+    t.string "hash_signature"
     t.jsonb "metadata", default: {}, null: false
+    t.string "previous_hash"
     t.string "remote_ip"
     t.string "request_id"
     t.uuid "tenant_id", null: false
@@ -47,73 +49,107 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_050000) do
     t.string "user_agent"
     t.uuid "user_id"
     t.index ["auditable_type", "auditable_id"], name: "index_audit_logs_on_auditable"
+    t.index ["hash_signature"], name: "index_audit_logs_on_hash_signature"
     t.index ["request_id"], name: "index_audit_logs_on_request_id"
     t.index ["tenant_id", "created_at"], name: "index_audit_logs_on_tenant_and_created"
     t.index ["user_id"], name: "index_audit_logs_on_user_id"
   end
 
   create_table "email_verification_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "tenant_id", null: false
-    t.uuid "user_id", null: false
-    t.string "token_digest", null: false
-    t.datetime "expires_at", null: false
-    t.datetime "used_at"
     t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.uuid "tenant_id", null: false
+    t.string "token_digest", null: false
     t.datetime "updated_at", null: false
+    t.datetime "used_at"
+    t.uuid "user_id", null: false
     t.index ["tenant_id", "user_id", "used_at"], name: "index_email_verification_tokens_on_tenant_user_used"
     t.index ["token_digest"], name: "index_email_verification_tokens_on_token_digest", unique: true
     t.index ["user_id"], name: "index_email_verification_tokens_on_user_id"
   end
 
   create_table "login_attempts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "tenant_id", null: false
-    t.uuid "user_id"
-    t.string "email", null: false
-    t.string "ip_address"
-    t.string "user_agent"
-    t.boolean "success", default: false, null: false
-    t.string "failure_reason"
     t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.string "failure_reason"
+    t.string "ip_address"
+    t.boolean "success", default: false, null: false
+    t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.uuid "user_id"
     t.index "tenant_id, lower((email)::text), created_at", name: "index_login_attempts_on_tenant_lower_email_created"
     t.index ["ip_address", "created_at"], name: "index_login_attempts_on_ip_and_created"
+    t.index ["tenant_id", "success", "created_at"], name: "index_login_attempts_on_throttle_check"
     t.index ["user_id"], name: "index_login_attempts_on_user_id"
   end
 
   create_table "mfa_backup_codes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "tenant_id", null: false
-    t.uuid "user_id", null: false
     t.string "code_digest", null: false
-    t.datetime "used_at"
     t.datetime "created_at", null: false
+    t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
+    t.datetime "used_at"
+    t.uuid "user_id", null: false
     t.index ["tenant_id", "user_id", "code_digest"], name: "index_mfa_backup_codes_unique_digest_per_user", unique: true
     t.index ["tenant_id", "user_id", "used_at"], name: "index_mfa_backup_codes_on_tenant_user_used"
     t.index ["user_id"], name: "index_mfa_backup_codes_on_user_id"
   end
 
   create_table "password_histories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "tenant_id", null: false
-    t.uuid "user_id", null: false
-    t.string "password_digest", null: false
     t.datetime "created_at", null: false
+    t.string "password_digest", null: false
+    t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
     t.index ["tenant_id", "user_id", "created_at"], name: "index_password_histories_on_tenant_user_created"
     t.index ["user_id"], name: "index_password_histories_on_user_id"
   end
 
   create_table "password_reset_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "tenant_id", null: false
-    t.uuid "user_id", null: false
-    t.string "token_digest", null: false
-    t.datetime "expires_at", null: false
-    t.datetime "used_at"
-    t.string "request_ip"
     t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "request_ip"
+    t.uuid "tenant_id", null: false
+    t.string "token_digest", null: false
     t.datetime "updated_at", null: false
+    t.datetime "used_at"
+    t.uuid "user_id", null: false
     t.index ["tenant_id", "user_id", "used_at"], name: "index_password_reset_tokens_on_tenant_user_used"
     t.index ["token_digest"], name: "index_password_reset_tokens_on_token_digest", unique: true
     t.index ["user_id"], name: "index_password_reset_tokens_on_user_id"
+  end
+
+  create_table "permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "action", null: false
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "name", null: false
+    t.string "resource_type", null: false
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_permissions_on_slug", unique: true
+  end
+
+  create_table "role_permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.jsonb "conditions", default: {}
+    t.datetime "created_at", null: false
+    t.uuid "permission_id", null: false
+    t.uuid "role_id", null: false
+    t.uuid "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["role_id", "permission_id"], name: "index_role_permissions_on_role_id_and_permission_id", unique: true
+  end
+
+  create_table "roles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.boolean "system_defined", default: false
+    t.uuid "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id", "slug"], name: "index_roles_on_tenant_id_and_slug", unique: true
   end
 
   create_table "sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -122,13 +158,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_050000) do
     t.datetime "expires_at"
     t.string "ip_address"
     t.datetime "last_seen_at"
+    t.string "revocation_reason"
     t.datetime "revoked_at"
+    t.uuid "revoked_by_id"
+    t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.string "user_agent"
-    t.uuid "tenant_id", null: false
     t.uuid "user_id", null: false
-    t.uuid "revoked_by_id"
-    t.string "revocation_reason"
     t.index ["expires_at"], name: "index_sessions_on_expires_at"
     t.index ["revoked_by_id"], name: "index_sessions_on_revoked_by_id"
     t.index ["tenant_id", "expires_at"], name: "index_sessions_on_tenant_expires"
@@ -276,31 +312,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_050000) do
   create_table "tenants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.string "domain"
     t.string "name", null: false
     t.string "plan", default: "starter", null: false
-    t.string "slug", null: false
     t.jsonb "settings", default: {}, null: false
+    t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.index "lower((domain)::text)", name: "index_tenants_on_lower_domain", unique: true, where: "(domain IS NOT NULL)"
     t.index "lower((slug)::text)", name: "index_tenants_on_lower_slug", unique: true
+    t.index ["deleted_at"], name: "index_tenants_on_deleted_at"
   end
 
   create_table "trusted_devices", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.string "device_fingerprint", null: false
+    t.string "device_fingerprint_digest", null: false
     t.string "ip_address"
     t.datetime "last_verified_at", null: false
+    t.string "revocation_reason"
     t.datetime "revoked_at"
+    t.uuid "revoked_by_id"
+    t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.string "user_agent"
-    t.uuid "tenant_id", null: false
     t.uuid "user_id", null: false
-    t.uuid "revoked_by_id"
-    t.string "revocation_reason"
-    t.index ["device_fingerprint"], name: "index_trusted_devices_on_device_fingerprint"
+    t.index ["device_fingerprint_digest"], name: "index_trusted_devices_on_device_fingerprint_digest"
     t.index ["revoked_by_id"], name: "index_trusted_devices_on_revoked_by_id"
-    t.index ["tenant_id", "user_id", "device_fingerprint"], name: "index_trusted_devices_active_unique_per_tenant_user", unique: true, where: "(revoked_at IS NULL)"
+    t.index ["tenant_id", "user_id", "device_fingerprint_digest"], name: "index_trusted_devices_active_unique_per_tenant_user", unique: true, where: "(revoked_at IS NULL)"
     t.index ["tenant_id"], name: "index_trusted_devices_on_tenant_id"
     t.index ["user_id"], name: "index_trusted_devices_on_user_id"
   end
@@ -310,13 +348,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_050000) do
     t.jsonb "consented_scopes", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "granted_at", null: false
+    t.string "revocation_reason"
     t.datetime "revoked_at"
+    t.uuid "revoked_by_id"
+    t.uuid "sso_client_configuration_id", null: false
     t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
-    t.uuid "sso_client_configuration_id", null: false
-    t.uuid "revoked_by_id"
-    t.string "revocation_reason"
     t.index ["revoked_by_id"], name: "index_user_consents_on_revoked_by_id"
     t.index ["tenant_id", "created_at"], name: "index_user_consents_on_tenant_and_created"
     t.index ["user_id", "tenant_id", "sso_client_configuration_id"], name: "index_active_user_consents_unique", unique: true, where: "(revoked_at IS NULL)"
@@ -330,8 +368,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_050000) do
     t.string "nickname"
     t.string "public_key", null: false
     t.integer "sign_count", default: 0, null: false
-    t.datetime "updated_at", null: false
     t.uuid "tenant_id", null: false
+    t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["external_id"], name: "index_user_passkeys_on_external_id", unique: true
     t.index ["tenant_id", "user_id"], name: "index_user_passkeys_on_tenant_and_user"
@@ -342,6 +380,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_050000) do
     t.string "action", null: false
     t.jsonb "conditions", default: {}, null: false
     t.datetime "created_at", null: false
+    t.boolean "is_override", default: true
+    t.uuid "permission_id"
     t.string "resource_type", null: false
     t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
@@ -351,38 +391,54 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_050000) do
     t.index ["user_id"], name: "index_user_permissions_on_user_id"
   end
 
+  create_table "user_roles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "role_id", null: false
+    t.uuid "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["user_id", "role_id"], name: "index_user_roles_on_user_id_and_role_id", unique: true
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
+    t.datetime "disabled_at"
     t.string "email", null: false
-    t.string "unconfirmed_email"
+    t.datetime "email_verified_at"
+    t.integer "failed_attempts", default: 0, null: false
     t.string "first_name", default: "", null: false
+    t.datetime "last_login_at"
+    t.string "last_login_ip"
     t.string "last_name", default: "", null: false
+    t.datetime "locked_at"
     t.boolean "otp_required_for_login", default: false, null: false
     t.string "otp_secret"
     t.string "password_digest", null: false
     t.string "phone", default: "", null: false
     t.string "provider"
+    t.datetime "revoked_at"
     t.integer "role", default: 0, null: false
     t.uuid "tenant_id", null: false
     t.string "uid"
+    t.string "unconfirmed_email"
     t.datetime "updated_at", null: false
     t.string "username"
     t.boolean "verified", default: false, null: false
-    t.integer "failed_attempts", default: 0, null: false
-    t.datetime "locked_at"
-    t.datetime "last_login_at"
-    t.string "last_login_ip"
     t.index "tenant_id, lower((email)::text)", name: "index_users_on_tenant_id_and_lower_email", unique: true
     t.index "tenant_id, lower((unconfirmed_email)::text)", name: "index_users_on_tenant_id_and_lower_unconfirmed_email", unique: true, where: "(unconfirmed_email IS NOT NULL)"
     t.index "tenant_id, lower((username)::text)", name: "index_users_on_tenant_id_and_lower_username", unique: true, where: "(username IS NOT NULL)"
     t.index ["tenant_id", "active"], name: "index_users_on_tenant_id_and_active"
+    t.index ["tenant_id", "deleted_at"], name: "index_users_on_tenant_id_and_deleted_at"
+    t.index ["tenant_id", "disabled_at"], name: "index_users_on_tenant_id_and_disabled_at"
+    t.index ["tenant_id", "email_verified_at"], name: "index_users_on_tenant_id_and_email_verified_at"
     t.index ["tenant_id", "provider", "uid"], name: "index_users_on_tenant_provider_uid", unique: true, where: "((provider IS NOT NULL) AND (uid IS NOT NULL))"
     t.index ["tenant_id", "role"], name: "index_users_on_tenant_id_and_role"
     t.index ["tenant_id", "verified"], name: "index_users_on_tenant_id_and_verified"
   end
 
-  add_foreign_key "api_clients", "tenants"
+  add_foreign_key "api_clients", "tenants", on_delete: :cascade
   add_foreign_key "audit_logs", "tenants"
   add_foreign_key "audit_logs", "users", on_delete: :nullify
   add_foreign_key "email_verification_tokens", "tenants", on_delete: :cascade
@@ -395,25 +451,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_050000) do
   add_foreign_key "password_histories", "users", on_delete: :cascade
   add_foreign_key "password_reset_tokens", "tenants", on_delete: :cascade
   add_foreign_key "password_reset_tokens", "users", on_delete: :cascade
+  add_foreign_key "role_permissions", "permissions", on_delete: :cascade
+  add_foreign_key "role_permissions", "roles", on_delete: :cascade
   add_foreign_key "sessions", "tenants", on_delete: :cascade
-  add_foreign_key "sessions", "users"
   add_foreign_key "sessions", "users", column: "revoked_by_id", on_delete: :nullify
+  add_foreign_key "sessions", "users", on_delete: :cascade
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-  add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: :job_id, on_delete: :cascade
-  add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: :job_id, on_delete: :cascade
-  add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: :job_id, on_delete: :cascade
-  add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: :job_id, on_delete: :cascade
-  add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: :job_id, on_delete: :cascade
+  add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "sso_client_configurations", "tenants", on_delete: :cascade
   add_foreign_key "trusted_devices", "tenants", on_delete: :cascade
-  add_foreign_key "trusted_devices", "users", on_delete: :cascade
   add_foreign_key "trusted_devices", "users", column: "revoked_by_id", on_delete: :nullify
+  add_foreign_key "trusted_devices", "users", on_delete: :cascade
   add_foreign_key "user_consents", "sso_client_configurations", on_delete: :cascade
   add_foreign_key "user_consents", "tenants", on_delete: :cascade
-  add_foreign_key "user_consents", "users", on_delete: :cascade
   add_foreign_key "user_consents", "users", column: "revoked_by_id", on_delete: :nullify
+  add_foreign_key "user_consents", "users", on_delete: :cascade
   add_foreign_key "user_passkeys", "tenants", on_delete: :cascade
   add_foreign_key "user_passkeys", "users", on_delete: :cascade
-  add_foreign_key "user_permissions", "tenants"
-  add_foreign_key "user_permissions", "users"
+  add_foreign_key "user_permissions", "permissions", on_delete: :cascade
+  add_foreign_key "user_permissions", "tenants", on_delete: :cascade
+  add_foreign_key "user_permissions", "users", on_delete: :cascade
+  add_foreign_key "user_roles", "roles", on_delete: :cascade
+  add_foreign_key "user_roles", "users", on_delete: :cascade
 end

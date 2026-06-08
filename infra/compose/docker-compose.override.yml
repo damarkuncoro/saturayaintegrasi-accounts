@@ -38,9 +38,23 @@ services:
       redis:
         condition: service_healthy
 
+  accounts-worker:
+    build:
+      context: ../../
+      dockerfile: apps/accounts/Dockerfile
+      target: development
+    environment:
+      DATABASE_URL: postgresql://postgres:password@db:5432/satu_raya_accounts_development
+      RAILS_ENV: development
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-development_secret_key_not_used_in_production}
+      REDIS_URL: redis://redis:6379/0
+    volumes:
+      - ../../apps/accounts:/rails
+      - bundle_cache:/usr/local/bundle
+
   db:
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   redis:
     ports:

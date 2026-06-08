@@ -15,6 +15,7 @@ PATH
     satu-raya-identity-client (0.1.0)
       jwt (~> 2.8)
       rails (~> 8.1, >= 8.1.0)
+      satu-raya-navigation
 
 PATH
   remote: ../packages/identity-ui
@@ -30,6 +31,12 @@ PATH
       rails (~> 8.1, >= 8.1.0)
       rotp (~> 6.3)
       rqrcode (~> 2.2)
+
+PATH
+  remote: ../packages/navigation
+  specs:
+    satu-raya-navigation (0.1.0)
+      rails (~> 8.1, >= 8.1.0)
 
 PATH
   remote: ../packages/system
@@ -720,6 +727,7 @@ DEPENDENCIES
   satu-raya-identity!
   satu-raya-identity-client!
   satu-raya-identity-ui!
+  satu-raya-navigation!
   satu-raya-system!
   satu-raya-ui!
   selenium-webdriver
