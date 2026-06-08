@@ -49,7 +49,7 @@ RSpec.describe "User Registrations", type: :system do
     click_button "Daftar Sekarang"
 
     # Verify that the user stays on the sign-up page and error banner is displayed
-    expect(page).to have_content(/kesalahan/i)
     expect(page).to have_content("Email tidak valid")
+    expect(page).to have_content("Password confirmation tidak sesuai dengan Password")
   end
 end
