@@ -12,8 +12,11 @@ module Identity
       where(revoked_at: nil).where("expires_at IS NULL OR expires_at > ?", Time.current)
     }
 
-    before_create do
+    before_validation do
       self.tenant ||= user&.tenant if has_attribute?(:tenant_id)
+    end
+
+    before_create do
       self.user_agent = System::Current.user_agent
       self.ip_address = System::Current.ip_address
     end

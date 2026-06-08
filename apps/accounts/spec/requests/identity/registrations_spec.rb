@@ -1,7 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe 'Registrations', type: :request do
-  let!(:tenant) { create(:tenant) }
+  let!(:tenant) { create(:tenant, domain: "www.example.com") }
+
+  before do
+    host! "www.example.com"
+  end
 
   describe 'GET /register' do
     it 'returns success' do

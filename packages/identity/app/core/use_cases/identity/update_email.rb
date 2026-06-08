@@ -30,16 +30,19 @@ module UseCases
 
       # 3. Update email (langsung atau via unconfirmed_email)
       # Di sini kita langsung update email namun set verified: false
-      if user.update(email: new_email, verified: false)
+      if user.update(email: new_email, email_verified_at: nil)
         # 4. Generate token verifikasi baru
+        token_raw = SecureRandom.hex(32)
+        token_digest = Digest::SHA256.hexdigest(token_raw)
+
         token = user.email_verification_tokens.create!(
           tenant: tenant,
-          token_digest: SecureRandom.hex(32),
+          token_digest: token_digest,
           expires_at: 24.hours.from_now
         )
 
         # 5. Kirim email verifikasi ke email baru
-        ::Identity::UserMailer.with(user: user, token: token.token_digest).email_verification.deliver_later
+        ::Identity::UserMailer.email_verification_instructions(user, token_raw).deliver_later
 
         # 6. Catat Audit Log
         @audit_logger.log(

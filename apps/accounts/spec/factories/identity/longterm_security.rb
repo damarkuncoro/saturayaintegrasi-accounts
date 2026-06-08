@@ -23,7 +23,7 @@ FactoryBot.define do
   factory :trusted_device, class: "Identity::TrustedDevice" do
     user
     tenant { user.tenant }
-    sequence(:device_fingerprint) { |n| "fingerprint_#{n}_#{SecureRandom.hex(16)}" }
+    sequence(:device_fingerprint_digest) { |n| "fingerprint_#{n}_#{SecureRandom.hex(16)}" }
     user_agent { "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" }
     ip_address { "127.0.0.1" }
     last_verified_at { Time.current }

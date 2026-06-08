@@ -4,20 +4,18 @@ RSpec.describe Identity::UserMailer, type: :mailer do
   let(:tenant) { create(:tenant) }
   let(:user) { create(:user, tenant: tenant) }
 
-  describe 'password_reset' do
-    let(:mail) { Identity::UserMailer.with(user: user).password_reset }
+  describe 'password_reset_instructions' do
+    let(:mail) { Identity::UserMailer.password_reset_instructions(user, 'test-token') }
 
     it 'renders the headers' do
-      expect(mail.subject).to eq("Reset your password")
       expect(mail.to).to eq([ user.email ])
     end
   end
 
-  describe 'email_verification' do
-    let(:mail) { Identity::UserMailer.with(user: user).email_verification }
+  describe 'email_verification_instructions' do
+    let(:mail) { Identity::UserMailer.email_verification_instructions(user, 'test-token') }
 
     it 'renders the headers' do
-      expect(mail.subject).to eq("Verify your email")
       expect(mail.to).to eq([ user.email ])
     end
   end

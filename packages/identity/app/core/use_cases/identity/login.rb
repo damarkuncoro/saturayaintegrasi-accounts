@@ -87,6 +87,7 @@ module UseCases
       Core::Result.success(user, meta: { status: :success, session: session })
     rescue => e
       Rails.logger.error "[Identity::Login] Error: #{e.message}"
+      raise e if Rails.env.test?
       Core::Result.failure("Terjadi kesalahan sistem saat proses login.")
     end
 

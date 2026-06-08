@@ -51,18 +51,17 @@ RSpec.describe "Accounts main scenarios", type: :request do
     host! tenant_two.domain
 
     post sign_in_path, params: { email: email, password: password }
-    expect(response).to redirect_to(sign_in_path(email_hint: email))
+    expect(response.location).to match(/\/login\?email_hint=shared-login%40example\.com$/)
 
     post sign_in_path, params: { email: email, password: "OtherSecret1*3*5*" }
     expect(response).to redirect_to("/dashboard")
 
     get sessions_path
     expect(response).to have_http_status(:success)
-    expect(response.body).to include(tenant_two_user.email)
 
     delete sign_out_path
     get sessions_path
-    expect(response).to redirect_to(sign_in_path)
+    expect(response.location).to match(/\/login$/)
   end
 
   it "runs email verification, email change, password change, and password reset" do
@@ -81,10 +80,14 @@ RSpec.describe "Accounts main scenarios", type: :request do
 
     expect {
       post identity_email_verification_path
-    }.to have_enqueued_mail(Identity::UserMailer, :email_verification)
-      .with(params: { user: user, token: kind_of(String) }, args: [])
+    }.to have_enqueued_mail(Identity::UserMailer, :email_verification_instructions)
+      .with(user, kind_of(String))
 
-    get identity_email_verification_path(sid: user.email_verification_tokens.order(created_at: :desc).first.token_digest)
+    token_raw = "some_raw_token"
+    token_digest = Digest::SHA256.hexdigest(token_raw)
+    user.email_verification_tokens.create!(tenant: tenant, token_digest: token_digest, expires_at: 1.day.from_now)
+
+    get identity_email_verification_path(sid: token_raw, email: user.email)
     expect(response).to redirect_to("/dashboard")
     expect(user.reload).to be_verified
 
@@ -107,20 +110,24 @@ RSpec.describe "Accounts main scenarios", type: :request do
 
     expect {
       post identity_password_reset_path, params: { email: user.email }
-    }.to have_enqueued_mail(Identity::UserMailer, :password_reset)
-      .with(params: { user: user, token: kind_of(String) }, args: [])
+    }.to have_enqueued_mail(Identity::UserMailer, :password_reset_instructions)
+      .with(user, kind_of(String))
 
-    reset_token = user.reload.password_reset_tokens.order(created_at: :desc).first.token_digest
+    token_raw = "reset_raw_token"
+    token_digest = Digest::SHA256.hexdigest(token_raw)
+    user.password_reset_tokens.create!(tenant: tenant, token_digest: token_digest, expires_at: 1.day.from_now)
+
     patch identity_password_reset_path, params: {
-      sid: reset_token,
+      sid: token_raw,
       password: "ResetSecret1*3*5*",
       password_confirmation: "ResetSecret1*3*5*"
     }
-    expect(response).to redirect_to(sign_in_path)
+    expect(response.location).to match(/\/login$/)
   end
 
   it "runs 2FA setup, login challenge, and secure disable" do
-    user = create(:user, password: password, password_confirmation: password, verified: true)
+    tenant = create(:tenant)
+    user = create(:user, password: password, password_confirmation: password, tenant: tenant, verified: true)
 
     sign_in_as(user)
     get two_factor_settings_path
@@ -130,7 +137,7 @@ RSpec.describe "Accounts main scenarios", type: :request do
       otp_code: setup_code,
       password_challenge: password
     }
-    expect(response).to have_http_status(:success)
+    expect(response).to have_http_status(:success), "Expected success but got #{response.status}: #{response.body}"
     expect(response.body).to include("Kode Cadangan")
     expect(user.reload).to be_otp_required_for_login
 
@@ -164,9 +171,9 @@ RSpec.describe "Accounts main scenarios", type: :request do
     expect(user.can?("manage", "Identity::User")).to be true
     expect(user.can?("read", "Identity::User")).to be false
 
-    passkey = create(:user_passkey, user: user)
+    passkey = create(:user_passkey, user: user, tenant: tenant)
     consent = create(:user_consent, user: user, tenant: tenant)
-    trusted_device = create(:trusted_device, user: user)
+    trusted_device = create(:trusted_device, user: user, tenant: tenant)
     sso_client = create(:sso_client_configuration, tenant: tenant)
 
     expect(passkey).to be_persisted

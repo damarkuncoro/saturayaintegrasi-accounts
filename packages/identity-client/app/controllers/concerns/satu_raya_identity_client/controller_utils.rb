@@ -77,7 +77,7 @@ module SatuRayaIdentityClient
       tenant ||= System::Current.user&.tenant
 
       # 3. Development fallback
-      if tenant.nil? && !Rails.env.production?
+      if tenant.nil? && Rails.env.development?
         tenant = ::System::Tenant.active.first
       end
 

@@ -3,36 +3,28 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require_relative "coverage_helper"
 
-# Set default environment for tests
-ENV["RAILS_ENV"] = "test"
-
-# Load the Rails application and its environment
-require_relative "../config/environment"
-
-# Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
-
-# Load Clean Architecture components
-require_relative "clean_architecture_helper"
-
-# Load support files
-Dir[Rails.root.join("spec/support/**/*.rb")].sort.each { |f| require f }
-
-# Shoulda Matchers configuration. See https://github.com/thoughtbot/shoulda-matchers
-Shoulda::Matchers.configure do |config|
-  config.integrate do |with|
-    with.test_framework :rspec
-    with.library :rails
-  end
-end
-
 RSpec.configure do |config|
-  # Use the built-in test framework's transaction methods
-  config.use_transactional_fixtures = true
+  config.expect_with :rspec do |expectations|
+    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+  end
 
-  # Infer spec type from file location
-  config.infer_spec_type_from_file_location!
+  config.mock_with :rspec do |mocks|
+    # Prevents you from mocking or stubbing a method that does not exist on
+    # a real object. This is generally recommended, and will default to
+    # `true` in RSpec 4.
+    mocks.verify_partial_doubles = true
+  end
 
-  # Filter lines from Rails gems in backtraces
-  config.filter_rails_from_backtrace!
+  config.shared_context_metadata_behavior = :apply_to_host_groups
+  config.filter_run_when_matching :focus
+  config.example_status_persistence_file_path = "spec/examples.txt"
+  config.disable_monkey_patching!
+
+  if config.files_to_run.one?
+    config.default_formatter = "doc"
+  end
+
+  config.profile_examples = 10
+  config.order = :random
+  Kernel.srand config.seed
 end

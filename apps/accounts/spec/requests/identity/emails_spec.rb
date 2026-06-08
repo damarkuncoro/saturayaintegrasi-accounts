@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Identity::Emails', type: :request do
-  let(:tenant) { create(:tenant) }
+  let(:tenant) { create(:tenant, domain: "www.example.com") }
   let(:user) { create(:user, password: "Secret1*3*5*", password_confirmation: "Secret1*3*5*", tenant: tenant, verified: true) }
 
   def sign_in_as(user)
@@ -9,6 +9,7 @@ RSpec.describe 'Identity::Emails', type: :request do
   end
 
   before do
+    host! "www.example.com"
     sign_in_as(user)
   end
 

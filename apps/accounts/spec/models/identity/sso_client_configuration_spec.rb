@@ -28,7 +28,8 @@ RSpec.describe Identity::SsoClientConfiguration, type: :model do
     it "validates format of redirect_uris" do
       subject.redirect_uris = [ "invalid-uri" ]
       expect(subject).not_to be_valid
-      expect(subject.errors[:redirect_uris]).to include("mengandung URI yang tidak valid: invalid-uri")
+      # The error message from URI.parse("invalid-uri") with our custom validation
+      expect(subject.errors[:redirect_uris].to_sentence).to match(/harus menggunakan HTTPS|mengandung URI tanpa host/)
     end
 
     it "validates presence of allowed_scopes" do

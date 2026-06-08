@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Two factor settings", type: :request do
-  let(:tenant) { create(:tenant) }
+  let(:tenant) { create(:tenant, domain: "www.example.com") }
   let(:password) { "Secret1*3*5*" }
   let(:user) { create(:user, password: password, password_confirmation: password, tenant: tenant, verified: true) }
 
@@ -10,6 +10,7 @@ RSpec.describe "Two factor settings", type: :request do
   end
 
   before do
+    host! "www.example.com"
     sign_in_as(user)
   end
 

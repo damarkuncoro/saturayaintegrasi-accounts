@@ -19,8 +19,8 @@ RSpec.describe 'Identity::EmailVerifications', type: :request do
     it 'queues a verification email and redirects' do
       expect {
         post identity_email_verification_path
-      }.to have_enqueued_mail(Identity::UserMailer, :email_verification)
-        .with(params: { user: user, token: kind_of(String) }, args: [])
+      }.to have_enqueued_mail(Identity::UserMailer, :email_verification_instructions)
+        .with(user, kind_of(String))
 
       expect(response).to redirect_to("/dashboard")
     end
@@ -29,29 +29,34 @@ RSpec.describe 'Identity::EmailVerifications', type: :request do
   describe 'GET /identity/email_verification' do
     context 'with a valid token' do
       it 'verifies the email and redirects to user dashboard' do
-        token = user.email_verification_tokens.create!(
+        token_raw = SecureRandom.hex(32)
+        token_digest = Digest::SHA256.hexdigest(token_raw)
+        
+        user.email_verification_tokens.create!(
           tenant: tenant,
-          token_digest: SecureRandom.hex(32),
+          token_digest: token_digest,
           expires_at: 24.hours.from_now
         )
 
-        sid = token.token_digest
-        get identity_email_verification_path(sid: sid, email: user.email)
+        get identity_email_verification_path(sid: token_raw, email: user.email)
         expect(response).to redirect_to("/dashboard")
       end
     end
 
     context 'with an expired token' do
       it 'does not verify the email and redirects with alert' do
-        token = user.email_verification_tokens.create!(
+        token_raw = SecureRandom.hex(32)
+        token_digest = Digest::SHA256.hexdigest(token_raw)
+
+        user.email_verification_tokens.create!(
           tenant: tenant,
-          token_digest: SecureRandom.hex(32),
+          token_digest: token_digest,
           expires_at: 1.hour.ago
         )
 
-        get identity_email_verification_path(sid: token.token_digest, email: user.email)
+        get identity_email_verification_path(sid: token_raw, email: user.email)
         expect(response).to redirect_to(sign_in_path)
-        expect(flash[:alert]).to eq("Token verifikasi tidak valid atau sudah kedaluwarsa.")
+        expect(flash[:alert]).to eq("Token tidak valid atau sudah kedaluwarsa.")
       end
     end
   end

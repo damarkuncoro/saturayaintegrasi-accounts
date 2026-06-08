@@ -21,7 +21,8 @@ class Identity::PasswordResetsController < ApplicationController
   def edit
     @token_digest = params[:sid]
     # Verify token exists and is valid
-    token = Identity::PasswordResetToken.for_tenant(System::Current.tenant).unused.not_expired.find_by(token_digest: @token_digest)
+    token_digest = Digest::SHA256.hexdigest(@token_digest)
+    token = Identity::PasswordResetToken.for_tenant(System::Current.tenant).unused.not_expired.find_by(token_digest: token_digest)
     
     unless token
       redirect_to new_identity_password_reset_path, alert: "That password reset link is invalid or has expired"
@@ -32,7 +33,8 @@ class Identity::PasswordResetsController < ApplicationController
   end
 
   def update
-    token = Identity::PasswordResetToken.for_tenant(System::Current.tenant).unused.not_expired.find_by(token_digest: params[:sid])
+    token_digest = Digest::SHA256.hexdigest(params[:sid])
+    token = Identity::PasswordResetToken.for_tenant(System::Current.tenant).unused.not_expired.find_by(token_digest: token_digest)
 
     unless token
       redirect_to new_identity_password_reset_path, alert: "Token reset kata sandi tidak valid atau sudah kedaluwarsa."

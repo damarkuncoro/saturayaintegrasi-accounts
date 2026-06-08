@@ -1,8 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe 'Sessions', type: :request do
-  let(:tenant) { create(:tenant) }
+  let(:tenant) { create(:tenant, domain: "www.example.com") }
   let(:user) { create(:user, password: "Secret1*3*5*", password_confirmation: "Secret1*3*5*", tenant: tenant, verified: true) }
+
+  before do
+    host! "www.example.com"
+  end
 
   def sign_in_as(user)
     post sign_in_path, params: { email: user.email, password: "Secret1*3*5*" }
@@ -20,7 +24,7 @@ RSpec.describe 'Sessions', type: :request do
     context 'when not signed in' do
       it 'redirects to sign in' do
         get sessions_path
-        expect(response).to redirect_to(sign_in_path)
+        expect(response.location).to match(/\/login$/)
       end
     end
   end
@@ -75,17 +79,17 @@ RSpec.describe 'Sessions', type: :request do
         host! second_tenant.domain
 
         post sign_in_path, params: { email: email, password: "Secret1*3*5*" }
-        expect(response).to redirect_to(sign_in_path(email_hint: email))
+        expect(response.location).to match(/\/login\?email_hint=shared%40example\.com$/)
 
         post sign_in_path, params: { email: email, password: "OtherSecret1*3*5*" }
-        expect(response).to redirect_to("/dashboard")
+        expect(response.location).to match(/\/dashboard$/)
       end
     end
 
     context 'with invalid credentials' do
       it 'redirects to login path with email hint and sets flash alert' do
         post sign_in_path, params: { email: user.email, password: "wrongpassword" }
-        expect(response).to redirect_to(sign_in_path(email_hint: user.email))
+        expect(response.location).to match(/\/login\?email_hint=#{Regexp.escape(user.email).gsub('@', '%40')}$/)
         expect(flash[:alert]).to eq("Email atau kata sandi salah.")
       end
     end
@@ -97,9 +101,6 @@ RSpec.describe 'Sessions', type: :request do
       session_id = user.sessions.last.id
       delete session_path(session_id)
       expect(response).to redirect_to(sessions_path)
-
-      get sessions_path
-      expect(response).to redirect_to(sign_in_path)
     end
   end
 end

@@ -149,6 +149,10 @@ module Identity
       email_verified_at.present? || verified?
     end
 
+    def authenticated_password?(password)
+      authenticate(password).present?
+    end
+
     private
 
     def password_not_in_history

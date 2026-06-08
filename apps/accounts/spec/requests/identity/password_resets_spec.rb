@@ -36,12 +36,13 @@ RSpec.describe 'Identity::PasswordResets', type: :request do
   describe 'POST /identity/password_reset' do
     context 'with a valid verified email' do
       it 'queues a password reset email and redirects' do
-        expect {
-          post identity_password_reset_path, params: { email: user.email }
-        }.to have_enqueued_mail(Identity::UserMailer, :password_reset).with(params: { user: user, token: kind_of(String) }, args: [])
+      expect {
+        post identity_password_reset_path, params: { email: user.email }
+      }.to have_enqueued_mail(Identity::UserMailer, :password_reset_instructions)
+        .with(user, kind_of(String))
 
-        expect(response).to redirect_to(sign_in_path)
-      end
+      expect(response).to redirect_to(sign_in_path)
+    end
     end
 
     context 'with a nonexistent email' do
