@@ -13,11 +13,15 @@ module Identity
       sync_url = SatuRayaIdentityClient::Identity::BrandConfig.user_sync_url
       return if sync_url.blank?
 
+      secret = ENV.fetch("HMAC_SECRET")
+      signature = SatuRayaCommons::Security::HmacSigner.sign(payload_hash.to_json, secret)
+
       # Mengirim data sinkronisasi ke sistem eksternal berdasarkan konfigurasi brand
       SatuRayaCommons::InternalApiClient.post_to_url(
         sync_url,
         "/api/internal/users/sync",
-        payload_hash
+        payload_hash,
+        { "X-Satu-Raya-Signature" => signature }
       )
     rescue => e
       Rails.logger.error("[UserSyncJob] Failed to sync user: #{e.message}")
