@@ -68,7 +68,7 @@
             <div>
               <dt class="text-[10px] font-black uppercase text-slate-400"><%= t("accounts.show.role_label") %></dt>
               <dd class="inline-block mt-1 px-3 py-1 bg-white rounded-lg border border-slate-200 text-[10px] font-black uppercase text-slate-600">
-                <%= @user.worker? ? SatuRayaIdentityClient::Identity::BrandConfig.role_worker_label : SatuRayaIdentityClient::Identity::BrandConfig.role_employer_label %>
+                <%= @user.role.titleize %>
               </dd>
             </div>
           </dl>

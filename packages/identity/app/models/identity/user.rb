@@ -123,11 +123,10 @@ module Identity
     has_many :email_verification_tokens, class_name: "Identity::EmailVerificationToken", dependent: :destroy
     has_many :password_reset_tokens, class_name: "Identity::PasswordResetToken", dependent: :destroy
 
-    enum :role, { worker: 0, employer: 1, admin: 2 }, default: :worker
+    enum :role, { user: 0, admin: 1, support: 2 }, default: :user
 
     scope :active, -> { where(active: true) }
-    scope :workers, -> { where(role: :worker) }
-    scope :employers, -> { where(role: :employer) }
+    scope :admins, -> { where(role: :admin) }
 
     before_validation :generate_username, on: :create
     before_validation :normalize_identity_fields
