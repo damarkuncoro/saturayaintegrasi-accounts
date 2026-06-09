@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_02_060000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -181,6 +181,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
     t.bigint "job_id", null: false
     t.integer "priority", default: 0, null: false
     t.string "queue_name", null: false
+    t.datetime "updated_at", null: false
     t.index ["concurrency_key", "priority", "job_id"], name: "index_solid_queue_blocked_executions_for_release"
     t.index ["expires_at", "concurrency_key"], name: "index_solid_queue_blocked_executions_for_maintenance"
     t.index ["job_id"], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
@@ -190,6 +191,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
     t.datetime "created_at", null: false
     t.bigint "job_id", null: false
     t.bigint "process_id"
+    t.datetime "updated_at", null: false
     t.index ["job_id"], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
     t.index ["process_id", "job_id"], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
   end
@@ -198,6 +200,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
     t.datetime "created_at", null: false
     t.text "error"
     t.bigint "job_id", null: false
+    t.datetime "updated_at", null: false
     t.index ["job_id"], name: "index_solid_queue_failed_executions_on_job_id", unique: true
   end
 
@@ -222,6 +225,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
   create_table "solid_queue_pauses", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "queue_name", null: false
+    t.datetime "updated_at", null: false
     t.index ["queue_name"], name: "index_solid_queue_pauses_on_queue_name", unique: true
   end
 
@@ -234,6 +238,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
     t.string "name", null: false
     t.integer "pid", null: false
     t.bigint "supervisor_id"
+    t.datetime "updated_at", null: false
     t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
     t.index ["name", "supervisor_id"], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
     t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
@@ -244,6 +249,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
     t.bigint "job_id", null: false
     t.integer "priority", default: 0, null: false
     t.string "queue_name", null: false
+    t.datetime "updated_at", null: false
     t.index ["job_id"], name: "index_solid_queue_ready_executions_on_job_id", unique: true
     t.index ["priority", "job_id"], name: "index_solid_queue_poll_all"
     t.index ["queue_name", "priority", "job_id"], name: "index_solid_queue_poll_by_queue"
@@ -254,6 +260,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
     t.bigint "job_id", null: false
     t.datetime "run_at", null: false
     t.string "task_key", null: false
+    t.datetime "updated_at", null: false
     t.index ["job_id"], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
     t.index ["task_key", "run_at"], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
   end
@@ -280,6 +287,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
     t.integer "priority", default: 0, null: false
     t.string "queue_name", null: false
     t.datetime "scheduled_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["job_id"], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
     t.index ["scheduled_at", "priority", "job_id"], name: "index_solid_queue_dispatch_all"
   end
@@ -418,7 +426,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
     t.string "password_digest", null: false
     t.string "phone", default: "", null: false
     t.string "provider"
-    t.datetime "revoked_at"
     t.integer "role", default: 0, null: false
     t.uuid "tenant_id", null: false
     t.string "uid"

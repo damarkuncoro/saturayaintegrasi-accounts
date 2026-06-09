@@ -46,7 +46,6 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
       t.datetime "deleted_at"
       t.datetime "email_verified_at"
       t.datetime "disabled_at"
-      t.datetime "revoked_at"
       t.timestamps
 
       t.index "tenant_id, lower((email)::text)", name: "index_users_on_tenant_id_and_lower_email", unique: true
@@ -74,10 +73,16 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
       t.jsonb "permissions", default: {}, null: false
       t.integer "rate_limit_per_minute", default: 60, null: false
       t.uuid "tenant_id", null: false
+      t.datetime "revoked_at"
+      t.uuid "revoked_by_id"
+      t.string "revocation_reason"
       t.timestamps
 
       t.index ["api_key"], name: "index_api_clients_on_api_key", unique: true
       t.index ["tenant_id"], name: "index_api_clients_on_tenant_id"
+      t.index ["revoked_by_id"], name: "index_api_clients_on_revoked_by_id"
+      t.index ["tenant_id", "active", "revoked_at"], name: "index_api_clients_on_tenant_active_revoked"
+      t.index ["tenant_id", "expires_at"], name: "index_api_clients_on_tenant_expires_at"
     end
 
     # 4. Audit Logs Table
@@ -101,6 +106,8 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
       t.index ["request_id"], name: "index_audit_logs_on_request_id"
       t.index ["tenant_id", "created_at"], name: "index_audit_logs_on_tenant_and_created"
       t.index ["user_id"], name: "index_audit_logs_on_user_id"
+      t.index ["tenant_id", "action", "created_at"], name: "index_audit_logs_on_tenant_action_created"
+      t.index ["tenant_id", "auditable_type", "auditable_id", "created_at"], name: "index_audit_logs_on_tenant_auditable_created"
     end
 
     # 5. Email Verification Tokens Table
@@ -115,6 +122,7 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
       t.index ["tenant_id", "user_id", "used_at"], name: "index_email_verification_tokens_on_tenant_user_used"
       t.index ["token_digest"], name: "index_email_verification_tokens_on_token_digest", unique: true
       t.index ["user_id"], name: "index_email_verification_tokens_on_user_id"
+      t.index ["expires_at"], name: "index_email_verification_tokens_on_expires_at"
     end
 
     # 6. Login Attempts Table
@@ -171,6 +179,7 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
       t.index ["tenant_id", "user_id", "used_at"], name: "index_password_reset_tokens_on_tenant_user_used"
       t.index ["token_digest"], name: "index_password_reset_tokens_on_token_digest", unique: true
       t.index ["user_id"], name: "index_password_reset_tokens_on_user_id"
+      t.index ["expires_at"], name: "index_password_reset_tokens_on_expires_at"
     end
 
     # 10. Permissions Table
@@ -190,7 +199,7 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
       t.string "description"
       t.string "name", null: false
       t.string "slug", null: false
-      t.boolean "system_defined", default: false
+      t.boolean "system_defined", default: false, null: false
       t.uuid "tenant_id", null: false
       t.timestamps
 
@@ -199,13 +208,14 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
 
     # 12. Role Permissions Table
     create_table "role_permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-      t.jsonb "conditions", default: {}
+      t.jsonb "conditions", default: {}, null: false
       t.uuid "permission_id", null: false
       t.uuid "role_id", null: false
       t.uuid "tenant_id", null: false
       t.timestamps
 
-      t.index ["role_id", "permission_id"], name: "index_role_permissions_on_role_id_and_permission_id", unique: true
+      t.index ["tenant_id", "role_id", "permission_id"], name: "index_role_permissions_on_tenant_role_permission", unique: true
+      t.index ["tenant_id", "permission_id"], name: "index_role_permissions_on_tenant_permission"
     end
 
     # 13. Sessions Table
@@ -306,15 +316,16 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
       t.string "action", null: false
       t.jsonb "conditions", default: {}, null: false
       t.boolean "is_override", default: true
-      t.uuid "permission_id"
+      t.uuid "permission_id", null: false
       t.string "resource_type", null: false
       t.uuid "tenant_id", null: false
       t.uuid "user_id", null: false
       t.timestamps
 
       t.index ["tenant_id", "resource_type"], name: "index_user_permissions_on_tenant_and_resource"
-      t.index ["user_id", "resource_type", "action"], name: "index_user_permissions_on_user_resource_action", unique: true
       t.index ["user_id"], name: "index_user_permissions_on_user_id"
+      t.index ["tenant_id", "user_id", "permission_id"], name: "index_user_permissions_on_tenant_user_permission", unique: true
+      t.index ["permission_id"], name: "index_user_permissions_on_permission_id"
     end
 
     # 19. User Roles Table
@@ -324,7 +335,8 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
       t.uuid "user_id", null: false
       t.timestamps
 
-      t.index ["user_id", "role_id"], name: "index_user_roles_on_user_id_and_role_id", unique: true
+      t.index ["tenant_id", "user_id", "role_id"], name: "index_user_roles_on_tenant_user_role", unique: true
+      t.index ["tenant_id", "role_id"], name: "index_user_roles_on_tenant_role"
     end
 
     # 20. Webhook Endpoints Table
@@ -337,6 +349,7 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
       t.timestamps
 
       t.index ["tenant_id"], name: "index_webhook_endpoints_on_tenant_id"
+      t.index ["tenant_id", "url"], name: "index_webhook_endpoints_on_tenant_url", unique: true
     end
 
     # 21. Webhook Deliveries Table
@@ -350,159 +363,27 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
       t.string "status", default: "pending", null: false
       t.uuid "tenant_id", null: false
       t.uuid "webhook_endpoint_id", null: false
+      t.integer "attempt_count", default: 0, null: false
+      t.datetime "next_retry_at"
+      t.datetime "delivered_at"
       t.timestamps
 
       t.index ["tenant_id"], name: "index_webhook_deliveries_on_tenant_id"
       t.index ["webhook_endpoint_id"], name: "index_webhook_deliveries_on_webhook_endpoint_id"
-    end
-
-    # 22. Solid Queue Blocked Executions Table
-    create_table "solid_queue_blocked_executions", force: :cascade do |t|
-      t.string "concurrency_key", null: false
-      t.datetime "expires_at", null: false
-      t.bigint "job_id", null: false
-      t.integer "priority", default: 0, null: false
-      t.string "queue_name", null: false
-      t.timestamps
-
-      t.index ["concurrency_key", "priority", "job_id"], name: "index_solid_queue_blocked_executions_for_release"
-      t.index ["expires_at", "concurrency_key"], name: "index_solid_queue_blocked_executions_for_maintenance"
-      t.index ["job_id"], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
-    end
-
-    # 23. Solid Queue Claimed Executions Table
-    create_table "solid_queue_claimed_executions", force: :cascade do |t|
-      t.bigint "job_id", null: false
-      t.bigint "process_id"
-      t.timestamps
-
-      t.index ["job_id"], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
-      t.index ["process_id", "job_id"], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
-    end
-
-    # 24. Solid Queue Failed Executions Table
-    create_table "solid_queue_failed_executions", force: :cascade do |t|
-      t.text "error"
-      t.bigint "job_id", null: false
-      t.timestamps
-
-      t.index ["job_id"], name: "index_solid_queue_failed_executions_on_job_id", unique: true
-    end
-
-    # 25. Solid Queue Jobs Table
-    create_table "solid_queue_jobs", force: :cascade do |t|
-      t.string "active_job_id"
-      t.text "arguments"
-      t.string "class_name", null: false
-      t.string "concurrency_key"
-      t.datetime "finished_at"
-      t.integer "priority", default: 0, null: false
-      t.string "queue_name", null: false
-      t.datetime "scheduled_at"
-      t.timestamps
-
-      t.index ["active_job_id"], name: "index_solid_queue_jobs_on_active_job_id"
-      t.index ["class_name"], name: "index_solid_queue_jobs_on_class_name"
-      t.index ["finished_at"], name: "index_solid_queue_jobs_on_finished_at"
-      t.index ["queue_name", "finished_at"], name: "index_solid_queue_jobs_for_filtering"
-      t.index ["scheduled_at", "finished_at"], name: "index_solid_queue_jobs_for_alerting"
-    end
-
-    # 26. Solid Queue Pauses Table
-    create_table "solid_queue_pauses", force: :cascade do |t|
-      t.string "queue_name", null: false
-      t.timestamps
-
-      t.index ["queue_name"], name: "index_solid_queue_pauses_on_queue_name", unique: true
-    end
-
-    # 27. Solid Queue Processes Table
-    create_table "solid_queue_processes", force: :cascade do |t|
-      t.string "hostname"
-      t.string "kind", null: false
-      t.datetime "last_heartbeat_at", null: false
-      t.text "metadata"
-      t.string "name", null: false
-      t.integer "pid", null: false
-      t.bigint "supervisor_id"
-      t.timestamps
-
-      t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
-      t.index ["name", "supervisor_id"], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
-      t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
-    end
-
-    # 28. Solid Queue Ready Executions Table
-    create_table "solid_queue_ready_executions", force: :cascade do |t|
-      t.bigint "job_id", null: false
-      t.integer "priority", default: 0, null: false
-      t.string "queue_name", null: false
-      t.timestamps
-
-      t.index ["job_id"], name: "index_solid_queue_ready_executions_on_job_id", unique: true
-      t.index ["priority", "job_id"], name: "index_solid_queue_poll_all"
-      t.index ["queue_name", "priority", "job_id"], name: "index_solid_queue_poll_by_queue"
-    end
-
-    # 29. Solid Queue Recurring Executions Table
-    create_table "solid_queue_recurring_executions", force: :cascade do |t|
-      t.bigint "job_id", null: false
-      t.datetime "run_at", null: false
-      t.string "task_key", null: false
-      t.timestamps
-
-      t.index ["job_id"], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
-      t.index ["task_key", "run_at"], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
-    end
-
-    # 30. Solid Queue Recurring Tasks Table
-    create_table "solid_queue_recurring_tasks", force: :cascade do |t|
-      t.text "arguments"
-      t.string "class_name"
-      t.string "command", limit: 2048
-      t.text "description"
-      t.string "key", null: false
-      t.integer "priority", default: 0
-      t.string "queue_name"
-      t.string "schedule", null: false
-      t.boolean "static", default: true, null: false
-      t.timestamps
-
-      t.index ["key"], name: "index_solid_queue_recurring_tasks_on_key", unique: true
-      t.index ["static"], name: "index_solid_queue_recurring_tasks_on_static"
-    end
-
-    # 31. Solid Queue Scheduled Executions Table
-    create_table "solid_queue_scheduled_executions", force: :cascade do |t|
-      t.bigint "job_id", null: false
-      t.integer "priority", default: 0, null: false
-      t.string "queue_name", null: false
-      t.datetime "scheduled_at", null: false
-      t.timestamps
-
-      t.index ["job_id"], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
-      t.index ["scheduled_at", "priority", "job_id"], name: "index_solid_queue_dispatch_all"
-    end
-
-    # 32. Solid Queue Semaphores Table
-    create_table "solid_queue_semaphores", force: :cascade do |t|
-      t.datetime "expires_at", null: false
-      t.string "key", null: false
-      t.integer "value", default: 1, null: false
-      t.timestamps
-
-      t.index ["expires_at"], name: "index_solid_queue_semaphores_on_expires_at"
-      t.index ["key", "value"], name: "index_solid_queue_semaphores_on_key_and_value"
-      t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
+      t.index ["tenant_id", "status", "created_at"], name: "index_webhook_deliveries_on_tenant_status_created"
+      t.index ["webhook_endpoint_id", "status", "created_at"], name: "index_webhook_deliveries_on_endpoint_status_created"
+      t.index ["status", "next_retry_at"], name: "index_webhook_deliveries_on_status_next_retry"
     end
 
     # 33. Foreign Keys
+    add_foreign_key "users", "tenants"
     add_foreign_key "api_clients", "tenants", on_delete: :cascade
+    add_foreign_key "api_clients", "users", column: "revoked_by_id", on_delete: :nullify
     add_foreign_key "audit_logs", "tenants"
     add_foreign_key "audit_logs", "users", on_delete: :nullify
     add_foreign_key "email_verification_tokens", "tenants", on_delete: :cascade
     add_foreign_key "email_verification_tokens", "users", on_delete: :cascade
-    add_foreign_key "login_attempts", "tenants", on_delete: :cascade
+    add_foreign_key "login_attempts", "tenants"
     add_foreign_key "login_attempts", "users", on_delete: :nullify
     add_foreign_key "mfa_backup_codes", "tenants", on_delete: :cascade
     add_foreign_key "mfa_backup_codes", "users", on_delete: :cascade
@@ -510,17 +391,13 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
     add_foreign_key "password_histories", "users", on_delete: :cascade
     add_foreign_key "password_reset_tokens", "tenants", on_delete: :cascade
     add_foreign_key "password_reset_tokens", "users", on_delete: :cascade
+    add_foreign_key "roles", "tenants", on_delete: :cascade
     add_foreign_key "role_permissions", "permissions", on_delete: :cascade
     add_foreign_key "role_permissions", "roles", on_delete: :cascade
+    add_foreign_key "role_permissions", "tenants", on_delete: :cascade
     add_foreign_key "sessions", "tenants", on_delete: :cascade
     add_foreign_key "sessions", "users", column: "revoked_by_id", on_delete: :nullify
     add_foreign_key "sessions", "users", on_delete: :cascade
-    add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-    add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-    add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-    add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-    add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
-    add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
     add_foreign_key "sso_client_configurations", "tenants", on_delete: :cascade
     add_foreign_key "trusted_devices", "tenants", on_delete: :cascade
     add_foreign_key "trusted_devices", "users", column: "revoked_by_id", on_delete: :nullify
@@ -536,8 +413,9 @@ class AccountsSchemaBaseline < ActiveRecord::Migration[8.1]
     add_foreign_key "user_permissions", "users", on_delete: :cascade
     add_foreign_key "user_roles", "roles", on_delete: :cascade
     add_foreign_key "user_roles", "users", on_delete: :cascade
-    add_foreign_key "webhook_deliveries", "tenants"
-    add_foreign_key "webhook_deliveries", "webhook_endpoints"
-    add_foreign_key "webhook_endpoints", "tenants"
+    add_foreign_key "user_roles", "tenants", on_delete: :cascade
+    add_foreign_key "webhook_deliveries", "tenants", on_delete: :cascade
+    add_foreign_key "webhook_deliveries", "webhook_endpoints", on_delete: :cascade
+    add_foreign_key "webhook_endpoints", "tenants", on_delete: :cascade
   end
 end

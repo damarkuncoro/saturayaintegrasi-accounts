@@ -29,7 +29,7 @@ module Identity
       return Core::Result.failure("Akun sudah aktif.") if user.active? && user.disabled_at.nil?
 
       Identity::User.transaction do
-        user.update!(disabled_at: nil, active: true, revoked_at: nil)
+        user.update!(disabled_at: nil, active: true)
         user.log_audit("account_reactivated")
       end
 

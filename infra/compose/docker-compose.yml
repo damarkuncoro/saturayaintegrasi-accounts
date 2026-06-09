@@ -25,6 +25,8 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/accounts_production
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: password
       RAILS_ENV: production
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-f5e6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6}
       REDIS_URL: redis://redis:6379/0
@@ -53,6 +55,8 @@ services:
       - accounts-app
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/accounts_production
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: password
       RAILS_ENV: production
       BUNDLE_WITHOUT: ""
     volumes:
