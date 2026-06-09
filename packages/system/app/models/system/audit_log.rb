@@ -33,6 +33,8 @@ module System
     private
 
     def sign_log
+      return if hash_signature.present?
+
       last_log = self.class.order(created_at: :desc, id: :desc).first
       self.previous_hash = last_log&.hash_signature || "0" * 64
       
