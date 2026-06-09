@@ -25,10 +25,7 @@ module Domains
       end
 
       def authenticate(password)
-        return false if @password_digest.blank?
-        BCrypt::Password.new(@password_digest) == password
-      rescue BCrypt::Errors::InvalidHash
-        false
+        SatuRayaCommons::Security::PasswordHasher.verify?(password, @password_digest)
       end
 
       def full_name

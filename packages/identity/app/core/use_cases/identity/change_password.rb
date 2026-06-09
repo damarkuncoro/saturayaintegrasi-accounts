@@ -21,7 +21,7 @@ module UseCases
       end
 
       # 2. Cek apakah password baru sama dengan password lama (Security best practice)
-      if BCrypt::Password.new(user.password_digest) == password
+      if SatuRayaCommons::Security::PasswordHasher.verify?(password, user.password_digest)
         return Core::Result.failure("Kata sandi baru tidak boleh sama dengan kata sandi saat ini.")
       end
 

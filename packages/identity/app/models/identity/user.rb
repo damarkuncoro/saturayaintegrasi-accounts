@@ -96,7 +96,7 @@ module Identity
         codes << code
         mfa_backup_codes.create!(
           tenant: tenant,
-          code_digest: BCrypt::Password.create(code)
+          code_digest: SatuRayaCommons::Security::PasswordHasher.hash(code)
         )
       end
       codes
@@ -106,7 +106,7 @@ module Identity
       return false if code.blank?
       
       mfa_backup_codes.unused.find_each do |backup_code|
-        if BCrypt::Password.new(backup_code.code_digest) == code
+        if SatuRayaCommons::Security::PasswordHasher.verify?(code, backup_code.code_digest)
           backup_code.mark_used!
           return true
         end
@@ -159,7 +159,7 @@ module Identity
       return unless password.present?
 
       # Cek riwayat password (kecuali untuk pembuatan akun pertama kali)
-      if password_histories.any? { |ph| BCrypt::Password.new(ph.password_digest) == password }
+      if password_histories.any? { |ph| SatuRayaCommons::Security::PasswordHasher.verify?(password, ph.password_digest) }
         errors.add(:password, "pernah digunakan sebelumnya. Silakan pilih kata sandi lain.")
       end
     end

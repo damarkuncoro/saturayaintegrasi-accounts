@@ -6,6 +6,7 @@ require "satu_raya_commons/event_bus"
 require "satu_raya_commons/internal_api_client"
 require "satu_raya_commons/security/hmac_signer"
 require "satu_raya_commons/security/jwt_codec"
+require "satu_raya_commons/security/password_hasher"
 
 # Re-require identity client components to maintain backward compatibility
 # as they were previously part of commons.
