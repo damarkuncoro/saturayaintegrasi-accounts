@@ -7,5 +7,9 @@ module SatuRayaCommons
     config.before_initialize do |app|
       app.config.paths["app/views"].unshift(File.expand_path("../../app/views", __dir__))
     end
+
+    config.after_initialize do
+      SatuRayaCommons::Config.validate! unless Rails.env.test?
+    end
   end
 end

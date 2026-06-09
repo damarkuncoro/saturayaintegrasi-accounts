@@ -61,6 +61,29 @@ module SatuRayaCommons
         val = @jwt_issuer.respond_to?(:call) ? @jwt_issuer.call : @jwt_issuer
         val || ENV.fetch("JWT_ISSUER", "https://#{accounts_host}")
       end
+
+      def validate!
+        errors = []
+        errors << "BRAND_NAME is missing" if brand_name.blank?
+        errors << "APP_DOMAIN is missing" if app_domain.blank?
+        errors << "APP_HOST is missing" if accounts_host.blank?
+        
+        {
+          brand_logo_url: brand_logo_url,
+          brand_privacy_url: brand_privacy_url,
+          brand_terms_url: brand_terms_url,
+          jwt_issuer: jwt_issuer
+        }.each do |key, url|
+          next if url.blank?
+          unless url =~ URI::DEFAULT_PARSER.make_regexp(%w[http https])
+            errors << "#{key} must be a valid HTTP/HTTPS URL (got: #{url})"
+          end
+        end
+
+        if errors.any?
+          raise "Configuration Error in SatuRayaCommons::Config:\n- #{errors.join("\n- ")}"
+        end
+      end
     end
   end
 end
