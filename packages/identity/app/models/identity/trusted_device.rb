@@ -17,11 +17,20 @@ module Identity
 
     validates :device_fingerprint_digest, presence: true
     validates :last_verified_at, presence: true
+    validate :tenant_must_match_user
 
     # Override active scope to also check for expiration (30 days)
     scope :active, -> { where(revoked_at: nil).where("last_verified_at > ?", 30.days.ago) }
 
     private
+
+    def tenant_must_match_user
+      return if tenant_id.blank? || user.blank?
+
+      if user.tenant_id != tenant_id
+        errors.add(:user_id, "must belong to the same tenant")
+      end
+    end
 
     def normalize_fields
       self.device_fingerprint_digest = normalize_key(device_fingerprint_digest)

@@ -33,6 +33,22 @@ RSpec.describe Identity::UserConsent, type: :model do
       expect(subject).not_to be_valid
       expect(subject.errors[:consented_scopes]).to include("harus bertipe Hash/JSON object")
     end
+
+    it "is invalid if user belongs to a different tenant" do
+      other_tenant = create(:tenant)
+      other_user = create(:user, tenant: other_tenant)
+      subject.user = other_user
+      expect(subject).not_to be_valid
+      expect(subject.errors[:user_id]).to include("must belong to the same tenant")
+    end
+
+    it "is invalid if sso_client_configuration belongs to a different tenant" do
+      other_tenant = create(:tenant)
+      other_client = create(:sso_client_configuration, tenant: other_tenant)
+      subject.sso_client_configuration = other_client
+      expect(subject).not_to be_valid
+      expect(subject.errors[:sso_client_configuration_id]).to include("must belong to the same tenant")
+    end
   end
 
   describe "scopes" do

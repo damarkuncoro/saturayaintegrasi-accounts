@@ -11,6 +11,7 @@ module Identity
     validates :resource_type, presence: true
   validates :action, presence: true
   validates :user_id, uniqueness: { scope: [ :resource_type, :action ], message: "has already been assigned this permission" }
+  validate :tenant_must_match_user
 
   before_validation :normalize_fields
 
@@ -23,6 +24,14 @@ module Identity
   end
 
   private
+
+  def tenant_must_match_user
+    return if tenant_id.blank? || user.blank?
+
+    if user.tenant_id != tenant_id
+      errors.add(:user_id, "must belong to the same tenant")
+    end
+  end
 
   def self.normalize_lookup_key(value)
     value.to_s.strip.downcase.presence

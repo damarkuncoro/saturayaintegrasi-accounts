@@ -13,10 +13,18 @@ module Identity
     validates :consent_signature, presence: true
     validates :consented_scopes, presence: true
     validate :consented_scopes_format
+    validate :tenant_must_match_user_and_sso_client
 
     before_validation :assign_tenant_from_user
 
     private
+
+    def tenant_must_match_user_and_sso_client
+      return if tenant_id.blank? || user.blank? || sso_client_configuration.blank?
+
+      errors.add(:user_id, "must belong to the same tenant") if user.tenant_id != tenant_id
+      errors.add(:sso_client_configuration_id, "must belong to the same tenant") if sso_client_configuration.tenant_id != tenant_id
+    end
 
     def assign_tenant_from_user
       self.tenant ||= user&.tenant

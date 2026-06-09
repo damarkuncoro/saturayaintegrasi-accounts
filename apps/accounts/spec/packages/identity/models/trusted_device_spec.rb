@@ -19,6 +19,14 @@ RSpec.describe Identity::TrustedDevice, type: :model do
       device.valid?
       expect(device.last_verified_at).to be_present
     end
+
+    it "is invalid if user belongs to a different tenant" do
+      other_tenant = create(:tenant)
+      other_user = create(:user, tenant: other_tenant)
+      subject.user = other_user
+      expect(subject).not_to be_valid
+      expect(subject.errors[:user_id]).to include("must belong to the same tenant")
+    end
   end
 
   describe "scopes" do
