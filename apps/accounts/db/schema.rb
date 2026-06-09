@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_06_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -438,6 +438,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_000002) do
     t.index ["tenant_id", "verified"], name: "index_users_on_tenant_id_and_verified"
   end
 
+  create_table "webhook_deliveries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "duration_ms"
+    t.string "error_message"
+    t.string "event_name", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.text "response_body"
+    t.integer "response_code"
+    t.string "status", default: "pending", null: false
+    t.uuid "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "webhook_endpoint_id", null: false
+    t.index ["tenant_id"], name: "index_webhook_deliveries_on_tenant_id"
+    t.index ["webhook_endpoint_id"], name: "index_webhook_deliveries_on_webhook_endpoint_id"
+  end
+
+  create_table "webhook_endpoints", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "events", default: [], null: false, array: true
+    t.string "secret", null: false
+    t.uuid "tenant_id", null: false
+    t.datetime "updated_at", null: false
+    t.string "url", null: false
+    t.index ["tenant_id"], name: "index_webhook_endpoints_on_tenant_id"
+  end
+
   add_foreign_key "api_clients", "tenants", on_delete: :cascade
   add_foreign_key "audit_logs", "tenants"
   add_foreign_key "audit_logs", "users", on_delete: :nullify
@@ -477,4 +504,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_000002) do
   add_foreign_key "user_permissions", "users", on_delete: :cascade
   add_foreign_key "user_roles", "roles", on_delete: :cascade
   add_foreign_key "user_roles", "users", on_delete: :cascade
+  add_foreign_key "webhook_deliveries", "tenants"
+  add_foreign_key "webhook_deliveries", "webhook_endpoints"
+  add_foreign_key "webhook_endpoints", "tenants"
 end

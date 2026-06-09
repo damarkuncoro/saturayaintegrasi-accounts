@@ -19,4 +19,4 @@ echo "🚀 Starting test dependencies (database, Redis)..."
 docker compose -f ../../infra/compose/docker-compose.test.yml up -d db-test redis-test
 
 echo "🧪 Running tests..."
-docker compose -f ../../infra/compose/docker-compose.test.yml run --rm accounts-app-test /bin/bash -c "bundle exec rails db:test:prepare && bundle exec rspec --tag ~type:system $@"
+docker compose -f ../../infra/compose/docker-compose.test.yml run --rm accounts-app-test /bin/bash -c "bundle exec rails db:migrate RAILS_ENV=test && bundle exec rails db:test:prepare && bundle exec rspec --tag ~type:system $@"
