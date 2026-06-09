@@ -52,18 +52,24 @@ module SatuRayaIdentityClient
     end
 
     def start_new_session_for(user)
-      user.sessions.create!(
-        tenant: user.tenant || System::Current.tenant,
-        user_agent: request.user_agent,
-        ip_address: request.ip
-      ).tap do |session|
-        System::Current.session = session
-        cookies.signed.permanent[auth_session_cookie_name] = session_cookie_options(session.id)
+      if user.respond_to?(:sessions)
+        user.sessions.create!(
+          tenant: (user.respond_to?(:tenant) ? user.tenant : nil) || (defined?(System::Current) ? System::Current.tenant : nil),
+          user_agent: request.user_agent,
+          ip_address: request.ip
+        ).tap do |session|
+          System::Current.session = session if defined?(System::Current)
+          cookies.signed.permanent[auth_session_cookie_name] = session_cookie_options(session.id)
+        end
+      else
+        raise NotImplementedError, "start_new_session_for is only supported on identity providers"
       end
     end
 
     def terminate_session
-      System::Current.session.destroy
+      if defined?(System::Current) && System::Current.session
+        System::Current.session.destroy if System::Current.session.respond_to?(:destroy)
+      end
       cookies.delete(auth_session_cookie_name, domain: session_cookie_domain)
     end
 

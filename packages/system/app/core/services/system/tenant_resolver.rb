@@ -28,8 +28,8 @@ module Services
         return tenant if tenant
 
         # 2. Match brand config (accounts host mapping to default tenant)
-        if host == normalize_host(brand_config.accounts_host)
-          return ::System::Tenant.active.find_by("lower(domain) = ?", normalize_host(brand_config.app_domain))
+        if host == normalize_host(accounts_host)
+          return ::System::Tenant.active.find_by("lower(domain) = ?", normalize_host(app_domain))
         end
 
         nil
@@ -57,8 +57,20 @@ module Services
         host.to_s.strip.downcase.presence
       end
 
-      def brand_config
-        SatuRayaIdentityClient::Identity::BrandConfig
+      def accounts_host
+        if defined?(SatuRayaIdentityClient::Identity::BrandConfig)
+          SatuRayaIdentityClient::Identity::BrandConfig.accounts_host
+        else
+          ENV.fetch("APP_HOST", "accounts.satu-raya.dev")
+        end
+      end
+
+      def app_domain
+        if defined?(SatuRayaIdentityClient::Identity::BrandConfig)
+          SatuRayaIdentityClient::Identity::BrandConfig.app_domain
+        else
+          ENV.fetch("APP_DOMAIN", "satu-raya.dev")
+        end
       end
 
       def reserved_subdomains

@@ -6,7 +6,7 @@ module UseCases
     def initialize(
       service: ::Identity::EmailVerificationService.new,
       audit_logger: Services::System::AuditLogger, 
-      sync_service: UseCases::PublishUserSyncEvent.new
+      sync_service: SatuRayaIdentity.user_sync_publisher
     )
       @service = service
       @audit_logger = audit_logger

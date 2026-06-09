@@ -10,7 +10,8 @@ module SatuRayaNavigation
     def accounts_url_for(path)
       domain = base_domain
       if request.host.include?(domain)
-        "#{request.protocol}#{brand_config.accounts_host}#{request.port_string}#{path}"
+        port_suffix = request.port == 80 || request.port == 443 ? "" : ":#{request.port}"
+        "#{request.protocol}#{brand_config.accounts_host}#{port_suffix}#{path}"
       else
         path
       end

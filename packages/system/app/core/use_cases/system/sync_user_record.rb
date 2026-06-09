@@ -10,10 +10,13 @@ module UseCases
         return ::Core::Result.failure("Action harus diisi.") unless action.present?
         return ::Core::Result.failure("User params harus diisi.") unless user_params.present?
 
+        user_class = SatuRayaSystem.user_class
+        return ::Core::Result.failure("User class tidak dikonfigurasi untuk sinkronisasi.") unless user_class
+
         case action
         when "create", "update"
           # Find or initialize minimal User replica
-          user = ::Identity::User.find_or_initialize_by(id: user_params[:id])
+          user = user_class.find_or_initialize_by(id: user_params[:id])
           
           # Allow simple attributes update
           user.email = user_params[:email] if user_params.key?(:email)
@@ -36,7 +39,7 @@ module UseCases
             ::Core::Result.failure("Gagal melakukan sinkronisasi user: #{user.errors.full_messages.join(', ')}")
           end
         when "destroy"
-          user = ::Identity::User.find_by(id: user_params[:id])
+          user = user_class.find_by(id: user_params[:id])
           if user
             user.destroy
             ::Core::Result.success({ id: user_params[:id], status: "destroyed" })

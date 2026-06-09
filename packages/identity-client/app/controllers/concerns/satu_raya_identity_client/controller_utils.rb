@@ -62,7 +62,9 @@ module SatuRayaIdentityClient
     end
 
     def find_session_by_cookie
-      ::Identity::Session.active.find_by(id: cookies.signed[brand_config.auth_session_cookie_name])
+      if defined?(::Identity::Session)
+        ::Identity::Session.active.find_by(id: cookies.signed[brand_config.auth_session_cookie_name])
+      end
     end
 
     def assign_current_tenant
@@ -71,13 +73,15 @@ module SatuRayaIdentityClient
 
     def tenant_from_request
       # 1. Try resolving from request (host, subdomain, etc)
-      tenant = Services::System::TenantResolver.new(request).resolve
+      tenant = if defined?(Services::System::TenantResolver)
+                 Services::System::TenantResolver.new(request).resolve
+               end
       
       # 2. Fallback to user's tenant if authenticated
-      tenant ||= System::Current.user&.tenant
+      tenant ||= System::Current.user&.tenant if System::Current.user.respond_to?(:tenant)
 
       # 3. Development fallback
-      if tenant.nil? && Rails.env.development?
+      if tenant.nil? && Rails.env.development? && defined?(::System::Tenant)
         tenant = ::System::Tenant.active.first
       end
 

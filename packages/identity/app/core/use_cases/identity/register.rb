@@ -5,15 +5,15 @@ module UseCases
     class Register
       include Normalizable
 
-    def initialize(
-      verification_service: ::Identity::EmailVerificationService.new,
-      audit_logger: Services::System::AuditLogger, 
-      sync_service: UseCases::PublishUserSyncEvent.new
-    )
-      @verification_service = verification_service
-      @audit_logger = audit_logger
-      @sync_service = sync_service
-    end
+      def initialize(
+        verification_service: ::Identity::EmailVerificationService.new,
+        audit_logger: Services::System::AuditLogger,
+        sync_service: SatuRayaIdentity.user_sync_publisher
+      )
+        @verification_service = verification_service
+        @audit_logger = audit_logger
+        @sync_service = sync_service
+      end
 
     # Menjalankan proses registrasi
     # @param params [Hash] Data user (email, password, name, dll)
