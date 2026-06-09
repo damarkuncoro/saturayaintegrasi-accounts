@@ -33,7 +33,9 @@ module SatuRayaCommons
 
       def dispatch(event_name, payload, meta)
         handlers = subscribers[event_name.to_s] || []
-        handlers.each do |handler|
+        wildcard_handlers = subscribers["*"] || []
+
+        (handlers + wildcard_handlers).each do |handler|
           if handler.respond_to?(:call)
             handler.call(payload, meta)
           else
