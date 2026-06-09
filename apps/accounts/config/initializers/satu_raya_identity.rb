@@ -24,4 +24,14 @@ Rails.application.config.to_prepare do
       UseCases::PublishUserSyncEvent.new.call(action: action, user: user)
     end
   end
+
+  # 3. Subscribe all events to WebhookDispatcher
+  SatuRayaCommons::EventBus.subscribe("*") do |payload, meta|
+    tenant_id = meta[:tenant_id] || meta["tenant_id"]
+    event_name = meta[:event] || meta["event"]
+
+    if tenant_id && event_name
+      Services::System::WebhookDispatcher.dispatch(event_name, tenant_id, payload)
+    end
+  end
 end
