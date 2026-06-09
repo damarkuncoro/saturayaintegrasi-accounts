@@ -1,4 +1,5 @@
 require "satu_raya_commons/engine"
+require "satu_raya_commons/config"
 require "satu_raya_commons/logging"
 require "satu_raya_commons/cache"
 require "satu_raya_commons/event_bus"

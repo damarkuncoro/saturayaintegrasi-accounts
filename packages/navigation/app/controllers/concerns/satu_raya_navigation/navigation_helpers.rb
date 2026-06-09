@@ -11,7 +11,7 @@ module SatuRayaNavigation
       domain = base_domain
       if request.host.include?(domain)
         port_suffix = request.port == 80 || request.port == 443 ? "" : ":#{request.port}"
-        "#{request.protocol}#{brand_config.accounts_host}#{port_suffix}#{path}"
+        "#{request.protocol}#{SatuRayaCommons::Config.accounts_host}#{port_suffix}#{path}"
       else
         path
       end
@@ -24,11 +24,7 @@ module SatuRayaNavigation
     private
 
     def base_domain
-      brand_config.app_domain
-    end
-
-    def brand_config
-      SatuRayaIdentityClient::Identity::BrandConfig
+      SatuRayaCommons::Config.app_domain
     end
   end
 end

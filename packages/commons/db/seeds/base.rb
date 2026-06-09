@@ -21,7 +21,7 @@ module SatuRayaCommons
     private
 
     def create_tenants
-      domain = SatuRayaIdentityClient::Identity::BrandConfig.app_domain
+      domain = SatuRayaCommons::Config.app_domain
       @tenants = [
         System::Tenant.find_or_create_by!(slug: "demo") do |t|
           t.name   = "Demo Company"

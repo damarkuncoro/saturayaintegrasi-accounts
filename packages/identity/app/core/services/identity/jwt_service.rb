@@ -5,7 +5,7 @@ module Services
       payload = {
         user_id: user_entity.id,
         tenant_id: user_entity.tenant_id,
-        iss: SatuRayaIdentityClient::Identity::BrandConfig.jwt_issuer,
+        iss: SatuRayaCommons::Config.jwt_issuer,
         exp: expires_in.from_now.to_i,
         iat: Time.current.to_i,
         jti: SecureRandom.uuid

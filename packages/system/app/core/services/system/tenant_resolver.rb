@@ -58,19 +58,11 @@ module Services
       end
 
       def accounts_host
-        if defined?(SatuRayaIdentityClient::Identity::BrandConfig)
-          SatuRayaIdentityClient::Identity::BrandConfig.accounts_host
-        else
-          ENV.fetch("APP_HOST", "accounts.satu-raya.dev")
-        end
+        SatuRayaCommons::Config.accounts_host
       end
 
       def app_domain
-        if defined?(SatuRayaIdentityClient::Identity::BrandConfig)
-          SatuRayaIdentityClient::Identity::BrandConfig.app_domain
-        else
-          ENV.fetch("APP_DOMAIN", "satu-raya.dev")
-        end
+        SatuRayaCommons::Config.app_domain
       end
 
       def reserved_subdomains

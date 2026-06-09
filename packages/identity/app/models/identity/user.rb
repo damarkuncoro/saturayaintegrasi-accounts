@@ -47,7 +47,7 @@ module Identity
     end
 
     def otp_qr_code
-      totp = ROTP::TOTP.new(otp_secret, issuer: SatuRayaIdentityClient::Identity::BrandConfig.name)
+      totp = ROTP::TOTP.new(otp_secret, issuer: SatuRayaCommons::Config.brand_name)
       provisioning_uri = totp.provisioning_uri(email)
       RQRCode::QRCode.new(provisioning_uri).as_svg(
         offset: 0,

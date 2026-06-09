@@ -98,11 +98,7 @@ module Services
       private
 
       def brand_name
-        if defined?(SatuRayaIdentityClient::Identity::BrandConfig)
-          SatuRayaIdentityClient::Identity::BrandConfig.name
-        else
-          "Satu Raya Integrasi"
-        end
+        SatuRayaCommons::Config.brand_name
       end
     end
   end
