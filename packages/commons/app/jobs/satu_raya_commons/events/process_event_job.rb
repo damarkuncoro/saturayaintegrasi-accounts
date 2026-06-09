@@ -22,11 +22,8 @@ module SatuRayaCommons
       private
 
       def dispatch_event(name, payload, meta)
-        # Here you would register subscribers. 
-        # For scaling, we could use a registry of service-specific handlers.
         Rails.logger.info("[EventBus] Dispatching #{name} to subscribers...")
-        
-        # Example: Broadcast via ActionCable or trigger internal webhooks
+        SatuRayaCommons::EventBus.dispatch(name, payload, meta)
       end
     end
   end
