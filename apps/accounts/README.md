@@ -137,6 +137,10 @@ packages/commons/app/models/system/audit_log.rb
 | `GET` | `/two_factor_challenge/new` | Form challenge 2FA |
 | `POST` | `/two_factor_challenge` | Verifikasi challenge 2FA |
 | `GET` | `/auth/:provider/callback` | Callback OAuth |
+| `POST` | `/oauth/token` | OAuth2 Token Endpoint (authorization_code / refresh_token) |
+| `POST` | `/oauth/introspect` | OAuth2 Token Introspection Endpoint (M2M) |
+| `GET` | `/oauth/userinfo` | OIDC Userinfo Endpoint |
+| `POST` | `/oauth/revoke` | OAuth2 Token Revocation Endpoint |
 | `GET` | `/health` | Health check aplikasi |
 | `GET` | `/ready` | Readiness check aplikasi |
 | `GET` | `/api-docs` | Swagger/Rswag UI |
@@ -356,8 +360,41 @@ erDiagram
         datetime updated_at
     }
 
+    SERVICE_CLIENTS {
+        uuid id PK
+        uuid tenant_id FK
+        string service_name
+        string client_id
+        string secret_digest
+        string_array allowed_scopes
+        string_array allowed_ips
+        boolean active
+        datetime rotated_at
+        datetime created_at
+        datetime updated_at
+    }
+
+    JWT_REFRESH_TOKENS {
+        uuid id PK
+        uuid tenant_id FK
+        uuid user_id FK
+        uuid sso_client_configuration_id FK
+        uuid replaced_by_id FK
+        string token_digest
+        uuid family_id
+        string_array scopes
+        datetime expires_at
+        datetime revoked_at
+        string ip_address
+        string user_agent
+        datetime created_at
+        datetime updated_at
+    }
+
     TENANTS ||--o{ USERS : owns
     TENANTS ||--o{ API_CLIENTS : owns
+    TENANTS ||--o{ SERVICE_CLIENTS : owns
+    TENANTS ||--o{ JWT_REFRESH_TOKENS : owns
     TENANTS ||--o{ AUDIT_LOGS : scopes
     TENANTS ||--o{ SSO_CLIENT_CONFIGURATIONS : owns
 
@@ -371,6 +408,7 @@ erDiagram
     USERS ||--o{ TRUSTED_DEVICES : trusts
     USERS ||--o{ USER_PASSKEYS : owns
     USERS ||--o{ USER_CONSENTS : grants
+    USERS ||--o{ JWT_REFRESH_TOKENS : owns
     USERS ||--o{ AUDIT_LOGS : performs
 
     USERS ||--o{ SESSIONS : revokes
@@ -378,6 +416,9 @@ erDiagram
     USERS ||--o{ USER_CONSENTS : revokes
 
     SSO_CLIENT_CONFIGURATIONS ||--o{ USER_CONSENTS : receives
+    SSO_CLIENT_CONFIGURATIONS ||--o{ JWT_REFRESH_TOKENS : receives
+    JWT_REFRESH_TOKENS ||--o{ JWT_REFRESH_TOKENS : replaces
+```,StartLine:347,TargetContent:
 ```
 
 ## Catatan Relasi dan Constraint
