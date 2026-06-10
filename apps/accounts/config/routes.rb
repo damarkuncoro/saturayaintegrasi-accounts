@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     resource  :account,  only: [ :show, :update ] do
       post :deactivate
     end
+    resource  :branding, only: :update
 
     resource :two_factor_settings, only: [ :show ] do
       post :enable

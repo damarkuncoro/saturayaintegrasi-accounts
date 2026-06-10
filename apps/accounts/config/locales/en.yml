@@ -142,6 +142,18 @@ en:
       role_label: "Role / Account Type"
       change_password_link: "Change password"
       mfa_settings_link: "Two-Factor Settings (2FA)"
+      branding_section: "Branding Customization"
+      branding_desc: "Customize the brand name, logo, primary color, and legal document links for your tenant."
+      brand_name_label: "Brand Name / Portal Title"
+      primary_color_label: "Brand Primary Color"
+      logo_url_label: "Brand Logo URL"
+      privacy_url_label: "Privacy Policy URL"
+      terms_url_label: "Terms of Service URL"
+      sidebar:
+        profile: "Profile"
+        security: "Security"
+        advanced: "Advanced"
+        branding: "Tenant Branding"
   common:
     privacy_policy: "Privacy Policy"
     terms_of_service: "Terms of Service"
