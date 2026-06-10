@@ -16,8 +16,16 @@ module UseCases
         # @param trusted_device_fingerprint [String] Fingerprint perangkat terpercaya (opsional)
         # @return [Core::Result]
         def perform_execute(email:, password:, tenant:, ip_address: nil, user_agent: nil, trusted_device_fingerprint: nil)
-          email = normalize_email(email)
-          user = tenant.users.find_by(email: email)
+          command = validate_with(::Identity::Commands::Auth::LoginCommand, {
+            email: email,
+            password: password,
+            ip_address: ip_address,
+            user_agent: user_agent,
+            trusted_device_fingerprint: trusted_device_fingerprint
+          })
+          return failure(command.error_messages, code: :validation_error) if command.failure?
+
+          user = tenant.users.find_by(email: command.email)
 
           # 1. Catat Login Attempt (selalu catat untuk audit)
           attempt = ::Identity::LoginAttempt.create!(

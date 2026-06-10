@@ -10,7 +10,7 @@ module UseCases
         # @param device_name [String] Nama tampilan perangkat (opsional)
         # @param tenant [System::Tenant] Tenant terkait
         # @return [Core::Result]
-        def execute(user:, fingerprint:, tenant:, device_name: nil)
+        def perform_execute(user:, fingerprint:, tenant:, device_name: nil)
           # 1. Cek apakah perangkat sudah terdaftar dan aktif
           digest = generate_digest(fingerprint)
           device = user.trusted_devices.for_tenant(tenant).active.find_by(device_fingerprint_digest: digest)

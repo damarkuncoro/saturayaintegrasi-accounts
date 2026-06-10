@@ -9,6 +9,7 @@ module Identity
     result = UseCases::Identity::Password::ChangePassword.new.execute(
       user: @user,
       password: params[:password],
+      password_confirmation: params[:password_confirmation],
       password_challenge: params[:password_challenge],
       tenant: System::Current.tenant,
       revoke_others: params[:revoke_others] == "1"

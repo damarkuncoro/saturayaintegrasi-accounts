@@ -10,11 +10,19 @@ module UseCases
         # @param name [String] Nama client (misal: "Mobile App", "Internal Script")
         # @param tenant [System::Tenant] Tenant pemilik
         # @param rate_limit [Integer] Limit request per menit (default: 60)
+        # @param description [String] Deskripsi client (opsional)
         # @return [Core::Result]
-        def execute(name:, tenant:, rate_limit: 60)
+        def perform_execute(name:, tenant:, rate_limit: 60, description: nil)
+          command = validate_with(::Identity::Commands::Api::CreateApiClientCommand, {
+            name: name,
+            description: description
+          })
+          return failure(command.error_messages, code: :validation_error) if command.failure?
+
           client = ::Identity::ApiClient.new(
             tenant: tenant,
-            name: normalize_text(name),
+            name: command.name,
+            description: command.description,
             rate_limit_per_minute: rate_limit
           )
 
@@ -24,7 +32,7 @@ module UseCases
               action: "api_client_created", 
               auditable: client, 
               tenant: tenant,
-              metadata: { name: name, rate_limit: rate_limit }
+              metadata: { name: command.name, rate_limit: rate_limit }
             )
 
             success(client)

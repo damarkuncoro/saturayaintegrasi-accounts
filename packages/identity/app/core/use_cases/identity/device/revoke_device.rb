@@ -9,7 +9,7 @@ module UseCases
         # @param revoked_by [Identity::User] User yang melakukan pencabutan
         # @param reason [String] Alasan pencabutan
         # @return [Core::Result]
-        def execute(device:, revoked_by:, reason: "user_request")
+        def perform_execute(device:, revoked_by:, reason: "user_request")
           if device.revoked?
             return success(device, meta: { message: "Perangkat sudah tidak aktif." })
           end

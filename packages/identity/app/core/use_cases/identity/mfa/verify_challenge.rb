@@ -14,19 +14,23 @@ module UseCases
 
       # Menjalankan proses verifikasi MFA
       # @param user [Identity::User] User yang mencoba login
-      # @param otp_code [String] Kode TOTP dari user
+      # @param code [String] Kode TOTP dari user
       # @param tenant [System::Tenant] Tenant terkait
       # @param ip_address [String] Alamat IP request
       # @param user_agent [String] User agent request
       # @param remember_device [Boolean] Apakah akan mendaftarkan perangkat sebagai terpercaya
       # @return [Core::Result]
-      def perform_execute(user:, otp_code:, tenant:, ip_address: nil, user_agent: nil, remember_device: false)
+      def perform_execute(user:, code:, tenant:, ip_address: nil, user_agent: nil, remember_device: false)
+        validate_command = validate_with(::Identity::Commands::Mfa::VerifyChallengeCommand, {
+          code: code
+        })
+        return failure(validate_command.error_messages, code: :validation_error) if validate_command.failure?
         if user.locked?
           return failure("Akun Anda sedang terkunci. Silakan hubungi admin atau reset kata sandi.")
         end
 
         # 1. Verifikasi Kode via Service
-        result = @service.verify_login_code(user: user, code: otp_code, tenant: tenant)
+        result = @service.verify_login_code(user: user, code: validate_command.code, tenant: tenant)
 
         if result.success?
           # 2. Login Sukses - Buat Sesi

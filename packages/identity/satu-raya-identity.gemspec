@@ -11,6 +11,8 @@ Gem::Specification.new do |spec|
   spec.files = Dir["{app,config,db,lib}/**/*", "README.md"]
 
   spec.add_dependency "rails", "~> 8.1", ">= 8.1.0"
+  spec.add_dependency "satu-raya-commons"
+  spec.add_dependency "satu-raya-system"
   spec.add_dependency "jwt", "~> 2.8"
   spec.add_dependency "rotp", "~> 6.3"
   spec.add_dependency "rqrcode", "~> 2.2"

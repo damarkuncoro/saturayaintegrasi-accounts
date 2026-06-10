@@ -12,4 +12,6 @@ Gem::Specification.new do |spec|
   spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
   spec.add_dependency "rails", "~> 8.1.3"
+  spec.add_dependency "satu-raya-ui"
+  spec.add_dependency "satu-raya-identity"
 end

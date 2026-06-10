@@ -2,7 +2,7 @@ class Identity::PasswordResetsController < ApplicationController
   skip_before_action :require_authentication
 
   def create
-    result = UseCases::Identity::ResetPasswordRequest.new.execute(
+    result = UseCases::Identity::Password::ResetPasswordRequest.new.execute(
       email: params[:email],
       tenant: System::Current.tenant,
       ip_address: request.ip
@@ -46,6 +46,7 @@ class Identity::PasswordResetsController < ApplicationController
     result = UseCases::Identity::Password::UpdatePassword.new.execute(
       token_digest: params[:sid],
       password: params[:password],
+      password_confirmation: params[:password_confirmation],
       tenant: System::Current.tenant
     )
 

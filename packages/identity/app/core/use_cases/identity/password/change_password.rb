@@ -9,23 +9,32 @@ module UseCases
         # Menjalankan proses perubahan password
         # @param user [Identity::User] User yang sedang login
         # @param password [String] Password baru
+        # @param password_confirmation [String] Konfirmasi password baru
         # @param password_challenge [String] Password saat ini (untuk verifikasi)
         # @param tenant [System::Tenant] Tenant terkait
         # @param revoke_others [Boolean] Apakah akan mencabut sesi lain
         # @return [Core::Result]
-        def perform_execute(user:, password:, password_challenge:, tenant:, revoke_others: false)
+        def perform_execute(user:, password:, password_confirmation:, password_challenge:, tenant:, revoke_others: false)
+          command = validate_with(::Identity::Commands::Password::ChangePasswordCommand, {
+            password: password,
+            password_confirmation: password_confirmation,
+            password_challenge: password_challenge,
+            revoke_others: revoke_others
+          })
+          return failure(command.error_messages, code: :validation_error) if command.failure?
+
           # 1. Verifikasi password saat ini
-          unless user.authenticate(password_challenge)
+          unless user.authenticate(command.password_challenge)
             return failure("Kata sandi saat ini salah.", code: :invalid_password)
           end
 
           # 2. Cek apakah password baru sama dengan password lama (Security best practice)
-          if SatuRayaCommons::Security::PasswordHasher.verify?(password, user.password_digest)
+          if SatuRayaCommons::Security::PasswordHasher.verify?(command.password, user.password_digest)
             return failure("Kata sandi baru tidak boleh sama dengan kata sandi saat ini.", code: :password_reused)
           end
 
           # 3. Update password
-          if user.update(password: password)
+          if user.update(password: command.password)
             # 4. Catat riwayat password
             user.password_histories.create!(
               tenant: tenant,
@@ -33,7 +42,7 @@ module UseCases
             )
 
             # 5. Opsional: Cabut sesi lain
-            if revoke_others
+            if command.revoke_others
               user.sessions.active.where.not(id: System::Current.session&.id).each do |s|
                 s.revoke!(reason: "password_changed")
               end

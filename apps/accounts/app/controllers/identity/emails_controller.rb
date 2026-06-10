@@ -7,7 +7,7 @@ class Identity::EmailsController < ApplicationController
   def update
     result = UseCases::Identity::Account::UpdateEmail.new.execute(
       user: @user,
-      new_email: params[:email],
+      email: params[:email],
       password_challenge: params[:password_challenge],
       tenant: System::Current.tenant
     )

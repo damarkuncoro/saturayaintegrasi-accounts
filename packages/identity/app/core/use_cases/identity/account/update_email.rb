@@ -9,26 +9,30 @@ module UseCases
 
         # Menjalankan proses pembaruan email
         # @param user [Identity::User] User yang sedang login
-        # @param new_email [String] Email baru yang diinginkan
+        # @param email [String] Email baru yang diinginkan
         # @param password_challenge [String] Password saat ini untuk verifikasi
         # @param tenant [System::Tenant] Tenant terkait
         # @return [Core::Result]
-        def perform_execute(user:, new_email:, password_challenge:, tenant:)
+        def perform_execute(user:, email:, password_challenge:, tenant:)
+          command = validate_with(::Identity::Commands::Account::UpdateEmailCommand, {
+            email: email,
+            password_challenge: password_challenge
+          })
+          return failure(command.error_messages, code: :validation_error) if command.failure?
+
           # 1. Verifikasi password saat ini
-          unless user.authenticate(password_challenge)
+          unless user.authenticate(command.password_challenge)
             return failure("Kata sandi saat ini salah.")
           end
 
-          new_email = normalize_email(new_email)
-
           # 2. Cek apakah email sudah digunakan oleh user lain di tenant yang sama
-          if tenant.users.where.not(id: user.id).exists?(email: new_email)
+          if tenant.users.where.not(id: user.id).exists?(email: command.email)
             return failure("Email sudah digunakan oleh pengguna lain.")
           end
 
           # 3. Update email (langsung atau via unconfirmed_email)
           # Di sini kita langsung update email namun set verified: false
-          if user.update(email: new_email, email_verified_at: nil)
+          if user.update(email: command.email, email_verified_at: nil)
             # 4. Generate token verifikasi baru
             token_raw = SecureRandom.hex(32)
             token_digest = Digest::SHA256.hexdigest(token_raw)
@@ -47,7 +51,7 @@ module UseCases
               action: "email_updated", 
               auditable: user, 
               tenant: tenant,
-              metadata: { new_email: new_email }
+              metadata: { new_email: command.email }
             )
 
             success(user)

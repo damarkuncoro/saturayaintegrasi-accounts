@@ -9,7 +9,7 @@ module Identity
   def create
     result = UseCases::Identity::Mfa::VerifyChallenge.call(
       user: @user,
-      otp_code: params[:otp_code],
+      code: params[:otp_code],
       tenant: System::Current.tenant,
       ip_address: request.ip,
       user_agent: request.user_agent,
