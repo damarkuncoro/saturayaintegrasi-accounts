@@ -3,7 +3,7 @@
 module UseCases
   module Identity
     module Oauth
-      class GetUserInfo
+      class GetUserInfo < ::Core::BaseUseCase
         attr_reader :request
 
         def initialize(request:)
@@ -14,13 +14,13 @@ module UseCases
         # @return [Core::Result]
         def execute
           token = request.headers["Authorization"]&.split(" ")&.last
-          return ::Core::Result.failure("missing_token", meta: { status: :unauthorized }) if token.blank?
+          return failure("missing_token", meta: { status: :unauthorized }) if token.blank?
 
           begin
             payload, _header = jwks_manager.decode_jwt(token)
             user = ::Identity::User.find(payload["sub"])
 
-            ::Core::Result.success({
+            success({
               sub: user.id.to_s,
               email: user.email,
               name: user.full_name,
@@ -30,9 +30,9 @@ module UseCases
               email_verified: user.email_verified?
             }, meta: { status: :ok })
           rescue JWT::DecodeError
-            ::Core::Result.failure("invalid_token", meta: { status: :unauthorized })
+            failure("invalid_token", meta: { status: :unauthorized })
           rescue ActiveRecord::RecordNotFound
-            ::Core::Result.failure("user_not_found", meta: { status: :unauthorized })
+            failure("user_not_found", meta: { status: :unauthorized })
           end
         end
 

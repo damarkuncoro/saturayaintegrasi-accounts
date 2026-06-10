@@ -3,7 +3,7 @@
 module UseCases
   module Identity
     module Oauth
-      class AuthorizeRequest
+      class AuthorizeRequest < ::Core::BaseUseCase
         attr_reader :params, :session, :current_user
 
         def initialize(params:, session:, current_user:)
@@ -16,11 +16,11 @@ module UseCases
         # @return [Core::Result]
         def execute
           client = ::Identity::SsoClientConfiguration.active.find_by(client_id: params[:client_id])
-          return ::Core::Result.failure("invalid_client", meta: { status: :bad_request }) if client.nil?
+          return failure("invalid_client", meta: { status: :bad_request }) if client.nil?
 
           # Validasi redirect_uri
           unless client.redirect_uris.include?(params[:redirect_uri])
-            return ::Core::Result.failure("invalid_redirect_uri", meta: { status: :bad_request })
+            return failure("invalid_redirect_uri", meta: { status: :bad_request })
           end
 
           # Simpan params ke session untuk digunakan setelah login
@@ -28,7 +28,7 @@ module UseCases
 
           # Jika belum login, beri tahu controller untuk redirect
           if current_user.nil?
-            return ::Core::Result.failure("unauthenticated", meta: { status: :unauthorized })
+            return failure("unauthenticated", meta: { status: :unauthorized })
           end
 
           # Cek apakah user sudah memberikan persetujuan sebelumnya
@@ -40,13 +40,13 @@ module UseCases
 
           if existing_consent || params[:prompt] == "none"
             code = issue_code(client)
-            return ::Core::Result.success({
+            return success({
               action: :redirect,
               url: "#{params[:redirect_uri]}?code=#{code}&state=#{params[:state]}"
             }, meta: { status: :found })
           end
 
-          ::Core::Result.success({ action: :render_consent, client: client }, meta: { status: :ok })
+          success({ action: :render_consent, client: client }, meta: { status: :ok })
         end
 
         private

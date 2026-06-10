@@ -3,7 +3,7 @@
 module UseCases
   module Identity
     module Oauth
-      class RevokeToken
+      class RevokeToken < ::Core::BaseUseCase
         attr_reader :params
 
         def initialize(params:)
@@ -15,7 +15,7 @@ module UseCases
         def execute
           token = params[:token]
           if token.blank?
-            return ::Core::Result.failure("missing_token", meta: { status: :bad_request })
+            return failure("missing_token", meta: { status: :bad_request })
           end
 
           # 1. Cek apakah ini refresh token di DB
@@ -23,7 +23,7 @@ module UseCases
           refresh_token = ::Identity::JwtRefreshToken.find_by(token_digest: token_digest)
           if refresh_token
             refresh_token.update!(revoked_at: Time.current)
-            return ::Core::Result.success({ status: "revoked" }, meta: { status: :ok })
+            return success({ status: "revoked" }, meta: { status: :ok })
           end
 
           # 2. Jika bukan refresh token, coba dekode sebagai JWT access token
@@ -41,7 +41,7 @@ module UseCases
             # Abaikan error jika token tidak valid/kadaluwarsa sesuai RFC 7009
           end
 
-          ::Core::Result.success({ status: "revoked" }, meta: { status: :ok })
+          success({ status: "revoked" }, meta: { status: :ok })
         end
 
         private

@@ -3,7 +3,7 @@
 module UseCases
   module Identity
     module Oauth
-      class IntrospectToken
+      class IntrospectToken < ::Core::BaseUseCase
         include ClientAuthHelper
 
         attr_reader :params, :request
@@ -18,12 +18,12 @@ module UseCases
         def execute
           client = find_service_client(params, request)
           if client.nil? || !authenticate_service_client(client, params, request)
-            return ::Core::Result.failure("invalid_client", meta: { status: :unauthorized })
+            return failure("invalid_client", meta: { status: :unauthorized })
           end
 
           token = params[:token]
           if token.blank?
-            return ::Core::Result.failure("missing_token", meta: { status: :bad_request })
+            return failure("missing_token", meta: { status: :bad_request })
           end
 
           begin
@@ -33,7 +33,7 @@ module UseCases
             service_client = ::Identity::ServiceClient.active.find_by(client_id: payload["sub"])
             if service_client
               if service_client.tenant.nil? || (service_client.tenant.active? && service_client.tenant_id.to_s == payload["tenant_id"].to_s)
-                return ::Core::Result.success({
+                return success({
                   active: true,
                   client_id: service_client.client_id,
                   tenant_id: service_client.tenant_id.to_s,
@@ -41,7 +41,7 @@ module UseCases
                   expires_at: Time.at(payload["exp"]).iso8601
                 }, meta: { status: :ok })
               else
-                return ::Core::Result.success({ active: false }, meta: { status: :ok })
+                return success({ active: false }, meta: { status: :ok })
               end
             end
 
@@ -55,7 +55,7 @@ module UseCases
               permissions += user.roles.includes(:permissions).flat_map { |r| r.permissions.map(&:slug) }
               permissions = permissions.uniq
 
-              ::Core::Result.success({
+              success({
                 active: true,
                 user_id: user.id.to_s,
                 tenant_id: user.tenant_id.to_s,
@@ -64,10 +64,10 @@ module UseCases
                 expires_at: Time.at(payload["exp"]).iso8601
               }, meta: { status: :ok })
             else
-              ::Core::Result.success({ active: false }, meta: { status: :ok })
+              success({ active: false }, meta: { status: :ok })
             end
           rescue JWT::DecodeError, ActiveRecord::RecordNotFound
-            ::Core::Result.success({ active: false }, meta: { status: :ok })
+            success({ active: false }, meta: { status: :ok })
           end
         end
 

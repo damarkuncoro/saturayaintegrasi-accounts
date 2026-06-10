@@ -3,7 +3,7 @@
 module UseCases
   module Identity
     module Oauth
-      class GrantConsent
+      class GrantConsent < ::Core::BaseUseCase
         attr_reader :params, :session, :current_user
 
         def initialize(params:, session:, current_user:)
@@ -16,10 +16,10 @@ module UseCases
         # @return [Core::Result]
         def execute
           client = ::Identity::SsoClientConfiguration.active.find_by(client_id: params[:client_id])
-          return ::Core::Result.failure("invalid_client", meta: { status: :bad_request }) if client.nil?
+          return failure("invalid_client", meta: { status: :bad_request }) if client.nil?
 
           if current_user.nil?
-            return ::Core::Result.failure("unauthenticated", meta: { status: :unauthorized })
+            return failure("unauthenticated", meta: { status: :unauthorized })
           end
 
           if params[:allow] == "true"
@@ -36,13 +36,13 @@ module UseCases
             )
 
             code = issue_code(client, oauth_params)
-            ::Core::Result.success({
+            success({
               action: :redirect,
               url: "#{oauth_params["redirect_uri"]}?code=#{code}&state=#{oauth_params["state"]}"
             }, meta: { status: :found })
           else
             redirect_uri = session.dig(:oauth_params, "redirect_uri") || params[:redirect_uri]
-            ::Core::Result.success({
+            success({
               action: :redirect,
               url: "#{redirect_uri}?error=access_denied"
             }, meta: { status: :found })

@@ -3,7 +3,7 @@
 module UseCases
   module Identity
     module Oauth
-      class ExchangeToken
+      class ExchangeToken < ::Core::BaseUseCase
         include ClientAuthHelper
 
         attr_reader :params, :request, :issuer
@@ -25,7 +25,7 @@ module UseCases
           when "authorization_code"
             handle_authorization_code
           else
-            ::Core::Result.failure("unsupported_grant_type", meta: { status: :bad_request })
+            failure("unsupported_grant_type", meta: { status: :bad_request })
           end
         end
 
@@ -34,14 +34,14 @@ module UseCases
         def handle_client_credentials
           client = find_service_client(params, request)
           if client.nil? || !authenticate_service_client(client, params, request)
-            return ::Core::Result.failure("invalid_client", meta: { status: :unauthorized })
+            return failure("invalid_client", meta: { status: :unauthorized })
           end
 
           now = Time.current.to_i
           requested_scopes = params[:scope] ? params[:scope].split(" ") : client.allowed_scopes
           invalid_scopes = requested_scopes - client.allowed_scopes
           if invalid_scopes.any?
-            return ::Core::Result.failure("invalid_scope", meta: { status: :bad_request })
+            return failure("invalid_scope", meta: { status: :bad_request })
           end
 
           access_token_payload = {
@@ -57,7 +57,7 @@ module UseCases
 
           access_token = JWT.encode(access_token_payload, jwks_manager.rsa_key, "RS256", { kid: jwks_manager.jwk[:kid] })
 
-          ::Core::Result.success({
+          success({
             access_token: access_token,
             token_type: "Bearer",
             expires_in: 3600,
@@ -68,38 +68,38 @@ module UseCases
         def handle_refresh_token
           client = find_sso_client(params, request)
           if client.nil? || !authenticate_sso_client(client, params, request)
-            return ::Core::Result.failure("invalid_client", meta: { status: :unauthorized })
+            return failure("invalid_client", meta: { status: :unauthorized })
           end
 
           refresh_token_param = params[:refresh_token]
           if refresh_token_param.blank?
-            return ::Core::Result.failure("invalid_grant", meta: { status: :bad_request })
+            return failure("invalid_grant", meta: { status: :bad_request })
           end
 
           token_digest = ::Identity::JwtRefreshToken.digest(refresh_token_param)
           refresh_token_record = ::Identity::JwtRefreshToken.find_by(token_digest: token_digest)
 
           if refresh_token_record.nil?
-            return ::Core::Result.failure("invalid_grant", meta: { status: :bad_request })
+            return failure("invalid_grant", meta: { status: :bad_request })
           end
 
           # Replay attack check: if token is already revoked, revoke the whole family
           if refresh_token_record.revoked?
             ::Identity::JwtRefreshToken.where(family_id: refresh_token_record.family_id).update_all(revoked_at: Time.current)
-            return ::Core::Result.failure("invalid_grant", meta: { status: :bad_request })
+            return failure("invalid_grant", meta: { status: :bad_request })
           end
 
           if refresh_token_record.expired?
-            return ::Core::Result.failure("invalid_grant", meta: { status: :bad_request })
+            return failure("invalid_grant", meta: { status: :bad_request })
           end
 
           if refresh_token_record.sso_client_configuration_id != client.id
-            return ::Core::Result.failure("invalid_grant", meta: { status: :bad_request })
+            return failure("invalid_grant", meta: { status: :bad_request })
           end
 
           user = refresh_token_record.user
           if !user.active? || !user.tenant.active?
-            return ::Core::Result.failure("invalid_grant", meta: { status: :bad_request })
+            return failure("invalid_grant", meta: { status: :bad_request })
           end
 
           new_refresh_token = "rt_#{SecureRandom.hex(32)}"
@@ -131,20 +131,20 @@ module UseCases
         def handle_authorization_code
           client = find_sso_client(params, request)
           if client.nil? || !authenticate_sso_client(client, params, request)
-            return ::Core::Result.failure("invalid_client", meta: { status: :unauthorized })
+            return failure("invalid_client", meta: { status: :unauthorized })
           end
 
           cached_data = Rails.cache.read("oauth_code_#{params[:code]}")
 
           if cached_data.nil? || cached_data[:client_id] != client.client_id
-            return ::Core::Result.failure("invalid_grant", meta: { status: :bad_request })
+            return failure("invalid_grant", meta: { status: :bad_request })
           end
 
           # PKCE verification if challenge is present
           if cached_data[:code_challenge].present?
             code_verifier = params[:code_verifier]
             if code_verifier.blank?
-              return ::Core::Result.failure("invalid_request", meta: { error_description: "code_verifier is required", status: :bad_request })
+              return failure("invalid_request", meta: { error_description: "code_verifier is required", status: :bad_request })
             end
 
             challenge_method = cached_data[:code_challenge_method] || "plain"
@@ -153,11 +153,11 @@ module UseCases
             elsif challenge_method == "plain"
               calculated = code_verifier
             else
-              return ::Core::Result.failure("invalid_request", meta: { error_description: "Unsupported code_challenge_method", status: :bad_request })
+              return failure("invalid_request", meta: { error_description: "Unsupported code_challenge_method", status: :bad_request })
             end
 
             if calculated != cached_data[:code_challenge]
-              return ::Core::Result.failure("invalid_grant", meta: { error_description: "PKCE verification failed", status: :bad_request })
+              return failure("invalid_grant", meta: { error_description: "PKCE verification failed", status: :bad_request })
             end
           end
 
@@ -217,7 +217,7 @@ module UseCases
           id_token = JWT.encode(id_token_payload, jwks_manager.rsa_key, "RS256", { kid: jwks_manager.jwk[:kid] })
           access_token = JWT.encode(access_token_payload, jwks_manager.rsa_key, "RS256", { kid: jwks_manager.jwk[:kid] })
 
-          ::Core::Result.success({
+          success({
             access_token: access_token,
             token_type: "Bearer",
             expires_in: 3600,
