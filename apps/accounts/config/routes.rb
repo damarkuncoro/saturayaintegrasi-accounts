@@ -38,7 +38,7 @@ Rails.application.routes.draw do
     post "oauth/introspect", to: "oauth#introspect"
   end
 
-  get    "dashboard",  to: "home#dashboard",       as: :identity_dashboard
+  get "dashboard",  to: "home#dashboard",       as: :identity_dashboard
 
   mount Rswag::Ui::Engine => "/api-docs"
   mount Rswag::Api::Engine => "/api-docs"

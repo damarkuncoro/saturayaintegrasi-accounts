@@ -19,7 +19,7 @@ RSpec.describe Identity::Session, type: :model do
       tenant_a = create(:tenant)
       tenant_b = create(:tenant)
       user = create(:user, tenant: tenant_b)
-      
+
       # We bypass tenant auto-assignment in before_validation by explicitly setting tenant
       session = build(:session, tenant: tenant_a, user: user)
       expect(session).not_to be_valid

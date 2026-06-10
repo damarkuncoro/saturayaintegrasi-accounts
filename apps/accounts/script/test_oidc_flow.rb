@@ -54,13 +54,13 @@ def test_oidc_flow
       tokens = JSON.parse(res.body)
       puts "✅ Token exchange successful"
       access_token = tokens['access_token']
-      
+
       # 4. Userinfo
       puts "\n4. Testing Userinfo..."
       uri = URI("#{BASE_URL}/oauth/userinfo")
       req = Net::HTTP::Get.new(uri)
       req['Authorization'] = "Bearer #{access_token}"
-      user_res = Net::HTTP.start(uri.hostname, uri.port) {|http| http.request(req) }
+      user_res = Net::HTTP.start(uri.hostname, uri.port) { |http| http.request(req) }
 
       if user_res.is_a?(Net::HTTPSuccess)
         user = JSON.parse(user_res.body)

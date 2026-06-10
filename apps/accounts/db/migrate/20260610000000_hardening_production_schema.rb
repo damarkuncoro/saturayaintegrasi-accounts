@@ -24,28 +24,28 @@ class HardeningProductionSchema < ActiveRecord::Migration[8.1]
 
     # 3. User Permissions Schema (Opsi A)
     change_column_null :user_permissions, :permission_id, false
-    
+
     # Remove old index: index_user_permissions_on_user_resource_action
     remove_index :user_permissions, name: "index_user_permissions_on_user_resource_action"
-    
+
     # Add new unique index: index_user_permissions_on_tenant_user_permission
-    add_index :user_permissions, [:tenant_id, :user_id, :permission_id], unique: true, name: "index_user_permissions_on_tenant_user_permission"
+    add_index :user_permissions, [ :tenant_id, :user_id, :permission_id ], unique: true, name: "index_user_permissions_on_tenant_user_permission"
 
     # 4. Null Constraint Small Patches
     change_column_null :roles, :system_defined, false, false
     change_column_null :role_permissions, :conditions, false, {}
 
     # 5. Missing Indekses (Operational Indexes)
-    add_index :role_permissions, [:tenant_id, :permission_id], name: "index_role_permissions_on_tenant_permission"
-    add_index :user_roles, [:tenant_id, :role_id], name: "index_user_roles_on_tenant_role"
-    add_index :user_permissions, [:permission_id], name: "index_user_permissions_on_permission_id"
-    add_index :api_clients, [:tenant_id, :active], name: "index_api_clients_on_tenant_active"
-    add_index :api_clients, [:tenant_id, :expires_at], name: "index_api_clients_on_tenant_expires_at"
+    add_index :role_permissions, [ :tenant_id, :permission_id ], name: "index_role_permissions_on_tenant_permission"
+    add_index :user_roles, [ :tenant_id, :role_id ], name: "index_user_roles_on_tenant_role"
+    add_index :user_permissions, [ :permission_id ], name: "index_user_permissions_on_permission_id"
+    add_index :api_clients, [ :tenant_id, :active ], name: "index_api_clients_on_tenant_active"
+    add_index :api_clients, [ :tenant_id, :expires_at ], name: "index_api_clients_on_tenant_expires_at"
 
     # 6. Webhook retry fields & index
     add_column :webhook_deliveries, :attempt_count, :integer, default: 0, null: false
     add_column :webhook_deliveries, :next_retry_at, :datetime
     add_column :webhook_deliveries, :delivered_at, :datetime
-    add_index :webhook_deliveries, [:status, :next_retry_at], name: "index_webhook_deliveries_on_status_next_retry"
+    add_index :webhook_deliveries, [ :status, :next_retry_at ], name: "index_webhook_deliveries_on_status_next_retry"
   end
 end

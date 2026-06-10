@@ -122,5 +122,3 @@ gem "satu-raya-identity-client", path: "../../packages/identity-client", require
 gem "satu-raya-identity-ui", path: "../../packages/identity-ui", require: "satu_raya_identity_ui"
 gem "satu-raya-navigation", path: "../../packages/navigation", require: "satu_raya_navigation"
 gem "satu-raya-ui", path: "../../packages/ui", require: "satu_raya_ui"
-
-

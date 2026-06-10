@@ -11,7 +11,7 @@ RSpec.describe "JWT Secret Rotation Fallback", type: :request do
       client_name: "rotation-app",
       client_id: "rotation_client_id",
       client_secret: "secret",
-      redirect_uris: ["https://client.example.com/callback"],
+      redirect_uris: [ "https://client.example.com/callback" ],
       active: true
     )
   end
@@ -22,7 +22,7 @@ RSpec.describe "JWT Secret Rotation Fallback", type: :request do
       service_name: "rotation-service",
       client_id: "rotation_service_id",
       secret: "supersecret",
-      allowed_scopes: ["introspect"],
+      allowed_scopes: [ "introspect" ],
       active: true
     )
   end

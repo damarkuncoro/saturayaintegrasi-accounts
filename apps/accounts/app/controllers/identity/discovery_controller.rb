@@ -3,6 +3,7 @@ module Identity
     allow_unauthenticated_access
     skip_before_action :resume_session
     skip_before_action :assign_current_tenant
+    skip_before_action :require_current_tenant!, raise: false
 
     def openid_configuration
       issuer = brand_config.oidc_issuer

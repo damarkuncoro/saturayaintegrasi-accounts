@@ -11,8 +11,8 @@ RSpec.describe "OIDC Refresh Token Rotation (RTR)", type: :request do
       client_name: "test-app",
       client_id: "test_client_id",
       client_secret: "supersecret",
-      redirect_uris: ["https://client.example.com/callback"],
-      allowed_scopes: ["openid", "profile", "email"],
+      redirect_uris: [ "https://client.example.com/callback" ],
+      allowed_scopes: [ "openid", "profile", "email" ],
       active: true
     )
   end
@@ -22,7 +22,7 @@ RSpec.describe "OIDC Refresh Token Rotation (RTR)", type: :request do
   before do
     host! "rtr.example.com"
     Rails.cache.clear
-    
+
     # Pre-cache code for authorization_code flow
     Rails.cache.write("oauth_code_#{auth_code}", {
       user_id: user.id,
@@ -57,7 +57,7 @@ RSpec.describe "OIDC Refresh Token Rotation (RTR)", type: :request do
         expect(record).to be_present
         expect(record.user_id).to eq(user.id)
         expect(record.sso_client_configuration_id).to eq(sso_client.id)
-        expect(record.scopes).to eq(["openid", "profile", "email"])
+        expect(record.scopes).to eq([ "openid", "profile", "email" ])
         expect(record).to be_active
       end
     end
@@ -71,7 +71,7 @@ RSpec.describe "OIDC Refresh Token Rotation (RTR)", type: :request do
           sso_client_configuration: sso_client,
           token_digest: Identity::JwtRefreshToken.digest(plain_token),
           family_id: SecureRandom.uuid,
-          scopes: ["openid", "profile"],
+          scopes: [ "openid", "profile" ],
           expires_at: 30.days.from_now
         )
       end
@@ -156,7 +156,7 @@ RSpec.describe "OIDC Refresh Token Rotation (RTR)", type: :request do
           client_name: "other-app",
           client_id: "other_client_id",
           client_secret: "supersecret",
-          redirect_uris: ["https://client.example.com/callback"],
+          redirect_uris: [ "https://client.example.com/callback" ],
           active: true
         )
 

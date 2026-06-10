@@ -13,7 +13,7 @@ namespace :system do
         # We order by created_at, id asc to verify the chain chronologically
         System::AuditLog.order(created_at: :asc, id: :asc).find_each do |log|
           total_checked += 1
-          
+
           # Verify integrity
           unless log.verify_integrity!
             corrupted_logs << { id: log.id, action: log.action, tenant: log.tenant&.name || "Global" }

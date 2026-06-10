@@ -3,6 +3,7 @@
 module Identity
   class OauthController < ApplicationController
     skip_before_action :require_authentication, only: [ :authorize, :consent, :token, :userinfo, :revoke, :introspect ]
+    skip_forgery_protection only: [ :token, :revoke, :introspect ]
 
     # GET /oauth/authorize
     def authorize

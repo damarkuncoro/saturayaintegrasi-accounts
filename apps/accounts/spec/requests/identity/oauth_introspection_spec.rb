@@ -11,8 +11,8 @@ RSpec.describe "OIDC Token Introspection", type: :request do
       service_name: "test-service",
       client_id: "test_service_client_id",
       secret: "super_secure_service_secret_123",
-      allowed_scopes: ["introspect", "user.sync"],
-      allowed_ips: ["127.0.0.1"],
+      allowed_scopes: [ "introspect", "user.sync" ],
+      allowed_ips: [ "127.0.0.1" ],
       active: true
     )
   end

@@ -13,7 +13,7 @@ RSpec.describe Identity::UserPasskey, type: :model do
     end
 
     it { should validate_presence_of(:external_id) }
-    
+
     it "validates uniqueness of external_id scoped to tenant_id" do
       passkey = create(:user_passkey)
       duplicate = build(:user_passkey, external_id: passkey.external_id, tenant: passkey.tenant)

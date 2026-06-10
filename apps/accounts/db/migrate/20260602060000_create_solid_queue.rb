@@ -11,9 +11,9 @@ class CreateSolidQueue < ActiveRecord::Migration[8.1]
       t.string "queue_name", null: false
       t.timestamps
 
-      t.index ["concurrency_key", "priority", "job_id"], name: "index_solid_queue_blocked_executions_for_release"
-      t.index ["expires_at", "concurrency_key"], name: "index_solid_queue_blocked_executions_for_maintenance"
-      t.index ["job_id"], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
+      t.index [ "concurrency_key", "priority", "job_id" ], name: "index_solid_queue_blocked_executions_for_release"
+      t.index [ "expires_at", "concurrency_key" ], name: "index_solid_queue_blocked_executions_for_maintenance"
+      t.index [ "job_id" ], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
     end
 
     # 23. Solid Queue Claimed Executions Table
@@ -22,8 +22,8 @@ class CreateSolidQueue < ActiveRecord::Migration[8.1]
       t.bigint "process_id"
       t.timestamps
 
-      t.index ["job_id"], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
-      t.index ["process_id", "job_id"], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
+      t.index [ "job_id" ], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
+      t.index [ "process_id", "job_id" ], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
     end
 
     # 24. Solid Queue Failed Executions Table
@@ -32,7 +32,7 @@ class CreateSolidQueue < ActiveRecord::Migration[8.1]
       t.bigint "job_id", null: false
       t.timestamps
 
-      t.index ["job_id"], name: "index_solid_queue_failed_executions_on_job_id", unique: true
+      t.index [ "job_id" ], name: "index_solid_queue_failed_executions_on_job_id", unique: true
     end
 
     # 25. Solid Queue Jobs Table
@@ -47,11 +47,11 @@ class CreateSolidQueue < ActiveRecord::Migration[8.1]
       t.datetime "scheduled_at"
       t.timestamps
 
-      t.index ["active_job_id"], name: "index_solid_queue_jobs_on_active_job_id"
-      t.index ["class_name"], name: "index_solid_queue_jobs_on_class_name"
-      t.index ["finished_at"], name: "index_solid_queue_jobs_on_finished_at"
-      t.index ["queue_name", "finished_at"], name: "index_solid_queue_jobs_for_filtering"
-      t.index ["scheduled_at", "finished_at"], name: "index_solid_queue_jobs_for_alerting"
+      t.index [ "active_job_id" ], name: "index_solid_queue_jobs_on_active_job_id"
+      t.index [ "class_name" ], name: "index_solid_queue_jobs_on_class_name"
+      t.index [ "finished_at" ], name: "index_solid_queue_jobs_on_finished_at"
+      t.index [ "queue_name", "finished_at" ], name: "index_solid_queue_jobs_for_filtering"
+      t.index [ "scheduled_at", "finished_at" ], name: "index_solid_queue_jobs_for_alerting"
     end
 
     # 26. Solid Queue Pauses Table
@@ -59,7 +59,7 @@ class CreateSolidQueue < ActiveRecord::Migration[8.1]
       t.string "queue_name", null: false
       t.timestamps
 
-      t.index ["queue_name"], name: "index_solid_queue_pauses_on_queue_name", unique: true
+      t.index [ "queue_name" ], name: "index_solid_queue_pauses_on_queue_name", unique: true
     end
 
     # 27. Solid Queue Processes Table
@@ -73,9 +73,9 @@ class CreateSolidQueue < ActiveRecord::Migration[8.1]
       t.bigint "supervisor_id"
       t.timestamps
 
-      t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
-      t.index ["name", "supervisor_id"], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
-      t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
+      t.index [ "last_heartbeat_at" ], name: "index_solid_queue_processes_on_last_heartbeat_at"
+      t.index [ "name", "supervisor_id" ], name: "index_solid_queue_processes_on_name_and_supervisor_id", unique: true
+      t.index [ "supervisor_id" ], name: "index_solid_queue_processes_on_supervisor_id"
     end
 
     # 28. Solid Queue Ready Executions Table
@@ -85,9 +85,9 @@ class CreateSolidQueue < ActiveRecord::Migration[8.1]
       t.string "queue_name", null: false
       t.timestamps
 
-      t.index ["job_id"], name: "index_solid_queue_ready_executions_on_job_id", unique: true
-      t.index ["priority", "job_id"], name: "index_solid_queue_poll_all"
-      t.index ["queue_name", "priority", "job_id"], name: "index_solid_queue_poll_by_queue"
+      t.index [ "job_id" ], name: "index_solid_queue_ready_executions_on_job_id", unique: true
+      t.index [ "priority", "job_id" ], name: "index_solid_queue_poll_all"
+      t.index [ "queue_name", "priority", "job_id" ], name: "index_solid_queue_poll_by_queue"
     end
 
     # 29. Solid Queue Recurring Executions Table
@@ -97,8 +97,8 @@ class CreateSolidQueue < ActiveRecord::Migration[8.1]
       t.string "task_key", null: false
       t.timestamps
 
-      t.index ["job_id"], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
-      t.index ["task_key", "run_at"], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
+      t.index [ "job_id" ], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
+      t.index [ "task_key", "run_at" ], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
     end
 
     # 30. Solid Queue Recurring Tasks Table
@@ -114,8 +114,8 @@ class CreateSolidQueue < ActiveRecord::Migration[8.1]
       t.boolean "static", default: true, null: false
       t.timestamps
 
-      t.index ["key"], name: "index_solid_queue_recurring_tasks_on_key", unique: true
-      t.index ["static"], name: "index_solid_queue_recurring_tasks_on_static"
+      t.index [ "key" ], name: "index_solid_queue_recurring_tasks_on_key", unique: true
+      t.index [ "static" ], name: "index_solid_queue_recurring_tasks_on_static"
     end
 
     # 31. Solid Queue Scheduled Executions Table
@@ -126,8 +126,8 @@ class CreateSolidQueue < ActiveRecord::Migration[8.1]
       t.datetime "scheduled_at", null: false
       t.timestamps
 
-      t.index ["job_id"], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
-      t.index ["scheduled_at", "priority", "job_id"], name: "index_solid_queue_dispatch_all"
+      t.index [ "job_id" ], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
+      t.index [ "scheduled_at", "priority", "job_id" ], name: "index_solid_queue_dispatch_all"
     end
 
     # 32. Solid Queue Semaphores Table
@@ -137,9 +137,9 @@ class CreateSolidQueue < ActiveRecord::Migration[8.1]
       t.integer "value", default: 1, null: false
       t.timestamps
 
-      t.index ["expires_at"], name: "index_solid_queue_semaphores_on_expires_at"
-      t.index ["key", "value"], name: "index_solid_queue_semaphores_on_key_and_value"
-      t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
+      t.index [ "expires_at" ], name: "index_solid_queue_semaphores_on_expires_at"
+      t.index [ "key", "value" ], name: "index_solid_queue_semaphores_on_key_and_value"
+      t.index [ "key" ], name: "index_solid_queue_semaphores_on_key", unique: true
     end
 
     # Foreign Keys for Solid Queue

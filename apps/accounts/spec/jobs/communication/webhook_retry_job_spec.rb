@@ -8,7 +8,7 @@ RSpec.describe Communication::WebhookRetryJob, type: :job do
     ActsAsTenant.with_tenant(tenant) do
       Communication::WebhookEndpoint.create!(
         url: "https://example.com/webhook",
-        events: ["user.created"],
+        events: [ "user.created" ],
         secret: "supersecret",
         active: true
       )

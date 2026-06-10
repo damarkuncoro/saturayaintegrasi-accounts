@@ -82,6 +82,7 @@ Rails.application.configure do
   if ENV["APP_HOST"].present?
     config.hosts << ENV["APP_HOST"]
     config.hosts << ".#{ENV["APP_HOST"]}"
+    config.hosts << ".#{SatuRayaIdentityClient::Identity::BrandConfig.app_domain}"
   end
 
   # Print deprecation notices to the Rails logger.

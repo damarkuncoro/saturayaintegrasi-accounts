@@ -10,7 +10,7 @@ RSpec.describe "OIDC / OAuth2 Provider Flow", type: :request do
       :sso_client_configuration,
       tenant: tenant,
       client_secret: "supersecret",
-      redirect_uris: ["https://client.example.com/callback"]
+      redirect_uris: [ "https://client.example.com/callback" ]
     )
   end
   let(:password) { "Password123!456" }
@@ -87,7 +87,7 @@ RSpec.describe "OIDC / OAuth2 Provider Flow", type: :request do
   describe "POST /oauth/consent" do
     before do
       post sign_in_path, params: { email: user.email, password: password }
-      
+
       get oauth_authorize_path, params: {
         client_id: sso_client.client_id,
         redirect_uri: "https://client.example.com/callback",
@@ -154,7 +154,7 @@ RSpec.describe "OIDC / OAuth2 Provider Flow", type: :request do
         }
 
         expect(response.status).to eq(200)
-        
+
         json = JSON.parse(response.body)
         expect(json["access_token"]).to be_present
         expect(json["id_token"]).to be_present
@@ -198,7 +198,7 @@ RSpec.describe "OIDC / OAuth2 Provider Flow", type: :request do
         get oauth_userinfo_path, headers: { "Authorization" => "Bearer #{token}" }
 
         expect(response.status).to eq(200)
-        
+
         json = JSON.parse(response.body)
         expect(json["sub"]).to eq(user.id.to_s)
         expect(json["email"]).to eq(user.email)

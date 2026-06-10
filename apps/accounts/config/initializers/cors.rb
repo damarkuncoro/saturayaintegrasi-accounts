@@ -10,9 +10,9 @@ require "satu_raya_identity_client/identity/brand_config"
 domain = SatuRayaIdentityClient::Identity::BrandConfig.app_domain
 allowed_origins = if Rails.env.production?
                     ENV.fetch("CORS_ALLOWED_ORIGINS", ENV.fetch("ALLOWED_ORIGINS", "https://#{domain}")).split(",")
-                  else
+else
                     [ "http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://127.0.0.1:3000" ]
-                  end
+end
 
 domain_regex = /https?:\/\/.*\.#{Regexp.escape(domain)}/
 

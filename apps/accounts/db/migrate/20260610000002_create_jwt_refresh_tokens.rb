@@ -20,8 +20,8 @@ class CreateJwtRefreshTokens < ActiveRecord::Migration[8.1]
 
     add_index :jwt_refresh_tokens, :token_digest, unique: true
     add_index :jwt_refresh_tokens, :family_id
-    add_index :jwt_refresh_tokens, [:tenant_id, :user_id]
-    
+    add_index :jwt_refresh_tokens, [ :tenant_id, :user_id ]
+
     add_foreign_key :jwt_refresh_tokens, :tenants, on_delete: :cascade
     add_foreign_key :jwt_refresh_tokens, :users, on_delete: :cascade
     add_foreign_key :jwt_refresh_tokens, :sso_client_configurations, on_delete: :cascade

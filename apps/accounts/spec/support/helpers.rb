@@ -6,7 +6,7 @@ module AuthenticationHelpers
 
     3.times do
       visit login_path
-      
+
       # If we are already logged in as the correct user and redirected to the expected path
       return if page.has_current_path?(expected_path, wait: 1)
 
@@ -29,7 +29,7 @@ module AuthenticationHelpers
 
   def dashboard_path_for(user)
     return admin_dashboard_path if user.admin?
-    return "/dashboard"
+    "/dashboard"
   end
 end
 

@@ -11,7 +11,6 @@ Bundler.require(*Rails.groups)
 # require_relative "../app/core/result"
 
 module App
-
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1

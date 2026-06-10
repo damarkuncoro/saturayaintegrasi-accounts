@@ -21,7 +21,7 @@ RSpec.describe "Rack::Attack Rate Limiting", type: :request do
   describe "login attempts throttling" do
     it "throttles by email after 10 attempts" do
       email = "login-throttle@example.com"
-      
+
       10.times do
         post sign_in_path, params: { email: email, password: "wrong_password" }
         expect(response.status).not_to eq(429)
@@ -29,7 +29,7 @@ RSpec.describe "Rack::Attack Rate Limiting", type: :request do
 
       post sign_in_path, params: { email: email, password: "wrong_password" }
       expect(response.status).to eq(429)
-      
+
       json = JSON.parse(response.body)
       expect(json["error"]).to include("Rate limit exceeded")
     end
@@ -44,7 +44,7 @@ RSpec.describe "Rack::Attack Rate Limiting", type: :request do
 
       post sign_up_path, params: { user: { email: "some@example.com" } }
       expect(response.status).to eq(429)
-      
+
       json = JSON.parse(response.body)
       expect(json["error"]).to include("Rate limit exceeded")
     end
@@ -59,7 +59,7 @@ RSpec.describe "Rack::Attack Rate Limiting", type: :request do
 
       post identity_password_reset_path, params: { email: "reset10@example.com" }
       expect(response.status).to eq(429)
-      
+
       json = JSON.parse(response.body)
       expect(json["error"]).to include("Rate limit exceeded")
     end
@@ -69,7 +69,7 @@ RSpec.describe "Rack::Attack Rate Limiting", type: :request do
       # To test this, we can vary the IP using a header or just make requests to the email.
       # Let's perform requests for the same email.
       email = "user-reset@example.com"
-      
+
       5.times do
         post identity_password_reset_path, params: { email: email }
         expect(response.status).not_to eq(429)

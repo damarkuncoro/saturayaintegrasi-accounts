@@ -31,7 +31,7 @@ RSpec.describe 'Identity::EmailVerifications', type: :request do
       it 'verifies the email and redirects to user dashboard' do
         token_raw = SecureRandom.hex(32)
         token_digest = Digest::SHA256.hexdigest(token_raw)
-        
+
         user.email_verification_tokens.create!(
           tenant: tenant,
           token_digest: token_digest,

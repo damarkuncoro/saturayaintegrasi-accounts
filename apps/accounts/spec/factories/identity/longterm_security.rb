@@ -36,8 +36,8 @@ FactoryBot.define do
   factory :sso_client_configuration, class: "Identity::SsoClientConfiguration" do
     tenant
     client_name { "Portal Internal Partner" }
-    redirect_uris { ["https://partner.#{SatuRayaIdentityClient::Identity::BrandConfig.app_domain}/callback", "https://partner-staging.#{SatuRayaIdentityClient::Identity::BrandConfig.app_domain}/callback"] }
-    allowed_scopes { ["openid", "profile", "email"] }
+    redirect_uris { [ "https://partner.#{SatuRayaIdentityClient::Identity::BrandConfig.app_domain}/callback", "https://partner-staging.#{SatuRayaIdentityClient::Identity::BrandConfig.app_domain}/callback" ] }
+    allowed_scopes { [ "openid", "profile", "email" ] }
     active { true }
 
     trait :inactive do
