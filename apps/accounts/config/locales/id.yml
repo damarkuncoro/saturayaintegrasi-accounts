@@ -235,4 +235,38 @@ id:
       password_hint: "Minimal 12 karakter."
       password_confirmation_label: "Konfirmasi Kata Sandi Baru"
       submit: "Simpan Kata Sandi Baru"
+  sso_clients:
+    index:
+      title: "Aplikasi SSO (OAuth2 / OIDC)"
+      description: "Daftar dan kelola konfigurasi integrasi Single Sign-On (SSO) untuk aplikasi klien Anda."
+      add_button: "Daftar Aplikasi Baru"
+      client_name: "Nama Aplikasi"
+      client_id: "Client ID"
+      status: "Status"
+      actions: "Aksi"
+      no_clients: "Belum ada aplikasi SSO yang terdaftar."
+    new:
+      title: "Daftar Aplikasi SSO Baru"
+      description: "Buat konfigurasi OIDC baru untuk mengintegrasikan aplikasi Anda dengan layanan SSO."
+    edit:
+      title: "Ubah Aplikasi SSO"
+      description: "Ubah konfigurasi redirect URI atau scope untuk aplikasi SSO ini."
+    show:
+      title: "Detail Aplikasi SSO"
+      description: "Informasi kredensial OIDC untuk integrasi aplikasi klien Anda."
+      credentials_warning_title: "Simpan Client Secret Anda!"
+      credentials_warning_desc: "Untuk alasan keamanan, Client Secret di bawah ini hanya akan ditampilkan sekali. Simpan di tempat yang aman sebelum meninggalkan halaman ini."
+      client_secret: "Client Secret"
+      redirect_uris: "Redirect URIs"
+      allowed_scopes: "Allowed Scopes"
+      status_label: "Status Aplikasi"
+    form:
+      client_name_label: "Nama Aplikasi"
+      client_name_placeholder: "Contoh: Portal HRD"
+      redirect_uris_label: "Redirect URIs"
+      redirect_uris_hint: "Masukkan satu URL per baris. Harus menggunakan HTTPS (kecuali localhost)."
+      redirect_uris_placeholder: "https://my-app.com/auth/callback"
+      allowed_scopes_label: "Allowed Scopes (Izin Akses)"
+      active_label: "Aktifkan Aplikasi ini"
+    sidebar_link: "Aplikasi SSO"
 

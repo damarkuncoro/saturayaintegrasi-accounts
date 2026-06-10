@@ -1,0 +1,92 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
+    <%= render "shared/components/section_header", 
+        title: t("sso_clients.show.title"), 
+        subtitle: t("sso_clients.show.description") %>
+    
+    <div class="flex gap-3">
+      <%= link_to "Ubah", edit_identity_sso_client_path(@sso_client), class: "inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition" %>
+      <%= button_to "Hapus", identity_sso_client_path(@sso_client), method: :delete, data: { confirm: "Apakah Anda yakin ingin menghapus aplikasi SSO ini?" }, class: "inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-rose-100 transition hover:bg-rose-700 active:scale-[0.98]" %>
+    </div>
+  </div>
+
+  <% if flash[:raw_client_secret].present? %>
+    <div class="mb-8 p-6 bg-amber-50 border border-amber-200 rounded-[2rem] flex gap-4 items-start shadow-sm">
+      <div class="h-10 w-10 bg-amber-100 text-amber-800 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+      </div>
+      <div class="flex-grow">
+        <h4 class="text-sm font-black text-amber-900 mb-1"><%= t("sso_clients.show.credentials_warning_title") %></h4>
+        <p class="text-xs font-semibold text-amber-700/90 leading-relaxed mb-4"><%= t("sso_clients.show.credentials_warning_desc") %></p>
+        
+        <div class="bg-white border border-amber-200 rounded-xl p-4 flex items-center justify-between gap-4">
+          <span class="font-mono text-sm font-black text-slate-800 break-all select-all"><%= flash[:raw_client_secret] %></span>
+          <button onclick="navigator.clipboard.writeText('<%= flash[:raw_client_secret] %>'); alert('Client Secret berhasil disalin!');" class="flex-shrink-0 text-xs font-bold text-amber-800 hover:text-amber-950 transition">Salin</button>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <%= render "shared/components/card", padding: "10", rounded: "[2.5rem]" do %>
+    <div class="space-y-8">
+      
+      <div class="border-b border-slate-50 pb-6 flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-black text-slate-900"><%= @sso_client.client_name %></h3>
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Nama Aplikasi</p>
+        </div>
+        <div>
+          <% if @sso_client.active? %>
+            <%= render "shared/components/badge", label: "Aktif", color: :green %>
+          <% else %>
+            <%= render "shared/components/badge", label: "Nonaktif", color: :slate %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6">
+        <div>
+          <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2"><%= t("sso_clients.show.client_id") %></label>
+          <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center justify-between gap-4">
+            <span class="font-mono text-sm text-slate-800 break-all select-all"><%= @sso_client.client_id %></span>
+            <button onclick="navigator.clipboard.writeText('<%= @sso_client.client_id %>'); alert('Client ID berhasil disalin!');" class="flex-shrink-0 text-xs font-bold text-slate-500 hover:text-slate-800 transition">Salin</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2"><%= t("sso_clients.show.client_secret") %></label>
+          <div class="bg-slate-50 border border-slate-100 rounded-xl p-4">
+            <span class="font-mono text-sm text-slate-400 italic">•••••••••••••••••••••••••••••••• (Tersimpan terenkripsi)</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2"><%= t("sso_clients.show.redirect_uris") %></label>
+          <div class="space-y-2">
+            <% @sso_client.redirect_uris.each do |uri| %>
+              <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 font-mono text-sm text-slate-800 break-all">
+                <%= uri %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2"><%= t("sso_clients.show.allowed_scopes") %></label>
+          <div class="flex flex-wrap gap-2">
+            <% @sso_client.allowed_scopes.each do |scope| %>
+              <span class="inline-flex items-center rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-800"><%= scope %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  <% end %>
+
+  <div class="mt-8 flex justify-between items-center">
+    <%= link_to "← Kembali ke Daftar", identity_sso_clients_path, class: "text-sm font-bold text-slate-500 hover:text-slate-700 transition" %>
+  </div>
+</div>

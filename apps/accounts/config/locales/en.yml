@@ -227,4 +227,38 @@ en:
       password_hint: "12 characters minimum."
       password_confirmation_label: "Confirm New Password"
       submit: "Save New Password"
+  sso_clients:
+    index:
+      title: "SSO Applications (OAuth2 / OIDC)"
+      description: "Register and manage Single Sign-On (SSO) integration configurations for your client applications."
+      add_button: "Register New Application"
+      client_name: "Application Name"
+      client_id: "Client ID"
+      status: "Status"
+      actions: "Actions"
+      no_clients: "No SSO applications registered yet."
+    new:
+      title: "Register New SSO Application"
+      description: "Create a new OIDC configuration to integrate your application with the SSO service."
+    edit:
+      title: "Edit SSO Application"
+      description: "Edit redirect URIs or scopes configuration for this SSO application."
+    show:
+      title: "SSO Application Details"
+      description: "OIDC credential information for your client application integration."
+      credentials_warning_title: "Save Your Client Secret!"
+      credentials_warning_desc: "For security reasons, the Client Secret below will only be displayed once. Store it in a safe place before leaving this page."
+      client_secret: "Client Secret"
+      redirect_uris: "Redirect URIs"
+      allowed_scopes: "Allowed Scopes"
+      status_label: "Application Status"
+    form:
+      client_name_label: "Application Name"
+      client_name_placeholder: "Example: HRD Portal"
+      redirect_uris_label: "Redirect URIs"
+      redirect_uris_hint: "Enter one URL per line. Must use HTTPS (except for localhost)."
+      redirect_uris_placeholder: "https://my-app.com/auth/callback"
+      allowed_scopes_label: "Allowed Scopes"
+      active_label: "Activate this application"
+    sidebar_link: "SSO Applications"
 

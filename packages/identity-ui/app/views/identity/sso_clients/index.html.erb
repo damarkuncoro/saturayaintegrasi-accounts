@@ -1,0 +1,75 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
+    <%= render "shared/components/section_header", 
+        title: t("sso_clients.index.title"), 
+        subtitle: t("sso_clients.index.description") %>
+    
+    <div>
+      <%= link_to t("sso_clients.index.add_button"), new_identity_sso_client_path, class: "inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3 text-sm font-bold text-white shadow-xl shadow-brand-primary/20 transition hover:opacity-95 active:scale-[0.98]" %>
+    </div>
+  </div>
+
+  <%= render "shared/components/card", padding: "0", rounded: "[2.5rem]" do %>
+    <% if @sso_clients.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-100">
+          <thead class="bg-slate-50/50">
+            <tr>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-widest"><%= t("sso_clients.index.client_name") %></th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-widest"><%= t("sso_clients.index.client_id") %></th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-widest"><%= t("sso_clients.index.status") %></th>
+              <th scope="col" class="relative px-6 py-4">
+                <span class="sr-only">Actions</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 bg-white">
+            <% @sso_clients.each do |client| %>
+              <tr class="hover:bg-slate-50/30 transition-colors">
+                <td class="whitespace-nowrap px-6 py-5">
+                  <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 bg-brand-primary/10 text-brand-primary rounded-xl flex items-center justify-center font-bold text-lg">
+                      <%= client.client_name.to_s[0].upcase %>
+                    </div>
+                    <div class="font-bold text-slate-900"><%= client.client_name %></div>
+                  </div>
+                </td>
+                <td class="whitespace-nowrap px-6 py-5 font-mono text-xs text-slate-500">
+                  <%= client.client_id %>
+                </td>
+                <td class="whitespace-nowrap px-6 py-5">
+                  <% if client.active? %>
+                    <%= render "shared/components/badge", label: "Aktif", color: :green, size: :sm %>
+                  <% else %>
+                    <%= render "shared/components/badge", label: "Nonaktif", color: :slate, size: :sm %>
+                  <% end %>
+                </td>
+                <td class="whitespace-nowrap px-6 py-5 text-right text-sm font-bold space-x-3">
+                  <%= link_to "Detail", identity_sso_client_path(client), class: "text-brand-primary hover:text-brand-primary/80 transition-colors" %>
+                  <%= link_to "Ubah", edit_identity_sso_client_path(client), class: "text-slate-600 hover:text-slate-800 transition-colors" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="text-center py-16 px-4">
+        <div class="h-16 w-16 bg-slate-50 text-slate-400 rounded-3xl flex items-center justify-center mx-auto mb-6">
+          <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-black text-slate-900 mb-2"><%= t("sso_clients.index.no_clients") %></h3>
+        <p class="text-sm text-slate-500 font-medium max-w-md mx-auto mb-8 leading-relaxed">
+          Mulai integrasikan aplikasi pihak ketiga atau portal internal Anda dengan SSO Satu Raya.
+        </p>
+        <%= link_to t("sso_clients.index.add_button"), new_identity_sso_client_path, class: "inline-flex items-center justify-center rounded-xl bg-brand-primary px-5 py-3.5 text-sm font-bold text-white shadow-xl shadow-brand-primary/20 transition hover:opacity-95 active:scale-[0.98]" %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class="mt-8">
+    <%= link_to "← Kembali ke Profil", identity_account_path, class: "text-sm font-bold text-slate-500 hover:text-slate-700 transition" %>
+  </div>
+</div>

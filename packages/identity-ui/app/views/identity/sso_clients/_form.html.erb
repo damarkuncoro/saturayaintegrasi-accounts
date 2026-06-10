@@ -1,0 +1,43 @@
+<%= form_with model: [:identity, @sso_client], local: true, class: "space-y-8" do |f| %>
+  <%= render "shared/components/form_errors", f: f %>
+
+  <%= render "shared/components/form_field", name: :client_name, label: t("sso_clients.form.client_name_label"), required: true do %>
+    <%= render "shared/components/form_input", f: f, field: :client_name, placeholder: t("sso_clients.form.client_name_placeholder") %>
+  <% end %>
+
+  <%= render "shared/components/form_field", name: :redirect_uris_text, label: t("sso_clients.form.redirect_uris_label"), hint: t("sso_clients.form.redirect_uris_hint"), required: true do %>
+    <%= f.text_area :redirect_uris_text, 
+        value: @sso_client.redirect_uris&.join("\n"), 
+        rows: 4, 
+        placeholder: t("sso_clients.form.redirect_uris_placeholder"), 
+        class: "block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm focus:border-brand-primary focus:outline-none focus:ring-4 focus:ring-brand-primary/20" %>
+  <% end %>
+
+  <%= render "shared/components/form_field", name: :allowed_scopes, label: t("sso_clients.form.allowed_scopes_label"), required: true do %>
+    <div class="flex flex-wrap gap-6 mt-2">
+      <% ["openid", "profile", "email"].each do |scope| %>
+        <label class="inline-flex items-center gap-2.5 cursor-pointer">
+          <%= f.check_box :allowed_scopes, 
+              { multiple: true, 
+                checked: @sso_client.allowed_scopes&.include?(scope),
+                class: "h-5 w-5 rounded-lg border-slate-200 text-brand-primary focus:ring-brand-primary/20 cursor-pointer" 
+              }, 
+              scope, nil %>
+          <span class="text-sm font-bold text-slate-700"><%= scope %></span>
+        </label>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= render "shared/components/form_field", name: :active, label: t("sso_clients.form.active_label") do %>
+    <label class="inline-flex items-center gap-2.5 cursor-pointer mt-2">
+      <%= f.check_box :active, class: "h-5 w-5 rounded-lg border-slate-200 text-brand-primary focus:ring-brand-primary/20 cursor-pointer" %>
+      <span class="text-sm font-bold text-slate-700">Aktif</span>
+    </label>
+  <% end %>
+
+  <div class="pt-6 flex justify-end gap-4 border-t border-slate-50">
+    <%= link_to t("common.cancel"), identity_sso_clients_path, class: "inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition" %>
+    <%= render "shared/components/button", f: f, label: t("common.save"), variant: :primary, class_name: "px-10 py-3.5 shadow-xl shadow-brand-primary/20" %>
+  </div>
+<% end %>
