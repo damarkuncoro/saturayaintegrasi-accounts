@@ -30,6 +30,21 @@ module System
       )
     end
 
+    # Memverifikasi integritas log ini terhadap previous_hash
+    def verify_integrity!
+      expected_data = [
+        previous_hash,
+        action,
+        user_id,
+        auditable_id,
+        auditable_type,
+        metadata.to_json,
+        created_at.to_i
+      ].join("|")
+
+      hash_signature == Digest::SHA256.hexdigest(expected_data)
+    end
+
     private
 
     def sign_log
@@ -53,21 +68,6 @@ module System
 
     def normalize_fields
       self.action = normalize_key(action)
-    end
-
-    # Memverifikasi integritas log ini terhadap previous_hash
-    def verify_integrity!
-      expected_data = [
-        previous_hash,
-        action,
-        user_id,
-        auditable_id,
-        auditable_type,
-        metadata.to_json,
-        created_at.to_i
-      ].join("|")
-
-      hash_signature == Digest::SHA256.hexdigest(expected_data)
     end
   end
 end

@@ -2,8 +2,14 @@ production:
   expired_token_cleanup:
     class: Identity::ExpiredTokenCleanupJob
     schedule: every hour
+  webhook_retry:
+    class: Communication::WebhookRetryJob
+    schedule: every 5 minutes
 
 development:
   expired_token_cleanup:
     class: Identity::ExpiredTokenCleanupJob
     schedule: every hour
+  webhook_retry:
+    class: Communication::WebhookRetryJob
+    schedule: every 5 minutes
