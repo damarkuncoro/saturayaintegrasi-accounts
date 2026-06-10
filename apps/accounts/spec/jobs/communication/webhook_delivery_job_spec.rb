@@ -76,4 +76,14 @@ RSpec.describe Communication::WebhookDeliveryJob, type: :job do
       end
     end
   end
+
+  describe "concurrency configuration" do
+    it "limits concurrency to 3 per tenant" do
+      expect(described_class.concurrency_limit).to eq(3)
+      expect(described_class.concurrency_duration).to eq(5.minutes)
+      
+      key = described_class.concurrency_key.call(delivery_id: delivery.id)
+      expect(key).to eq(tenant.id)
+    end
+  end
 end

@@ -5,8 +5,9 @@ example_id                                                                      
 ./spec/initialization_spec.rb[1:2:2]                                             | passed | 0.00599 seconds |
 ./spec/initialization_spec.rb[2:1:1]                                             | passed | 0.26172 seconds |
 ./spec/initialization_spec.rb[2:2:1]                                             | passed | 0.29923 seconds |
-./spec/jobs/communication/webhook_delivery_job_spec.rb[1:1:1]                    | passed | 0.43166 seconds |
-./spec/jobs/communication/webhook_delivery_job_spec.rb[1:1:2]                    | passed | 0.13084 seconds |
+./spec/jobs/communication/webhook_delivery_job_spec.rb[1:1:1]                    | passed | 0.04096 seconds |
+./spec/jobs/communication/webhook_delivery_job_spec.rb[1:1:2]                    | passed | 0.09599 seconds |
+./spec/jobs/communication/webhook_delivery_job_spec.rb[1:2:1]                    | passed | 0.17952 seconds |
 ./spec/jobs/communication/webhook_retry_job_spec.rb[1:1:1]                       | passed | 0.08803 seconds |
 ./spec/jobs/identity/expired_token_cleanup_job_spec.rb[1:1:1]                    | passed | 0.3581 seconds  |
 ./spec/jobs/identity/user_sync_job_spec.rb[1:1:1]                                | passed | 0.06107 seconds |

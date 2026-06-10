@@ -2,6 +2,11 @@ module Communication
   class WebhookDeliveryJob < ApplicationJob
   queue_as :webhooks
 
+  limits_concurrency to: 3, key: ->(delivery_id:, **) {
+    delivery = ActsAsTenant.without_tenant { ::Communication::WebhookDelivery.find_by(id: delivery_id) }
+    delivery&.tenant_id
+  }, duration: 5.minutes
+
   retry_on Faraday::Error, wait: :exponentially_longer, attempts: 5
 
   def perform(delivery_id:, endpoint_url:, event:, payload:, headers: {}, attempt: 1)
