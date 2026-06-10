@@ -8,13 +8,18 @@ module SatuRayaNavigation
 
     # Helper to generate URL for accounts subdomain
     def accounts_url_for(path)
-      domain = base_domain
-      if request.host.include?(domain)
-        port_suffix = request.port == 80 || request.port == 443 ? "" : ":#{request.port}"
-        "#{request.protocol}#{SatuRayaCommons::Config.accounts_host}#{port_suffix}#{path}"
-      else
-        path
-      end
+      subdomain = SatuRayaIdentityClient::Identity::BrandConfig.accounts_subdomain
+      
+      host = if request.host.start_with?("#{subdomain}.")
+               request.host
+             elsif defined?(System::Current) && System::Current.tenant&.domain.present?
+               "#{subdomain}.#{System::Current.tenant.domain}"
+             else
+               SatuRayaCommons::Config.accounts_host
+             end
+
+      port_suffix = request.port == 80 || request.port == 443 ? "" : ":#{request.port}"
+      "#{request.protocol}#{host}#{port_suffix}#{path}"
     end
 
     def identity_dashboard_url

@@ -7,6 +7,7 @@ Selamat datang di pusat dokumentasi layanan **Satu Raya Accounts (IAM)**. Reposi
 Untuk memulai pengembangan lokal, silakan pelajari panduan penyiapan service Accounts:
 
 - **Setup & Panduan Kerja**: [Panduan Lengkap apps/accounts](../apps/accounts/README.md) — Menjelaskan tech stack, ERD database, setup local development, testing, seeding data, dan endpoint API utama.
+- **Fitur & Penggunaan**: [Fitur & Panduan Penggunaan Accounts](accounts/FEATURES.md) — Daftar lengkap fitur IAM (2FA, Audit, SSO, Webhooks) dan cara menggunakannya.
 
 ## 🏗 Arsitektur & Spesifikasi IAM (Accounts Architecture)
 

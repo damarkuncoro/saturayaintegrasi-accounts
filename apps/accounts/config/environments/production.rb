@@ -68,11 +68,11 @@ Rails.application.configure do
   end
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
+  config.hosts << "accounts.satu-raya.dev"
+  config.hosts << "accounts.satukerja.dev"
+  config.hosts << ".satu-raya.dev"
+  config.hosts << ".satukerja.dev"
+
   # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" || request.path == "/ready" } }
 end

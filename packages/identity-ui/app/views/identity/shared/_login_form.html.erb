@@ -1,5 +1,5 @@
-<%= render "shared/components/card", padding: "p-8 sm:p-10", rounded: "rounded-[2.5rem]" do %>
-  <%= form_with(url: sign_in_path(return_to: params[:return_to]), class: "space-y-6") do |form| %>
+<%= render "shared/components/card", padding: "8 sm:10", rounded: "[2.5rem]" do %>
+  <%= form_with(url: sign_in_path(return_to: params[:return_to]), class: "space-y-8") do |form| %>
     <%= render "shared/components/form_field", label: t("sessions.new.email"), name: :email do %>
       <%= render "shared/components/form_input", f: form, field: :email, type: :email, placeholder: "nama@email.com", data: { autofocus: true } %>
     <% end %>

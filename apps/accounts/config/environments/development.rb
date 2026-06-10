@@ -79,6 +79,11 @@ Rails.application.configure do
   Rails.application.routes.default_url_options[:port] = url_port if url_port
 
   # Allow the application to receive requests on the configured APP_HOST and its subdomains.
+  config.hosts << "accounts.satu-raya.dev"
+  config.hosts << "accounts.satukerja.dev"
+  config.hosts << ".satu-raya.dev"
+  config.hosts << ".satukerja.dev"
+
   if ENV["APP_HOST"].present?
     config.hosts << ENV["APP_HOST"]
     config.hosts << ".#{ENV["APP_HOST"]}"

@@ -81,22 +81,24 @@ en:
   two_factor_settings:
     show:
       title: "Two-Factor Security (2FA)"
-      description: "Protect your account with an extra layer of security."
-      backup_codes_title: "Save Your Backup Codes"
-      backup_codes_desc: "If you lose access to your authenticator app, you can use one of these codes to sign in. <strong>Save these codes in a safe place.</strong>"
-      print_pdf: "Print or Save PDF"
-      status_active: "Status: Active"
-      status_inactive: "Status: Inactive"
-      account_secure_title: "Your Account is Secure"
-      account_secure_desc: "Two-factor authentication is currently active. Every time you sign in, you will be asked to enter a code from your authenticator app."
-      activate_now_title: "Activate Now"
-      activate_now_desc: "Use an authenticator app (like Google Authenticator or Microsoft Authenticator) to scan the QR code and get a verification code."
-      otp_code_label: "OTP Code"
-      otp_from_app_label: "OTP Code from app"
-      password_challenge_label: "Account password"
+      description: "Add an extra layer of security to your account by requiring a verification code every time you sign in."
+      back_button: "Back"
+      backup_codes_title: "Emergency Backup Codes"
+      backup_codes_desc: "Store these codes in a safe place. You can use them to sign in if you lose access to your authenticator device."
+      print_pdf: "Print / Save PDF"
+      status_active: "Active"
+      status_inactive: "Inactive"
+      account_secure_title: "Your Account is Protected"
+      account_secure_desc: "Two-factor authentication is currently active. Every time you sign in, you will be asked to enter a 6-digit code from your authenticator app."
+      activate_now_title: "Activate 2FA Protection"
+      activate_now_desc: "Use an authenticator app (like Google Authenticator or Microsoft Authenticator) to scan the QR code and enter the code below."
+      otp_code_label: "Current OTP Code"
+      otp_from_app_label: "6-Digit Code from App"
+      password_challenge_label: "Confirm Password"
       disable_button: "Disable 2FA"
-      enable_button: "Activate 2FA Now"
+      enable_button: "Verify & Activate"
       qr_placeholder: "QR Code will appear<br>after activation"
+      qr_active_msg: "2FA is already active.<br>QR Code is hidden for security."
   two_factor_challenges:
     new:
       title: "Two-Factor Verification"
@@ -148,6 +150,9 @@ en:
     save: "Save"
     cancel: "Cancel"
     loading: "Loading..."
+    errors_occurred:
+      one: "There is %{count} error:"
+      other: "There are %{count} errors:"
   navbar:
     signed_in_as: "Signed in as"
     account_settings: "Account Settings"
@@ -155,6 +160,13 @@ en:
     sign_out: "Sign Out"
     sign_in: "Sign In"
     sign_up: "Sign Up"
+  footer:
+    help_title: "Help"
+    help_center: "Help Center"
+    contact_us: "Contact Us"
+    api_docs: "API Documentation"
+    copyright: "All rights reserved."
+  mailers:
     user_mailer:
       password_reset:
         subject: "Reset your password at %{brand_name}"

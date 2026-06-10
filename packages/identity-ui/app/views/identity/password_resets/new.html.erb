@@ -13,8 +13,9 @@
     </div>
 
     <div class="px-4 sm:px-0">
-      <%= render "shared/components/card", padding: "p-8 sm:p-10", rounded: "rounded-[2.5rem]" do %>
+      <%= render "shared/components/card", padding: "8 sm:10", rounded: "[2.5rem]" do %>
         <%= form_with(url: identity_password_reset_path, class: "space-y-8") do |form| %>
+          <%= render "shared/components/form_errors", f: form %>
           <%= render "shared/components/form_field", label: t("password_resets.new.email_label"), name: :email, required: true do %>
             <%= render "shared/components/form_input", f: form, field: :email, type: :email, placeholder: "nama@email.com", autofocus: true %>
           <% end %>

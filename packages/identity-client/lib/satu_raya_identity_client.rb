@@ -18,7 +18,7 @@ module SatuRayaIdentityClient
     attr_accessor :accounts_url, :client_id, :client_secret, :jwt_secret, :jwt_algorithm
 
     def initialize
-      @accounts_url = ENV.fetch("ACCOUNTS_URL", "https://#{Identity::BrandConfig.accounts_host}")
+      @accounts_url = ENV.fetch("ACCOUNTS_URL", nil)
       @client_id = ENV.fetch("IDENTITY_CLIENT_ID", nil)
       @client_secret = ENV.fetch("IDENTITY_CLIENT_SECRET", nil)
       @jwt_secret = ENV.fetch("IDENTITY_JWT_SECRET", Rails.application.secret_key_base)

@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="flex flex-wrap justify-center gap-3">
-        <%= render "shared/components/button", label: t("home.dashboard.edit_profile"), path: identity_account_path, variant: :outline, class_name: "px-6" %>
+        <%= render "shared/components/button", label: t("home.dashboard.edit_profile"), path: account_path, variant: :outline, class_name: "px-6" %>
         <%= render "shared/components/button", label: t("home.dashboard.sign_out"), path: sign_out_path, method: :delete, variant: :danger, class_name: "px-6" %>
       </div>
     </div>
@@ -58,7 +58,7 @@
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
               <%= t("home.dashboard.last_changed") %>: <%= format_date(@user.updated_at) %>
             </p>
-            <%= link_to t("home.dashboard.change"), edit_identity_password_path, class: "text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 mt-2" %>
+            <%= link_to t("home.dashboard.change"), edit_password_path, class: "text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 mt-2" %>
           </div>
         </div>
       <% end %>

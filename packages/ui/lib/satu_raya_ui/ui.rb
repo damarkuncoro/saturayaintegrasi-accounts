@@ -118,7 +118,7 @@ module SatuRayaUi
       end
 
       class FormInput
-        attr_reader :form, :field, :type, :placeholder, :prefix, :rows, :class_name, :data
+        attr_reader :form, :field, :type, :placeholder, :prefix, :rows, :class_name, :data, :errors
 
         def initialize(params = {})
           @form        = params[:form]
@@ -129,6 +129,7 @@ module SatuRayaUi
           @rows        = params[:rows] || 4
           @class_name  = params[:class_name]
           @data        = params[:data] || {}
+          @errors      = params[:errors] || []
         end
 
         def has_errors?
@@ -330,7 +331,7 @@ module SatuRayaUi
         md: "px-2.5 py-1 text-xs"
       }
 
-      FORM_FIELD_WRAPPER = "space-y-2"
+      FORM_FIELD_WRAPPER = "space-y-3"
       FORM_LABEL = "block text-sm font-black text-slate-700"
       FORM_HINT = "text-xs font-semibold leading-5 text-slate-500"
       

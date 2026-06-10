@@ -1,4 +1,4 @@
-module SatuRayaIdentityUi
+module SatuRayaIdentityUI
   module BrandViewHelper
     # Mengembalikan nama brand dari konfigurasi.
     # @return [String]

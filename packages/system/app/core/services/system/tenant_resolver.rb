@@ -27,12 +27,26 @@ module Services
         tenant = ::System::Tenant.active.find_by("lower(domain) = ?", host)
         return tenant if tenant
 
-        # 2. Match brand config (accounts host mapping to default tenant)
+        # 2. Match accounts subdomain for a tenant domain
+        # If host is accounts.satukerja.dev, check if satukerja.dev is a tenant
+        if host.start_with?("#{accounts_subdomain}.")
+          tenant_domain = host.sub("#{accounts_subdomain}.", "")
+          tenant = ::System::Tenant.active.find_by("lower(domain) = ?", tenant_domain)
+          return tenant if tenant
+        end
+
+        # 3. Match brand config (accounts host mapping to default tenant)
         if host == normalize_host(accounts_host)
           return ::System::Tenant.active.find_by("lower(domain) = ?", normalize_host(app_domain))
         end
 
         nil
+      end
+
+      private
+
+      def accounts_subdomain
+        SatuRayaIdentityClient::Identity::BrandConfig.accounts_subdomain
       end
 
       def resolve_by_subdomain

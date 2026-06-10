@@ -9,20 +9,20 @@
       </div>
 
       <div>
-        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Bantuan</h3>
+        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4"><%= t("footer.help_title") %></h3>
         <ul class="space-y-2.5 text-sm font-semibold text-slate-500">
-          <li><%= link_to "Pusat Bantuan", "#", class: "hover:text-indigo-600 transition-colors" %></li>
-          <li><%= link_to "Kontak Kami", "#", class: "hover:text-indigo-600 transition-colors" %></li>
-          <li><%= link_to "Dokumentasi API", accounts_url_for("/api-docs"), class: "hover:text-indigo-600 transition-colors" %></li>
+          <li><%= link_to t("footer.help_center"), "#", class: "hover:text-indigo-600 transition-colors" %></li>
+          <li><%= link_to t("footer.contact_us"), "#", class: "hover:text-indigo-600 transition-colors" %></li>
+          <li><%= link_to t("footer.api_docs"), accounts_url_for("/api-docs"), class: "hover:text-indigo-600 transition-colors" %></li>
         </ul>
       </div>
     </div>
     
     <div class="mt-12 pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
-      <p class="text-xs font-bold text-slate-400">&copy; <%= Time.current.year %> <%= brand_config.name %>. Seluruh hak cipta dilindungi.</p>
+      <p class="text-xs font-bold text-slate-400">&copy; <%= Time.current.year %> <%= brand_config.name %>. <%= t("footer.copyright") %></p>
       <div class="flex items-center gap-6 text-xs font-bold text-slate-400">
-        <%= link_to "Ketentuan Layanan", brand_config.terms_url || "#", class: "hover:text-slate-600 transition-colors" %>
-        <%= link_to "Kebijakan Privasi", brand_config.privacy_url || "#", class: "hover:text-slate-600 transition-colors" %>
+        <%= link_to t("common.terms_of_service"), brand_config.terms_url || "#", class: "hover:text-slate-600 transition-colors" %>
+        <%= link_to t("common.privacy_policy"), brand_config.privacy_url || "#", class: "hover:text-slate-600 transition-colors" %>
       </div>
     </div>
   </div>

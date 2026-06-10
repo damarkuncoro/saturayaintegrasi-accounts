@@ -2,5 +2,5 @@
 
 require "satu_raya_identity_ui/engine"
 
-module SatuRayaIdentityUi
+module SatuRayaIdentityUI
 end

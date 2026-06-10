@@ -50,6 +50,6 @@ RSpec.describe "User Registrations", type: :system do
 
     # Verify that the user stays on the sign-up page and error banner is displayed
     expect(page).to have_content("Email tidak valid")
-    expect(page).to have_content("Password confirmation tidak sesuai dengan Password")
+    expect(page).to have_content("Password confirmation tidak cocok dengan kata sandi")
   end
 end

@@ -3,23 +3,26 @@ class ApplicationController < ActionController::Base
   include SatuRayaCommons::ApiResponder
   include SatuRayaCommons::ResultHandler
   include SatuRayaIdentityClient::ControllerUtils
+
+  before_action :require_current_tenant!
+
   include SatuRayaIdentityClient::Authentication
   include Pundit::Authorization
   # include Pagy::Backend
 
-  helper SatuRayaIdentityUi::BrandViewHelper
+  helper SatuRayaIdentityUI::BrandViewHelper
 
   allow_browser versions: :modern
 
   layout :resolve_layout
-
-  before_action :require_current_tenant!
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
 
   def resolve_layout
-    if self.class.name.start_with?("Identity::") && !request.xhr?
+    auth_controllers = %w[SessionsController RegistrationsController PasswordResetsController TwoFactorChallengesController EmailVerificationsController OauthController]
+    
+    if auth_controllers.any? { |name| self.class.name.include?(name) } && !request.xhr?
       "auth"
     else
       "application"

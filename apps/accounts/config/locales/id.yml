@@ -1,4 +1,17 @@
 id:
+  activerecord:
+    attributes:
+      identity/user:
+        password_confirmation: "Password confirmation"
+        password: "Password"
+    errors:
+      models:
+        identity/user:
+          attributes:
+            password_confirmation:
+              confirmation: "tidak sesuai dengan %{attribute}"
+            email:
+              invalid: "tidak valid"
   number:
     currency:
       format:
@@ -80,22 +93,24 @@ id:
   two_factor_settings:
     show:
       title: "Keamanan Dua Faktor (2FA)"
-      description: "Lindungi akun Anda dengan lapisan keamanan tambahan."
-      backup_codes_title: "Simpan Kode Cadangan Anda"
-      backup_codes_desc: "Jika Anda kehilangan akses ke aplikasi autentikator, Anda dapat menggunakan salah satu kode di bawah ini untuk masuk. <strong>Simpan kode ini di tempat yang aman.</strong>"
-      print_pdf: "Cetak atau Simpan PDF"
-      status_active: "Status: Aktif"
-      status_inactive: "Status: Tidak Aktif"
-      account_secure_title: "Akun Anda Aman"
-      account_secure_desc: "Autentikasi dua faktor saat ini sedang aktif. Setiap kali Anda masuk, Anda akan diminta untuk memasukkan kode dari aplikasi autentikator Anda."
-      activate_now_title: "Aktifkan Sekarang"
-      activate_now_desc: "Gunakan aplikasi autentikator (seperti Google Authenticator atau Microsoft Authenticator) untuk memindai kode QR di samping dan mendapatkan kode verifikasi."
-      otp_code_label: "Kode OTP"
-      otp_from_app_label: "Kode OTP dari aplikasi"
-      password_challenge_label: "Password akun"
+      description: "Tambahkan lapisan keamanan tambahan ke akun Anda dengan mewajibkan kode verifikasi setiap kali Anda masuk."
+      back_button: "Kembali"
+      backup_codes_title: "Kode Cadangan Darurat"
+      backup_codes_desc: "Simpan kode-kode ini di tempat yang aman. Anda dapat menggunakannya untuk masuk jika kehilangan akses ke perangkat autentikator Anda."
+      print_pdf: "Cetak / Simpan PDF"
+      status_active: "Aktif"
+      status_inactive: "Tidak Aktif"
+      account_secure_title: "Akun Anda Telah Terlindungi"
+      account_secure_desc: "Autentikasi dua faktor saat ini sedang aktif. Setiap kali Anda masuk, Anda akan diminta untuk memasukkan kode 6-digit dari aplikasi autentikator Anda."
+      activate_now_title: "Aktifkan Perlindungan 2FA"
+      activate_now_desc: "Gunakan aplikasi autentikator (seperti Google Authenticator atau Microsoft Authenticator) untuk memindai kode QR di samping, lalu masukkan kode yang muncul di bawah."
+      otp_code_label: "Kode OTP Saat Ini"
+      otp_from_app_label: "Kode 6-Digit dari Aplikasi"
+      password_challenge_label: "Kata Sandi Konfirmasi"
       disable_button: "Nonaktifkan 2FA"
-      enable_button: "Aktifkan 2FA Sekarang"
+      enable_button: "Verifikasi & Aktifkan"
       qr_placeholder: "QR Code akan muncul<br>setelah diaktifkan"
+      qr_active_msg: "2FA sudah aktif.<br>QR Code disembunyikan untuk keamanan."
   two_factor_challenges:
     new:
       title: "Verifikasi Dua Faktor"
@@ -117,20 +132,24 @@ id:
   accounts:
     show:
       title: "Pengaturan Akun"
-      description: "Kelola informasi profil dan pengaturan keamanan akun Anda."
+      description: "Kelola informasi pribadi, keamanan, dan preferensi akun Anda."
       profile_section: "Informasi Profil"
-      save_button: "Simpan Perubahan"
-      danger_zone: "Zona Berbahaya"
-      deactivate_title: "Nonaktifkan Akun"
-      deactivate_desc: "Menonaktifkan akun akan mencabut semua sesi aktif dan mencegah login kembali sampai akun diaktifkan ulang oleh admin. Data Anda tidak akan dihapus."
-      password_confirm_label: "Konfirmasi Password Anda"
-      deactivate_button: "Nonaktifkan Akun Sekarang"
-      confirm_deactivate: "Apakah Anda yakin ingin menonaktifkan akun Anda?"
       account_details: "Detail Akun"
       email_label: "Alamat Email"
-      role_label: "Peran / Tipe Akun"
-      change_password_link: "Ubah kata sandi"
-      mfa_settings_link: "Pengaturan Dua Faktor (2FA)"
+      save_button: "Simpan Perubahan"
+      change_password_link: "Ubah Kata Sandi"
+      mfa_settings_link: "Keamanan 2FA"
+      danger_zone: "Zona Bahaya"
+      deactivate_title: "Nonaktifkan Akun"
+      deactivate_desc: "Setelah Anda menonaktifkan akun, semua data Anda akan disembunyikan dan tidak dapat diakses lagi. Tindakan ini dapat dibatalkan dengan menghubungi dukungan kami."
+      deactivate_button: "Nonaktifkan Akun Saya"
+      confirm_deactivate: "Apakah Anda yakin ingin menonaktifkan akun Anda? Anda akan segera keluar dari sistem."
+      password_confirm_label: "Konfirmasi Kata Sandi Anda"
+      sidebar:
+        profile: "Profil"
+        security: "Keamanan"
+        sessions: "Sesi Aktif"
+        advanced: "Lanjutan"
   common:
     privacy_policy: "Kebijakan Privasi"
     terms_of_service: "Syarat & Ketentuan"
@@ -139,6 +158,13 @@ id:
     save: "Simpan"
     cancel: "Batal"
     loading: "Memuat..."
+    edit: "Ubah"
+    delete: "Hapus"
+    verified: "Terverifikasi"
+    not_verified: "Belum Verifikasi"
+    errors_occurred:
+      one: "Terdapat %{count} kesalahan:"
+      other: "Terdapat %{count} kesalahan:"
   navbar:
     signed_in_as: "Masuk Sebagai"
     account_settings: "Pengaturan Akun"
@@ -146,6 +172,13 @@ id:
     sign_out: "Keluar"
     sign_in: "Masuk"
     sign_up: "Daftar"
+  footer:
+    help_title: "Bantuan"
+    help_center: "Pusat Bantuan"
+    contact_us: "Kontak Kami"
+    api_docs: "Dokumentasi API"
+    copyright: "Seluruh hak cipta dilindungi."
+  mailers:
     user_mailer:
       password_reset:
         subject: "Reset password Anda di %{brand_name}"

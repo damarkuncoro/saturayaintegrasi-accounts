@@ -1,4 +1,4 @@
-accounts.satu-raya.dev {
+accounts.satu-raya.dev, accounts.satukerja.dev {
     reverse_proxy accounts-app:3000
     tls internal
 }
