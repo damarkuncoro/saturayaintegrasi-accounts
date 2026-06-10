@@ -48,5 +48,18 @@ module Core
     def failure(error, code: nil, meta: {})
       ::Core::Result.failure(error, code: code, meta: meta)
     end
+
+    # Helper untuk validasi input menggunakan command object.
+    # @param command_class [Class] Kelas command yang mewarisi Core::BaseCommand
+    # @param params [Hash] Parameter input
+    # @return [Core::BaseCommand]
+    def validate_with(command_class, params)
+      command = command_class.call(params)
+      if command.failure?
+        # Kita tidak langsung return failure di sini agar subclass bisa menghandle detailnya
+        # tapi menyediakan helper untuk mempermudah.
+      end
+      command
+    end
   end
 end

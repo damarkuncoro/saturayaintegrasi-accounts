@@ -19,16 +19,9 @@ module UseCases
           begin
             payload, _header = jwks_manager.decode_jwt(token)
             user = ::Identity::User.find(payload["sub"])
+            presenter = ::Identity::Presenters::UserPresenter.new(user)
 
-            success({
-              sub: user.id.to_s,
-              email: user.email,
-              name: user.full_name,
-              preferred_username: user.username,
-              given_name: user.first_name,
-              family_name: user.last_name,
-              email_verified: user.email_verified?
-            }, meta: { status: :ok })
+            success(presenter.oidc_userinfo, meta: { status: :ok })
           rescue JWT::DecodeError
             failure("invalid_token", meta: { status: :unauthorized })
           rescue ActiveRecord::RecordNotFound

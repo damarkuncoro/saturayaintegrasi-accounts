@@ -20,6 +20,9 @@ module UseCases
         # @param tenant [System::Tenant] Tenant tempat user mendaftar
         # @return [Core::Result]
         def perform_execute(params:, tenant:)
+          command = validate_with(::Identity::Commands::Account::RegisterCommand, params)
+          return failure(command.error_messages, code: :validation_error) if command.failure?
+
           params[:email] = normalize_email(params[:email]) if params[:email]
           params[:first_name] = normalize_text(params[:first_name]) if params[:first_name]
           params[:last_name] = normalize_text(params[:last_name]) if params[:last_name]
