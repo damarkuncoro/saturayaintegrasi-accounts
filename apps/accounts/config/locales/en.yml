@@ -115,6 +115,22 @@ en:
       created_at: "Created at"
       logout_button: "Log out"
       back_button: "Back"
+      logs_title: "Security Activity Logs"
+      logs_description: "History of important events related to your account security."
+      log_event: "Activity / Event"
+      log_ip: "IP Address"
+      log_time: "Time"
+      events:
+        user_login: "Successful Login"
+        user_login_failed: "Failed Login"
+        password_changed: "Password Changed"
+        password_reset_requested: "Password Reset Requested"
+        password_reset_completed: "Password Reset Successful"
+        email_changed: "Email Address Changed"
+        mfa_enabled: "MFA Enabled"
+        mfa_disabled: "MFA Disabled"
+        session_revoked: "Session Revoked (Logout)"
+        account_deactivated: "Account Deactivated"
   passwords:
     edit:
       title: "Change Your Password"

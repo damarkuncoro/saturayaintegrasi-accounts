@@ -14,7 +14,7 @@
     ""
   ] do |skin| %>
     <% @sessions.each do |session| %>
-      <tr class="<%= skin.tr_classes %> <%= "bg-indigo-50/30" if session == System::Current.session %>">
+      <tr class="<%= skin.tr_classes %> <%= "bg-brand-primary/5" if session == System::Current.session %>">
         <td class="<%= skin.td_classes %>">
           <div class="flex items-center gap-4">
             <div class="h-10 w-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm">
@@ -32,7 +32,7 @@
         <td class="<%= skin.td_classes %> font-bold text-slate-500"><%= format_datetime(session.created_at) %></td>
         <td class="<%= skin.td_classes %> text-right">
           <% if session == System::Current.session %>
-            <%= render "shared/components/badge", label: t("home.dashboard.this_session"), color: :indigo, size: :sm %>
+            <%= render "shared/components/badge", label: t("home.dashboard.this_session"), color: :green, size: :sm %>
           <% else %>
             <%= button_to session_path(session), method: :delete, class: "text-xs font-black text-rose-600 hover:text-rose-700 transition-colors uppercase tracking-widest" do %>
               <div class="flex items-center gap-1">
@@ -43,6 +43,56 @@
               </div>
             <% end %>
           <% end %>
+        </td>
+      </tr>
+    <% end %>
+  <% end %>
+
+  <div class="mt-16 mb-6">
+    <h2 class="text-2xl font-black text-slate-900 tracking-tight mb-2"><%= t("sessions.index.logs_title") %></h2>
+    <p class="text-slate-500 font-medium"><%= t("sessions.index.logs_description") %></p>
+  </div>
+
+  <%= render "shared/components/table", headers: [
+    t("sessions.index.log_event"),
+    t("sessions.index.log_ip"),
+    t("sessions.index.log_time"),
+    "User Agent"
+  ] do |skin| %>
+    <% if @audit_logs.any? %>
+      <% @audit_logs.each do |log| %>
+        <tr class="<%= skin.tr_classes %>">
+          <td class="<%= skin.td_classes %>">
+            <div class="flex items-center gap-3">
+              <%
+                # Select a badge color based on the log action
+                color = case log.action
+                        when "user_login" then :green
+                        when "user_login_failed" then :red
+                        when "password_changed", "password_reset_completed" then :indigo
+                        when "mfa_enabled" then :green
+                        when "mfa_disabled" then :yellow
+                        when "session_revoked" then :slate
+                        else :slate
+                        end
+                
+                # Get dynamic translated event label or fallback to humanized action key
+                translated_label = t("sessions.index.events.#{log.action}", default: log.action.to_s.humanize)
+              %>
+              <%= render "shared/components/badge", label: translated_label, color: color, size: :sm %>
+            </div>
+          </td>
+          <td class="<%= skin.td_classes %> font-mono font-bold text-slate-600"><%= log.remote_ip.presence || "—" %></td>
+          <td class="<%= skin.td_classes %> font-bold text-slate-500"><%= format_datetime(log.created_at) %></td>
+          <td class="<%= skin.td_classes %> text-xs text-slate-400 max-w-xs truncate font-medium" title="<%= log.user_agent %>">
+            <%= log.user_agent.to_s.split.first.presence || "—" %>
+          </td>
+        </tr>
+      <% end %>
+    <% else %>
+      <tr>
+        <td colspan="4" class="<%= skin.td_classes %> text-center py-8 text-slate-400 font-medium">
+          Tidak ada log aktivitas keamanan.
         </td>
       </tr>
     <% end %>

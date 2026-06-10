@@ -52,6 +52,22 @@ id:
       created_at: "Dibuat pada"
       logout_button: "Logout"
       back_button: "Kembali"
+      logs_title: "Log Aktivitas Keamanan"
+      logs_description: "Riwayat peristiwa penting terkait keamanan akun Anda."
+      log_event: "Aktivitas / Peristiwa"
+      log_ip: "Alamat IP"
+      log_time: "Waktu"
+      events:
+        user_login: "Login Berhasil"
+        user_login_failed: "Gagal Login"
+        password_changed: "Ubah Kata Sandi"
+        password_reset_requested: "Permintaan Reset Password"
+        password_reset_completed: "Reset Password Berhasil"
+        email_changed: "Ubah Alamat Email"
+        mfa_enabled: "MFA Diaktifkan"
+        mfa_disabled: "MFA Dinonaktifkan"
+        session_revoked: "Sesi Dihentikan (Logout)"
+        account_deactivated: "Akun Dinonaktifkan"
   registrations:
     new:
       title: "Daftar Akun Baru"
