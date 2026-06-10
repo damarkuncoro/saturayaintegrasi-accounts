@@ -25,5 +25,13 @@ RSpec.describe Identity::UserPasskey, type: :model do
     it { should validate_presence_of(:sign_count) }
     it { should validate_numericality_of(:sign_count).is_greater_than_or_equal_to(0) }
     it { should validate_length_of(:nickname).is_at_most(100) }
+
+    it "validates that user and passkey belong to the same tenant" do
+      other_tenant = create(:tenant)
+      passkey = build(:user_passkey)
+      passkey.tenant = other_tenant
+      expect(passkey).not_to be_valid
+      expect(passkey.errors[:user_id]).to include("must belong to the same tenant")
+    end
   end
 end

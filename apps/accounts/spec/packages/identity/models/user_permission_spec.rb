@@ -12,9 +12,8 @@ RSpec.describe Identity::UserPermission, type: :model do
 
   describe 'validations' do
     subject { create(:user_permission, tenant: tenant, user: user) }
-    it { should validate_presence_of(:resource_type) }
-    it { should validate_presence_of(:action) }
-    it { should validate_uniqueness_of(:user_id).scoped_to([ :resource_type, :action ]).with_message('has already been assigned this permission').ignoring_case_sensitivity }
+    it { should validate_presence_of(:permission_id) }
+    it { should validate_uniqueness_of(:user_id).scoped_to(:permission_id).with_message('has already been assigned this permission').ignoring_case_sensitivity }
 
     it "is invalid if user belongs to a different tenant" do
       other_tenant = create(:tenant)

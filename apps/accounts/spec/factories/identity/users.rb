@@ -37,9 +37,17 @@ FactoryBot.define do
     end
   end
 
+  factory :permission, class: "Identity::Permission" do
+    name { "Read Users" }
+    sequence(:slug) { |n| "users.read_#{n}" }
+    resource_type { "Identity::User" }
+    action { "read" }
+  end
+
   factory :user_permission, class: "Identity::UserPermission" do
     tenant
     user
+    permission { association :permission, resource_type: resource_type, action: action }
     resource_type { "Identity::User" }
     action { "read" }
   end

@@ -1,0 +1,9 @@
+production:
+  expired_token_cleanup:
+    class: Identity::ExpiredTokenCleanupJob
+    schedule: every hour
+
+development:
+  expired_token_cleanup:
+    class: Identity::ExpiredTokenCleanupJob
+    schedule: every hour

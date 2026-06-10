@@ -6,6 +6,7 @@ module Communication
 
   def perform(delivery_id:, endpoint_url:, event:, payload:, headers: {}, attempt: 1)
     delivery = ::Communication::WebhookDelivery.find(delivery_id)
+    delivery.increment!(:attempt_count)
     start_time = Time.current
 
     response = Faraday.post(endpoint_url) do |req|
@@ -21,7 +22,9 @@ module Communication
       response_code: response.status,
       response_body: response.body.to_s.truncate(1000),
       duration_ms: duration,
-      status: response.success? ? :success : :failed
+      status: response.success? ? :success : :failed,
+      delivered_at: response.success? ? Time.current : nil,
+      next_retry_at: nil # Clear retry time on success/final state
     )
 
     unless response.success?
@@ -30,9 +33,12 @@ module Communication
     end
   rescue => e
     if delivery
+      # Estimate next retry wait time (matching ActiveJob's exponentially_longer strategy)
+      next_wait = (delivery.attempt_count ** 4) + 15
       delivery.update(
         status: :failed,
-        error_message: e.message.truncate(500)
+        error_message: e.message.truncate(500),
+        next_retry_at: delivery.attempt_count < 5 ? Time.current + next_wait.seconds : nil
       )
     end
     Rails.logger.error "[Webhook] Error delivering #{event} to #{endpoint_url}: #{e.message}"

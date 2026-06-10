@@ -11,5 +11,21 @@ module Identity
 
     validates :token_digest, presence: true, uniqueness: true
     validates :expires_at, presence: true
+
+    validate :tenant_must_match_user
+
+    before_validation do
+      self.tenant ||= user&.tenant if has_attribute?(:tenant_id)
+    end
+
+    private
+
+    def tenant_must_match_user
+      return if tenant_id.blank? || user.blank?
+
+      if user.tenant_id != tenant_id
+        errors.add(:user_id, "must belong to the same tenant")
+      end
+    end
   end
 end

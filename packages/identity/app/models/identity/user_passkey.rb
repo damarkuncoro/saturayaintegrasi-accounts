@@ -11,7 +11,9 @@ module Identity
     validates :sign_count, presence: true, numericality: { greater_than_or_equal_to: 0 }
     validates :nickname, length: { maximum: 100 }, allow_blank: true
 
-    before_validation :set_tenant_from_user, on: :create
+    validate :tenant_must_match_user
+
+    before_validation :set_tenant_from_user
     before_validation :normalize_fields
 
     private
@@ -22,7 +24,15 @@ module Identity
     end
 
     def set_tenant_from_user
-      self.tenant ||= user&.tenant
+      self.tenant ||= user&.tenant if has_attribute?(:tenant_id)
+    end
+
+    def tenant_must_match_user
+      return if tenant_id.blank? || user.blank?
+
+      if user.tenant_id != tenant_id
+        errors.add(:user_id, "must belong to the same tenant")
+      end
     end
   end
 end

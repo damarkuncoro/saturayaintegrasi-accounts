@@ -6,14 +6,16 @@ module Identity
     include Normalizable
 
     belongs_to :user, class_name: "Identity::User"
-    belongs_to :permission, class_name: "Identity::Permission", optional: true
+    belongs_to :permission, class_name: "Identity::Permission"
 
+    before_validation :sync_resource_type_and_action
+    before_validation :normalize_fields
+
+    validates :permission_id, presence: true
     validates :resource_type, presence: true
-  validates :action, presence: true
-  validates :user_id, uniqueness: { scope: [ :resource_type, :action ], message: "has already been assigned this permission" }
-  validate :tenant_must_match_user
-
-  before_validation :normalize_fields
+    validates :action, presence: true
+    validates :user_id, uniqueness: { scope: :permission_id, message: "has already been assigned this permission" }
+    validate :tenant_must_match_user
 
   def self.can?(user, action, resource_type)
     where(
@@ -24,6 +26,13 @@ module Identity
   end
 
   private
+
+  def sync_resource_type_and_action
+    if permission
+      self.resource_type = permission.resource_type
+      self.action = permission.action
+    end
+  end
 
   def tenant_must_match_user
     return if tenant_id.blank? || user.blank?

@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Identity
   class OauthController < ApplicationController
-    skip_before_action :require_authentication, only: [ :token, :userinfo, :revoke ]
-    
+    skip_before_action :require_authentication, only: [ :authorize, :consent, :token, :userinfo, :revoke ]
+
     # GET /oauth/authorize
     def authorize
       @client = SsoClientConfiguration.active.find_by!(client_id: params[:client_id])
@@ -19,10 +21,6 @@ module Identity
         return redirect_to sign_in_path(return_to: request.fullpath), allow_other_host: true
       end
 
-      # Tampilkan halaman persetujuan (consent) jika diperlukan
-      # Untuk saat ini, kita langsung redirect dengan code jika sudah login
-      # (Dalam implementasi penuh, harus ada consent screen di sini)
-      
       # Cek apakah user sudah memberikan persetujuan sebelumnya
       existing_consent = UserConsent.find_by(
         user: current_user,
@@ -41,12 +39,19 @@ module Identity
     def consent
       @client = SsoClientConfiguration.active.find_by!(client_id: params[:client_id])
       
+      unless authenticated?
+        return redirect_to sign_in_path(return_to: request.fullpath), allow_other_host: true
+      end
+
       if params[:allow] == "true"
         # Simpan persetujuan user
+        scopes = (session.dig(:oauth_params, "scope") || "openid profile email").split(" ")
+        scopes_hash = scopes.each_with_object({}) { |scope, hash| hash[scope] = true }
+
         UserConsent.create!(
           user: current_user,
           sso_client_configuration: @client,
-          consented_scopes: (session.dig(:oauth_params, "scope") || "openid profile email").split(" "),
+          consented_scopes: scopes_hash,
           granted_at: Time.current,
           consent_signature: SecureRandom.hex(32) # Simple signature
         )
@@ -56,21 +61,6 @@ module Identity
         redirect_uri = session.dig(:oauth_params, "redirect_uri")
         redirect_to "#{redirect_uri}?error=access_denied", allow_other_host: true
       end
-    end
-
-    private
-
-    def issue_code_and_redirect
-      oauth_params = session[:oauth_params] || params
-      code = SecureRandom.hex(16)
-      Rails.cache.write("oauth_code_#{code}", {
-        user_id: current_user.id,
-        client_id: @client.client_id,
-        scopes: oauth_params["scope"],
-        redirect_uri: oauth_params["redirect_uri"]
-      }, expires_in: 5.minutes)
-
-      redirect_to "#{oauth_params["redirect_uri"]}?code=#{code}&state=#{oauth_params["state"]}", allow_other_host: true
     end
 
     # POST /oauth/token
@@ -157,7 +147,27 @@ module Identity
       end
     end
 
+    # POST /oauth/revoke
+    def revoke
+      # Basic implementation: tokens are stateless JWTs, so we just return OK
+      # or implement a blacklist in Redis if needed.
+      render json: { status: "revoked" }
+    end
+
     private
+
+    def issue_code_and_redirect
+      oauth_params = session[:oauth_params] || params
+      code = SecureRandom.hex(16)
+      Rails.cache.write("oauth_code_#{code}", {
+        user_id: current_user.id,
+        client_id: @client.client_id,
+        scopes: oauth_params["scope"],
+        redirect_uri: oauth_params["redirect_uri"]
+      }, expires_in: 5.minutes)
+
+      redirect_to "#{oauth_params["redirect_uri"]}?code=#{code}&state=#{oauth_params["state"]}", allow_other_host: true
+    end
 
     def find_client
       client_id = params[:client_id] || extract_client_id_from_header
@@ -191,13 +201,6 @@ module Identity
       end
 
       false
-    end
-
-    # POST /oauth/revoke
-    def revoke
-      # Basic implementation: tokens are stateless JWTs, so we just return OK
-      # or implement a blacklist in Redis if needed.
-      render json: { status: "revoked" }
     end
   end
 end

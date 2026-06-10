@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_02_060000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_10_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -30,6 +30,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_060000) do
     t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["api_key"], name: "index_api_clients_on_api_key", unique: true
+    t.index ["tenant_id", "active"], name: "index_api_clients_on_tenant_active"
+    t.index ["tenant_id", "expires_at"], name: "index_api_clients_on_tenant_expires_at"
     t.index ["tenant_id"], name: "index_api_clients_on_tenant_id"
   end
 
@@ -132,13 +134,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_060000) do
   end
 
   create_table "role_permissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.jsonb "conditions", default: {}
+    t.jsonb "conditions", default: {}, null: false
     t.datetime "created_at", null: false
     t.uuid "permission_id", null: false
     t.uuid "role_id", null: false
     t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["role_id", "permission_id"], name: "index_role_permissions_on_role_id_and_permission_id", unique: true
+    t.index ["tenant_id", "permission_id"], name: "index_role_permissions_on_tenant_permission"
   end
 
   create_table "roles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -146,7 +149,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_060000) do
     t.string "description"
     t.string "name", null: false
     t.string "slug", null: false
-    t.boolean "system_defined", default: false
+    t.boolean "system_defined", default: false, null: false
     t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["tenant_id", "slug"], name: "index_roles_on_tenant_id_and_slug", unique: true
@@ -389,13 +392,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_060000) do
     t.jsonb "conditions", default: {}, null: false
     t.datetime "created_at", null: false
     t.boolean "is_override", default: true
-    t.uuid "permission_id"
+    t.uuid "permission_id", null: false
     t.string "resource_type", null: false
     t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.index ["permission_id"], name: "index_user_permissions_on_permission_id"
     t.index ["tenant_id", "resource_type"], name: "index_user_permissions_on_tenant_and_resource"
-    t.index ["user_id", "resource_type", "action"], name: "index_user_permissions_on_user_resource_action", unique: true
+    t.index ["tenant_id", "user_id", "permission_id"], name: "index_user_permissions_on_tenant_user_permission", unique: true
     t.index ["user_id"], name: "index_user_permissions_on_user_id"
   end
 
@@ -405,6 +409,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_060000) do
     t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
+    t.index ["tenant_id", "role_id"], name: "index_user_roles_on_tenant_role"
     t.index ["user_id", "role_id"], name: "index_user_roles_on_user_id_and_role_id", unique: true
   end
 
@@ -446,10 +451,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_060000) do
   end
 
   create_table "webhook_deliveries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "attempt_count", default: 0, null: false
     t.datetime "created_at", null: false
+    t.datetime "delivered_at"
     t.integer "duration_ms"
     t.string "error_message"
     t.string "event_name", null: false
+    t.datetime "next_retry_at"
     t.jsonb "payload", default: {}, null: false
     t.text "response_body"
     t.integer "response_code"
@@ -457,6 +465,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_060000) do
     t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.uuid "webhook_endpoint_id", null: false
+    t.index ["status", "next_retry_at"], name: "index_webhook_deliveries_on_status_next_retry"
     t.index ["tenant_id"], name: "index_webhook_deliveries_on_tenant_id"
     t.index ["webhook_endpoint_id"], name: "index_webhook_deliveries_on_webhook_endpoint_id"
   end
@@ -472,12 +481,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_060000) do
     t.index ["tenant_id"], name: "index_webhook_endpoints_on_tenant_id"
   end
 
-  add_foreign_key "api_clients", "tenants", on_delete: :cascade
+  add_foreign_key "api_clients", "tenants"
   add_foreign_key "audit_logs", "tenants"
   add_foreign_key "audit_logs", "users", on_delete: :nullify
   add_foreign_key "email_verification_tokens", "tenants", on_delete: :cascade
   add_foreign_key "email_verification_tokens", "users", on_delete: :cascade
-  add_foreign_key "login_attempts", "tenants", on_delete: :cascade
+  add_foreign_key "login_attempts", "tenants"
   add_foreign_key "login_attempts", "users", on_delete: :nullify
   add_foreign_key "mfa_backup_codes", "tenants", on_delete: :cascade
   add_foreign_key "mfa_backup_codes", "users", on_delete: :cascade
@@ -511,6 +520,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_060000) do
   add_foreign_key "user_permissions", "users", on_delete: :cascade
   add_foreign_key "user_roles", "roles", on_delete: :cascade
   add_foreign_key "user_roles", "users", on_delete: :cascade
+  add_foreign_key "users", "tenants"
   add_foreign_key "webhook_deliveries", "tenants"
   add_foreign_key "webhook_deliveries", "webhook_endpoints"
   add_foreign_key "webhook_endpoints", "tenants"

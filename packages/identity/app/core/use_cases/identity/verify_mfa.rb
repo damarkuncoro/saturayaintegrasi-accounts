@@ -20,6 +20,10 @@ module UseCases
     # @param remember_device [Boolean] Apakah akan mendaftarkan perangkat sebagai terpercaya
     # @return [Core::Result]
     def call(user:, otp_code:, tenant:, ip_address: nil, user_agent: nil, remember_device: false)
+      if user.locked?
+        return Core::Result.failure("Akun Anda sedang terkunci. Silakan hubungi admin atau reset kata sandi.")
+      end
+
       # 1. Verifikasi Kode via Service
       result = @service.verify_login_code(user: user, code: otp_code, tenant: tenant)
 
@@ -52,6 +56,14 @@ module UseCases
         Core::Result.success(user, meta: { session: session, trusted_device_fingerprint: trusted_device_fingerprint_raw })
       else
         # 3. Gagal Verifikasi
+        user.record_failed_attempt!
+
+        if user.failed_attempts >= 5
+          user.lock!
+          @audit_logger.log(action: "account_locked", auditable: user, tenant: tenant)
+          result = Core::Result.failure("Akun Anda sedang terkunci. Silakan hubungi admin atau reset kata sandi.")
+        end
+
         @audit_logger.log(
           action: "mfa_login_failed", 
           auditable: user, 
