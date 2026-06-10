@@ -14,10 +14,10 @@
       <% end %>
     </div>
     <h2 class="mt-8 text-center text-3xl font-black font-heading text-slate-900 tracking-tight">
-      Persetujuan Akses
+      <%= t("oauth.authorize.title") %>
     </h2>
     <p class="mt-3 text-center text-sm text-slate-500 font-semibold">
-      Aplikasi <strong><%= @client.client_name %></strong> meminta izin untuk mengakses akun Anda.
+      <%= t("oauth.authorize.request_desc", client_name: @client.client_name).html_safe %>
     </p>
   </div>
 
@@ -25,36 +25,30 @@
     <%= render "shared/components/card", padding: "p-8 sm:p-10", rounded: "rounded-[2.5rem]" do %>
       <div class="space-y-6">
         <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-          <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Izin yang diminta:</h3>
+          <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-4"><%= t("oauth.authorize.requested_permissions") %></h3>
           <ul class="space-y-3">
             <li class="flex items-start">
               <svg class="h-5 w-5 text-green-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
               </svg>
-              <span class="text-sm font-bold text-slate-700">Akses profil dasar (Nama)</span>
+              <span class="text-sm font-bold text-slate-700"><%= t("oauth.authorize.profile_access") %></span>
             </li>
             <li class="flex items-start">
               <svg class="h-5 w-5 text-green-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
               </svg>
-              <span class="text-sm font-bold text-slate-700">Akses alamat email</span>
+              <span class="text-sm font-bold text-slate-700"><%= t("oauth.authorize.email_access") %></span>
             </li>
           </ul>
         </div>
 
         <div class="flex flex-col space-y-3">
-          <%= button_to oauth_consent_path(client_id: @client.client_id, allow: true), method: :post, class: "w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-indigo-200/50 text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all cursor-pointer" do %>
-            Izinkan Akses
-          <% end %>
-
-          <%= button_to oauth_consent_path(client_id: @client.client_id, allow: false), method: :post, class: "w-full flex justify-center py-3.5 px-4 border border-slate-200 rounded-xl bg-white text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer" do %>
-            Batalkan
-          <% end %>
+          <%= render "shared/components/button", label: t("oauth.authorize.allow_button"), path: oauth_consent_path(client_id: @client.client_id, allow: true), method: :post, variant: :primary, class_name: "w-full py-3.5" %>
+          <%= render "shared/components/button", label: t("oauth.authorize.deny_button"), path: oauth_consent_path(client_id: @client.client_id, allow: false), method: :post, variant: :outline, class_name: "w-full py-3.5" %>
         </div>
 
         <p class="text-[10px] text-center text-slate-400 leading-relaxed">
-          Dengan mengizinkan, Anda setuju untuk membagikan informasi akun Anda dengan <%= @client.client_name %>. 
-          Anda dapat mencabut akses ini kapan saja melalui pengaturan akun <%= brand_name %>.
+          <%= t("oauth.authorize.disclaimer", client_name: @client.client_name, brand_name: brand_name).html_safe %>
         </p>
       </div>
     <% end %>

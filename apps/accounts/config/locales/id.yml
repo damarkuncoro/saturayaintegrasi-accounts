@@ -131,8 +131,21 @@ id:
       role_label: "Peran / Tipe Akun"
       change_password_link: "Ubah kata sandi"
       mfa_settings_link: "Pengaturan Dua Faktor (2FA)"
-  mailers:
-
+  common:
+    privacy_policy: "Kebijakan Privasi"
+    terms_of_service: "Syarat & Ketentuan"
+    back: "Kembali"
+    ago: "lalu"
+    save: "Simpan"
+    cancel: "Batal"
+    loading: "Memuat..."
+  navbar:
+    signed_in_as: "Masuk Sebagai"
+    account_settings: "Pengaturan Akun"
+    security_2fa: "Keamanan (2FA)"
+    sign_out: "Keluar"
+    sign_in: "Masuk"
+    sign_up: "Daftar"
     user_mailer:
       password_reset:
         subject: "Reset password Anda di %{brand_name}"
@@ -147,4 +160,38 @@ id:
         instruction: "Terima kasih telah bergabung dengan %{brand_name}. Email ini dikirim untuk mengonfirmasi bahwa %{email} adalah alamat email yang ingin Anda gunakan untuk akun Anda."
         action: "Ya, Verifikasi Email Saya"
         support: "Punya pertanyaan atau butuh bantuan? Balas email ini dan tim dukungan kami akan membantu Anda."
+  oauth:
+    authorize:
+      title: "Persetujuan Akses"
+      request_desc: "Aplikasi <strong>%{client_name}</strong> meminta izin untuk mengakses akun Anda."
+      requested_permissions: "Izin yang diminta:"
+      profile_access: "Akses profil dasar (Nama)"
+      email_access: "Akses alamat email"
+      allow_button: "Izinkan Akses"
+      deny_button: "Batalkan"
+      disclaimer: "Dengan mengizinkan, Anda setuju untuk membagikan informasi akun Anda dengan %{client_name}. Anda dapat mencabut akses ini kapan saja melalui pengaturan akun %{brand_name}."
+  emails:
+    edit:
+      title_change: "Ubah Email Anda"
+      title_verify: "Verifikasi Email Anda"
+      verify_desc: "Kami telah mengirimkan email verifikasi ke alamat di bawah ini. Periksa email tersebut dan ikuti instruksi untuk mengonfirmasi alamat email Anda."
+      resend_button: "Kirim ulang email verifikasi"
+      new_email_label: "Email Baru"
+      password_challenge_label: "Kata Sandi Konfirmasi"
+      submit: "Simpan Perubahan"
+      back_button: "Kembali"
+  password_resets:
+    new:
+      title: "Lupa kata sandi?"
+      description: "Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk mereset kata sandi Anda."
+      email_label: "Alamat Email"
+      submit: "Kirim Email Reset Password"
+      back_to_login: "Kembali ke Login"
+    edit:
+      title: "Reset kata sandi Anda"
+      description: "Pilih kata sandi baru yang kuat untuk akun Anda."
+      password_label: "Kata Sandi Baru"
+      password_hint: "Minimal 12 karakter."
+      password_confirmation_label: "Konfirmasi Kata Sandi Baru"
+      submit: "Simpan Kata Sandi Baru"
 

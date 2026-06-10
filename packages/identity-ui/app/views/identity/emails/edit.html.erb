@@ -1,43 +1,41 @@
-<p style="color: red"><%= alert %></p>
-
-<% if System::Current.user.verified? %>
-  <h1>Change your email</h1>
-<% else %>
-  <h1>Verify your email</h1>
-  <p>We sent a verification email to the address below. Check that email and follow those instructions to confirm it's your email address.</p>
-  <p><%= button_to "Re-send verification email", identity_email_verification_path %></p>
-<% end %>
-
-<%= form_with(url: identity_email_path, method: :patch) do |form| %>
-  <% if @user.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
-
-      <ul>
-        <% @user.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+<div class="max-w-2xl mx-auto px-4 py-12">
+  <div class="flex items-center justify-between mb-12">
+    <div>
+      <% if System::Current.user.verified? %>
+        <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2"><%= t("emails.edit.title_change") %></h1>
+      <% else %>
+        <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2"><%= t("emails.edit.title_verify") %></h1>
+        <p class="text-slate-500 font-medium"><%= t("emails.edit.verify_desc") %></p>
+      <% end %>
     </div>
+    <%= link_to t("emails.edit.back_button"), root_path, class: "text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors" %>
+  </div>
+
+  <%= render "shared/components/card", padding: "10" do %>
+    <% unless System::Current.user.verified? %>
+      <div class="mb-10 p-6 bg-indigo-50 rounded-2xl border border-indigo-100 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4 text-indigo-700">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          <span class="text-sm font-bold"><%= System::Current.user.email %></span>
+        </div>
+        <%= render "shared/components/button", label: t("emails.edit.resend_button"), path: identity_email_verification_path, method: :post, variant: :outline, size: :sm %>
+      </div>
+    <% end %>
+
+    <%= form_with(url: identity_email_path, method: :patch, class: "space-y-8") do |form| %>
+      <%= render "shared/components/form_field", label: t("emails.edit.new_email_label"), name: :email, required: true do %>
+        <%= render "shared/components/form_input", f: form, field: :email, type: :email, placeholder: "nama@email.com", autofocus: true %>
+      <% end %>
+
+      <%= render "shared/components/form_field", label: t("emails.edit.password_challenge_label"), name: :password_challenge, required: true do %>
+        <%= render "shared/components/form_input", f: form, field: :password_challenge, type: :password, placeholder: "••••••••" %>
+      <% end %>
+
+      <div class="pt-4">
+        <%= render "shared/components/button", f: form, label: t("emails.edit.submit"), variant: :primary, class_name: "w-full py-4 shadow-xl shadow-indigo-100" %>
+      </div>
+    <% end %>
   <% end %>
-
-  <div>
-    <%= form.label :email, "New email", style: "display: block" %>
-    <%= form.email_field :email, required: true, autofocus: true %>
-  </div>
-
-  <div>
-    <%= form.label :password_challenge, style: "display: block" %>
-    <%= form.password_field :password_challenge, required: true, autocomplete: "current-password" %>
-  </div>
-
-  <div>
-    <%= form.submit "Save changes" %>
-  </div>
-<% end %>
-
-<br>
-
-<div>
-  <%= link_to "Back", root_path %>
 </div>

@@ -68,7 +68,7 @@
             <% end %>
 
             <div class="pt-4 flex justify-end">
-              <%= render "shared/components/button", label: t("accounts.show.save_button"), path: "#", method: :submit, variant: :primary, class_name: "px-10 py-4 shadow-xl shadow-indigo-100" %>
+              <%= render "shared/components/button", f: f, label: t("accounts.show.save_button"), variant: :primary, class_name: "px-10 py-4 shadow-xl shadow-indigo-100" %>
             </div>
           <% end %>
         </section>
@@ -92,7 +92,7 @@
                 <%= render "shared/components/form_input", f: f, field: :password_challenge, type: :password, class_name: "bg-white" %>
               <% end %>
               
-              <%= render "shared/components/button", label: t("accounts.show.deactivate_button"), path: "#", method: :submit, variant: :danger, data: { confirm: t("accounts.show.confirm_deactivate") }, class_name: "w-full sm:w-auto" %>
+              <%= render "shared/components/button", f: f, label: t("accounts.show.deactivate_button"), variant: :danger, data: { confirm: t("accounts.show.confirm_deactivate") }, class_name: "w-full sm:w-auto" %>
             <% end %>
           </div>
         </div>

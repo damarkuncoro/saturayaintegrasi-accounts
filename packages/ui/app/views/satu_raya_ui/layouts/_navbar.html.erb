@@ -34,22 +34,22 @@
           
           <div data-dropdown-target="menu" class="hidden absolute right-0 mt-2.5 w-64 rounded-xl shadow-2xl bg-white border border-slate-100 divide-y divide-slate-100 z-50 transition-all">
             <div class="px-4 py-3">
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Masuk Sebagai</p>
+              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"><%= t("navbar.signed_in_as") %></p>
               <p class="text-sm font-bold text-slate-800 truncate mt-0.5"><%= System::Current.user.full_name %></p>
               <p class="text-xs text-slate-500 truncate"><%= System::Current.user.email %></p>
             </div>
             <div class="py-1">
-              <%= link_to "Pengaturan Akun", accounts_url_for("/settings"), class: "block px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors" %>
-              <%= link_to "Keamanan (2FA)", accounts_url_for("/two_factor_settings"), class: "block px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors" %>
+              <%= link_to t("navbar.account_settings"), accounts_url_for("/account"), class: "block px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors" %>
+              <%= link_to t("navbar.security_2fa"), accounts_url_for("/two_factor_settings"), class: "block px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors" %>
             </div>
             <div class="py-1">
-              <%= button_to "Keluar", accounts_url_for("/logout"), method: :delete, class: "w-full text-left px-4 py-2.5 text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors" %>
+              <%= button_to t("navbar.sign_out"), accounts_url_for("/logout"), method: :delete, class: "w-full text-left px-4 py-2.5 text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors" %>
             </div>
           </div>
         </div>
       <% else %>
-        <%= link_to "Masuk", accounts_url_for("/login"), class: "text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors px-4 py-2" %>
-        <%= link_to "Daftar", accounts_url_for("/register"), class: "text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-200 px-5 py-2.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]" %>
+        <%= link_to t("navbar.sign_in"), accounts_url_for("/login"), class: "text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors px-4 py-2" %>
+        <%= link_to t("navbar.sign_up"), accounts_url_for("/register"), class: "text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-200 px-5 py-2.5 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98]" %>
       <% end %>
     </div>
   </nav>

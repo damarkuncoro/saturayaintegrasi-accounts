@@ -140,8 +140,21 @@ en:
       role_label: "Role / Account Type"
       change_password_link: "Change password"
       mfa_settings_link: "Two-Factor Settings (2FA)"
-  mailers:
-
+  common:
+    privacy_policy: "Privacy Policy"
+    terms_of_service: "Terms of Service"
+    back: "Back"
+    ago: "ago"
+    save: "Save"
+    cancel: "Cancel"
+    loading: "Loading..."
+  navbar:
+    signed_in_as: "Signed in as"
+    account_settings: "Account Settings"
+    security_2fa: "Security (2FA)"
+    sign_out: "Sign Out"
+    sign_in: "Sign In"
+    sign_up: "Sign Up"
     user_mailer:
       password_reset:
         subject: "Reset your password at %{brand_name}"
@@ -156,4 +169,38 @@ en:
         instruction: "Thank you for joining %{brand_name}. This email is sent to confirm that %{email} is the email address you want to use for your account."
         action: "Yes, Verify My Email"
         support: "Have questions or need help? Reply to this email and our support team will assist you."
+  oauth:
+    authorize:
+      title: "Access Approval"
+      request_desc: "The application <strong>%{client_name}</strong> is requesting permission to access your account."
+      requested_permissions: "Requested permissions:"
+      profile_access: "Basic profile access (Name)"
+      email_access: "Email address access"
+      allow_button: "Allow Access"
+      deny_button: "Cancel"
+      disclaimer: "By allowing, you agree to share your account information with %{client_name}. You can revoke this access at any time through your %{brand_name} account settings."
+  emails:
+    edit:
+      title_change: "Change Your Email"
+      title_verify: "Verify Your Email"
+      verify_desc: "We sent a verification email to the address below. Check that email and follow those instructions to confirm it's your email address."
+      resend_button: "Re-send verification email"
+      new_email_label: "New Email"
+      password_challenge_label: "Confirm Password"
+      submit: "Save Changes"
+      back_button: "Back"
+  password_resets:
+    new:
+      title: "Forgot your password?"
+      description: "Enter your email address and we'll send you a link to reset your password."
+      email_label: "Email Address"
+      submit: "Send Password Reset Email"
+      back_to_login: "Back to Login"
+    edit:
+      title: "Reset your password"
+      description: "Choose a new strong password for your account."
+      password_label: "New Password"
+      password_hint: "12 characters minimum."
+      password_confirmation_label: "Confirm New Password"
+      submit: "Save New Password"
 

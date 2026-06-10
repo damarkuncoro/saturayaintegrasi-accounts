@@ -8,6 +8,7 @@
   aria_label = local_assigns[:aria_label]
   class_name = local_assigns[:class_name]
   data       = local_assigns[:data] || {}
+  form       = local_assigns[:f] || local_assigns[:form]
 
   button = ::SatuRayaUi::UI::Contract::Button.new(
     label: label,
@@ -17,12 +18,15 @@
     target: target,
     aria_label: aria_label,
     class_name: class_name,
-    data: data
+    data: data,
+    form: form
   )
   skin = ::SatuRayaUi::UI::Skins::Button.new(button)
 %>
 
-<% if button.method.to_sym == :get %>
+<% if button.form.present? %>
+  <%= button.form.submit button.label, **skin.render_attributes %>
+<% elsif button.method.to_sym == :get %>
   <%= link_to button.label, button.path, **skin.render_attributes %>
 <% else %>
   <%= button_to button.label, button.path, method: button.method, form: { class: "inline" }, **skin.render_attributes %>

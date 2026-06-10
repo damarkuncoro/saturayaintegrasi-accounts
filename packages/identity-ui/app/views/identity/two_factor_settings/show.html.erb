@@ -67,7 +67,7 @@
                   <%= render "shared/components/form_input", f: f, field: :password_challenge, type: :password %>
                 <% end %>
               </div>
-              <%= render "shared/components/button", label: t("two_factor_settings.show.disable_button"), path: "#", method: :submit, variant: :danger, class_name: "px-10 py-4 shadow-xl shadow-rose-100" %>
+              <%= render "shared/components/button", f: f, label: t("two_factor_settings.show.disable_button"), variant: :danger, class_name: "px-10 py-4 shadow-xl shadow-rose-100" %>
             <% end %>
           <% else %>
             <div class="space-y-4">
@@ -87,7 +87,7 @@
                   <%= render "shared/components/form_input", f: f, field: :password_challenge, type: :password %>
                 <% end %>
               </div>
-              <%= render "shared/components/button", label: t("two_factor_settings.show.enable_button"), path: "#", method: :submit, variant: :primary, class_name: "px-10 py-4 shadow-xl shadow-indigo-100" %>
+              <%= render "shared/components/button", f: f, label: t("two_factor_settings.show.enable_button"), variant: :primary, class_name: "px-10 py-4 shadow-xl shadow-indigo-100" %>
             <% end %>
           <% end %>
         </div>

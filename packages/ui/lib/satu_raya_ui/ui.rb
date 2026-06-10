@@ -7,9 +7,9 @@ module SatuRayaUi
     # UI Contract: Definisi murni properti komponen (❌ depend apa pun)
     module Contract
       class Button
-        attr_reader :label, :path, :method, :variant, :target, :aria_label, :class_name, :data
+        attr_reader :label, :path, :method, :variant, :target, :aria_label, :class_name, :data, :form
 
-        def initialize(label:, path:, method: :get, variant: :primary, target: nil, aria_label: nil, class_name: nil, data: {})
+        def initialize(label:, path: nil, method: :get, variant: :primary, target: nil, aria_label: nil, class_name: nil, data: {}, form: nil)
           @label = label
           @path = path
           @method = method
@@ -18,6 +18,7 @@ module SatuRayaUi
           @aria_label = aria_label || label
           @class_name = class_name
           @data = data
+          @form = form
         end
       end
 
