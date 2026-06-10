@@ -7,6 +7,7 @@ module Identity
 
   def index
     @sessions = System::Current.user.sessions.order(created_at: :desc)
+    @audit_logs = System::AuditLog.where(user: System::Current.user).order(created_at: :desc).limit(20)
   end
 
   def new
