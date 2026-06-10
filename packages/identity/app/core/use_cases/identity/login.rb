@@ -17,7 +17,7 @@ module UseCases
     # @param user_agent [String] User agent request
     # @param trusted_device_fingerprint [String] Fingerprint perangkat terpercaya (opsional)
     # @return [Core::Result]
-    def call(email:, password:, tenant:, ip_address: nil, user_agent: nil, trusted_device_fingerprint: nil)
+    def execute(email:, password:, tenant:, ip_address: nil, user_agent: nil, trusted_device_fingerprint: nil)
       email = normalize_email(email)
       user = tenant.users.find_by(email: email)
 

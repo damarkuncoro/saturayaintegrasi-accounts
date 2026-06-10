@@ -13,7 +13,7 @@ module Identity
   end
 
   def create
-    result = UseCases::Identity::Login.new.call(
+    result = UseCases::Identity::Login.new.execute(
       email: params[:email],
       password: params[:password],
       tenant: System::Current.tenant,
@@ -53,7 +53,7 @@ module Identity
   end
 
   def omniauth
-    result = UseCases::Identity::LoginWithOauth.new.call(
+    result = UseCases::Identity::LoginWithOauth.new.execute(
       auth: request.env["omniauth.auth"],
       tenant: require_current_tenant!,
       ip_address: request.ip,
@@ -72,11 +72,11 @@ module Identity
 
   def destroy
     if @session
-      UseCases::Identity::RevokeSession.new.call(session: @session, reason: "user_logout")
+      UseCases::Identity::RevokeSession.new.execute(session: @session, reason: "user_logout")
       redirect_to sessions_path, notice: "That session has been logged out"
     else
       if (session_record = Identity::Session.find_by(id: cookies.signed[auth_session_cookie_name]))
-        UseCases::Identity::RevokeSession.new.call(session: session_record, reason: "user_logout")
+        UseCases::Identity::RevokeSession.new.execute(session: session_record, reason: "user_logout")
       end
       terminate_session
       redirect_to root_path, notice: "Signed out successfully"

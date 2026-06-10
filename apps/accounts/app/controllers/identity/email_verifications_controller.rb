@@ -2,7 +2,7 @@ class Identity::EmailVerificationsController < ApplicationController
   skip_before_action :require_authentication, only: :show
 
   def show
-    result = UseCases::Identity::VerifyEmail.new.call(
+    result = UseCases::Identity::VerifyEmail.new.execute(
       token_digest: params[:sid],
       tenant: System::Current.tenant
     )
@@ -15,7 +15,7 @@ class Identity::EmailVerificationsController < ApplicationController
   end
 
   def create
-    result = UseCases::Identity::ResendEmailVerification.new.call(
+    result = UseCases::Identity::ResendEmailVerification.new.execute(
       user: System::Current.user,
       tenant: System::Current.tenant
     )

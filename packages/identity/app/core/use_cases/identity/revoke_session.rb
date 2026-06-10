@@ -12,7 +12,7 @@ module UseCases
     # @param revoked_by [Identity::User] User yang melakukan pencabutan (opsional)
     # @param reason [String] Alasan pencabutan (opsional, misal: "user_logout")
     # @return [Core::Result]
-    def call(session:, revoked_by: nil, reason: "user_logout")
+    def execute(session:, revoked_by: nil, reason: "user_logout")
       if session.revoked?
         return Core::Result.success(session, meta: { message: "Sesi sudah tidak aktif." })
       end

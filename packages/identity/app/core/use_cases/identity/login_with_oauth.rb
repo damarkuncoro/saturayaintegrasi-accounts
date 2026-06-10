@@ -15,7 +15,7 @@ module UseCases
       # @param ip_address [String] Alamat IP request
       # @param user_agent [String] User agent request
       # @return [Core::Result]
-      def call(auth:, tenant:, ip_address: nil, user_agent: nil)
+      def execute(auth:, tenant:, ip_address: nil, user_agent: nil)
         uid = auth.uid
         provider = normalize_key(auth.provider)
         email = normalize_email(auth.info.email)

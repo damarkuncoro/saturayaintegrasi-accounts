@@ -6,7 +6,7 @@ module Identity
   end
 
   def update
-    result = UseCases::Identity::ChangePassword.new.call(
+    result = UseCases::Identity::ChangePassword.new.execute(
       user: @user,
       password: params[:password],
       password_challenge: params[:password_challenge],

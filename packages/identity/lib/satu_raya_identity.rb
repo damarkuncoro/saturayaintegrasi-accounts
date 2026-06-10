@@ -20,7 +20,7 @@ module SatuRayaIdentity
         ::UseCases::PublishUserSyncEvent.new
       else
         Object.new.tap do |o|
-          def o.call(action:, user:)
+          def o.execute(action:, user:)
             Rails.logger.info("[SatuRayaIdentity] Skipped syncing user: no publisher configured.")
           end
         end

@@ -8,7 +8,7 @@ module Identity
     end
 
     def create
-      result = UseCases::Identity::Register.new.call(
+      result = UseCases::Identity::Register.new.execute(
         params: user_params,
         tenant: require_current_tenant!
       )

@@ -26,7 +26,7 @@ module Identity
     end
 
     def jwks
-      render json: { keys: [ Identity::OauthController.jwk ] }
+      render json: { keys: [ Services::Identity::JwksManager.jwk ] }
     end
   end
 end

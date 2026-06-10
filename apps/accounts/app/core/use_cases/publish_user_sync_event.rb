@@ -7,7 +7,7 @@ module UseCases
     # @param action [String] Jenis aksi yang memicu sinkronisasi (misal: 'create', 'update', 'delete').
     # @param user [Identity::User] Objek user yang datanya akan disinkronkan.
     # @return [ActiveJob::Base] Mengembalikan instance background job yang telah dijadwalkan.
-    def call(action:, user:)
+    def execute(action:, user:)
       payload = {
         action: action,
         user: {

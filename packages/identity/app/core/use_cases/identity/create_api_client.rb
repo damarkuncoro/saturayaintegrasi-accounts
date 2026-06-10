@@ -14,7 +14,7 @@ module UseCases
     # @param tenant [System::Tenant] Tenant pemilik
     # @param rate_limit [Integer] Limit request per menit (default: 60)
     # @return [Core::Result]
-    def call(name:, tenant:, rate_limit: 60)
+    def execute(name:, tenant:, rate_limit: 60)
       client = ::Identity::ApiClient.new(
         tenant: tenant,
         name: normalize_text(name),

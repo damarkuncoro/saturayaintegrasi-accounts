@@ -12,10 +12,10 @@ RSpec.describe UseCases::Identity::AuthenticateUser do
     ActsAsTenant.current_tenant = nil
   end
 
-  describe '#call' do
+  describe '#execute' do
     context 'with valid credentials' do
       it 'returns success with token and user' do
-        result = described_class.new.call(
+        result = described_class.new.execute(
           email: user.email,
           password: 'password123456',
           tenant: tenant
@@ -42,7 +42,7 @@ RSpec.describe UseCases::Identity::AuthenticateUser do
 
     context 'with non-existent email' do
       it 'returns failure' do
-        result = described_class.new.call(
+        result = described_class.new.execute(
           email: 'nonexistent@example.com',
           password: 'password123456',
           tenant: tenant

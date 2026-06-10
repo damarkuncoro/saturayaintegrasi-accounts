@@ -127,7 +127,7 @@ RSpec.describe "OIDC / OAuth2 Client Credentials Grant (M2M)", type: :request do
         client_credentials: true
       }
     end
-    let(:m2m_token) { JWT.encode(token_payload, Identity::OauthController.rsa_key, "RS256", { kid: Identity::OauthController.jwk[:kid] }) }
+    let(:m2m_token) { JWT.encode(token_payload, Services::Identity::JwksManager.rsa_key, "RS256", { kid: Services::Identity::JwksManager.jwk[:kid] }) }
 
     it "returns active: true and client metadata for a valid M2M token" do
       post oauth_introspect_path, params: { token: m2m_token }, headers: auth_header
@@ -153,7 +153,7 @@ RSpec.describe "OIDC / OAuth2 Client Credentials Grant (M2M)", type: :request do
 
     it "returns active: false if the token has expired" do
       expired_payload = token_payload.merge(exp: 10.minutes.ago.to_i)
-      expired_token = JWT.encode(expired_payload, Identity::OauthController.rsa_key, "RS256", { kid: Identity::OauthController.jwk[:kid] })
+      expired_token = JWT.encode(expired_payload, Services::Identity::JwksManager.rsa_key, "RS256", { kid: Services::Identity::JwksManager.jwk[:kid] })
 
       post oauth_introspect_path, params: { token: expired_token }, headers: auth_header
 

@@ -16,7 +16,7 @@ module UseCases
     # @param password [String] Password baru
     # @param tenant [System::Tenant] Tenant terkait
     # @return [Core::Result]
-    def call(token_digest:, password:, tenant:)
+    def execute(token_digest:, password:, tenant:)
       @service.reset_password(
         token_raw: token_digest, 
         new_password: password, 

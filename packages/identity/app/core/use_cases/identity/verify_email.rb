@@ -17,13 +17,13 @@ module UseCases
     # @param token_digest [String] Token verifikasi yang diberikan
     # @param tenant [System::Tenant] Tenant terkait
     # @return [Core::Result]
-    def call(token_digest:, tenant:)
+    def execute(token_digest:, tenant:)
       result = @service.verify(token_raw: token_digest, tenant: tenant)
       
       if result.success?
         user = result.value
         # Sinkronisasi Data User (status verified berubah)
-        @sync_service.call(action: "updated", user: user)
+        @sync_service.execute(action: "updated", user: user)
       end
 
       result

@@ -33,10 +33,10 @@ RSpec.describe UseCases::Identity::Login, type: :model do
     System::Current.user_agent = nil
   end
 
-  describe "#call" do
+  describe "#execute" do
     context "with a trusted device and known safe IP" do
       it "bypasses MFA and logs in successfully" do
-        result = described_class.new.call(
+        result = described_class.new.execute(
           email: user.email,
           password: "SecurePassword123!",
           tenant: tenant,
@@ -61,7 +61,7 @@ RSpec.describe UseCases::Identity::Login, type: :model do
           metadata: hash_including(ip_address: "10.0.0.1")
         ).and_call_original
 
-        result = described_class.new.call(
+        result = described_class.new.execute(
           email: user.email,
           password: "SecurePassword123!",
           tenant: tenant,

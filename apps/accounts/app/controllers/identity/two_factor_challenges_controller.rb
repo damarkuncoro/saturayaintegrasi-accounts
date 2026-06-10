@@ -7,7 +7,7 @@ module Identity
   end
 
   def create
-    result = UseCases::Identity::VerifyMfa.new.call(
+    result = UseCases::Identity::Mfa::VerifyChallenge.new.execute(
       user: @user,
       otp_code: params[:otp_code],
       tenant: System::Current.tenant,

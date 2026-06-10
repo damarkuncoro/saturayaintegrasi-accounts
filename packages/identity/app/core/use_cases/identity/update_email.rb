@@ -15,7 +15,7 @@ module UseCases
     # @param password_challenge [String] Password saat ini untuk verifikasi
     # @param tenant [System::Tenant] Tenant terkait
     # @return [Core::Result]
-    def call(user:, new_email:, password_challenge:, tenant:)
+    def execute(user:, new_email:, password_challenge:, tenant:)
       # 1. Verifikasi password saat ini
       unless user.authenticate(password_challenge)
         return Core::Result.failure("Kata sandi saat ini salah.")

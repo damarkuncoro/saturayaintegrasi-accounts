@@ -18,7 +18,7 @@ module UseCases
     # @param tenant [System::Tenant] Tenant terkait
     # @param ip_address [String] Alamat IP request
     # @return [Core::Result]
-    def call(email:, tenant:, ip_address: nil)
+    def execute(email:, tenant:, ip_address: nil)
       email = normalize_email(email)
       
       # Gunakan service untuk logika inti

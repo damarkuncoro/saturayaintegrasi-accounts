@@ -11,7 +11,7 @@ module UseCases
     # @param client [Identity::ApiClient] Objek API Client yang akan dirotasi
     # @param tenant [System::Tenant] Tenant pemilik
     # @return [Core::Result]
-    def call(client:, tenant:)
+    def execute(client:, tenant:)
       # 1. Generate new credentials
       new_key = "sk_#{SecureRandom.hex(24)}"
       new_secret = SecureRandom.hex(32)

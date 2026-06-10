@@ -1,14 +1,10 @@
 # frozen_string_literal: true
 
-require "openssl"
-require "base64"
-require "digest"
-require "jwt"
-require "redis"
-
 module Services
   module Identity
-    module JwksManager
+    class JwksManager
+      # Mengambil kunci privat RSA untuk penandatanganan JWT.
+      # @return [OpenSSL::PKey::RSA]
       def self.rsa_key
         @rsa_key ||= begin
           if ENV["JWT_PRIVATE_KEY"].present?
@@ -29,10 +25,15 @@ module Services
         end
       end
 
+      # Melakukan encoding string ke format Base64URL (tanpa padding).
+      # @param str [String]
+      # @return [String]
       def self.base64url_encode(str)
         Base64.urlsafe_encode64(str).tr("=", "")
       end
 
+      # Mengembalikan representasi JWK (JSON Web Key) publik dari kunci RSA.
+      # @return [Hash]
       def self.jwk
         @jwk ||= begin
           pub = rsa_key.public_key
@@ -47,6 +48,10 @@ module Services
         end
       end
 
+      # Mendekode dan memvalidasi JWT token.
+      # @param token [String]
+      # @return [Array(Hash, Hash)] payload dan header
+      # @raise [JWT::DecodeError] jika token tidak valid atau telah dicabut
       def self.decode_jwt(token)
         if token.present?
           token_hash = Digest::SHA256.hexdigest(token)
@@ -57,10 +62,11 @@ module Services
           end
         end
 
+        # Cek algoritma token dari header terlebih dahulu
         begin
           header = JWT.decode(token, nil, false)[1]
           algorithm = header["alg"]
-        rescue
+        rescue StandardError
           algorithm = nil
         end
 
@@ -68,6 +74,7 @@ module Services
           return JWT.decode(token, rsa_key.public_key, true, { algorithm: "RS256" })
         end
 
+        # Fallback ke HS256 jika alg simetris atau nil
         keys = [ Rails.application.secret_key_base ]
         if ENV["JWT_SECRET_FALLBACKS"].present?
           keys += ENV["JWT_SECRET_FALLBACKS"].split(",").map(&:strip)

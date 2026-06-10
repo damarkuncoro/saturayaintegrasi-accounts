@@ -183,7 +183,7 @@ RSpec.describe "Accounts main scenarios", type: :request do
     expect(sso_client.client_id).to start_with("client_")
 
     expect {
-      UseCases::PublishUserSyncEvent.new.call(action: "update", user: user)
+      UseCases::PublishUserSyncEvent.new.execute(action: "update", user: user)
     }.to have_enqueued_job(Identity::UserSyncJob)
       .with(hash_including(action: "update", user: hash_including(id: user.id, tenant_id: tenant.id)))
   end

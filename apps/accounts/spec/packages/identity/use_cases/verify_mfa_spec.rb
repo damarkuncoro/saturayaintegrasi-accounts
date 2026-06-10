@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe UseCases::Identity::VerifyMfa do
+RSpec.describe UseCases::Identity::Mfa::VerifyChallenge do
   let(:tenant) { create(:tenant) }
   let(:user) { create(:user, tenant: tenant) }
   let(:mfa_service) { instance_double(Identity::MfaService) }
@@ -18,7 +18,7 @@ RSpec.describe UseCases::Identity::VerifyMfa do
     ActsAsTenant.current_tenant = nil
   end
 
-  describe "#call" do
+  describe "#execute" do
     context "when the user is already locked" do
       before do
         user.lock!
@@ -27,7 +27,7 @@ RSpec.describe UseCases::Identity::VerifyMfa do
       it "returns failure immediately without checking the OTP code" do
         expect(mfa_service).not_to receive(:verify_login_code)
 
-        result = use_case.call(user: user, otp_code: "123456", tenant: tenant)
+        result = use_case.execute(user: user, otp_code: "123456", tenant: tenant)
 
         expect(result).not_to be_success
         expect(result.error).to eq("Akun Anda sedang terkunci. Silakan hubungi admin atau reset kata sandi.")
@@ -49,7 +49,7 @@ RSpec.describe UseCases::Identity::VerifyMfa do
       end
 
       it "resets failed attempts, creates a session, and returns success" do
-        result = use_case.call(user: user, otp_code: "123456", tenant: tenant)
+        result = use_case.execute(user: user, otp_code: "123456", tenant: tenant)
 
         expect(result).to be_success
         expect(user.reload.failed_attempts).to eq(0)
@@ -66,12 +66,12 @@ RSpec.describe UseCases::Identity::VerifyMfa do
 
       it "increments the failed attempts counter" do
         expect {
-          use_case.call(user: user, otp_code: "wrong_code", tenant: tenant)
+          use_case.execute(user: user, otp_code: "wrong_code", tenant: tenant)
         }.to change { user.reload.failed_attempts }.by(1)
       end
 
       it "does not lock the account if attempts are under 5" do
-        use_case.call(user: user, otp_code: "wrong_code", tenant: tenant)
+        use_case.execute(user: user, otp_code: "wrong_code", tenant: tenant)
         expect(user.reload).not_to be_locked
       end
 
@@ -80,7 +80,7 @@ RSpec.describe UseCases::Identity::VerifyMfa do
 
         result = nil
         expect {
-          result = use_case.call(user: user, otp_code: "wrong_code", tenant: tenant)
+          result = use_case.execute(user: user, otp_code: "wrong_code", tenant: tenant)
         }.to change { System::AuditLog.count }.by(2)
 
         expect(user.reload).to be_locked

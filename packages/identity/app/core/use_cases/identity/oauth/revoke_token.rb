@@ -1,34 +1,21 @@
 # frozen_string_literal: true
 
-require "digest"
-require "redis"
-
 module UseCases
   module Identity
     module Oauth
       class RevokeToken
-        class Result
-          attr_reader :data, :error, :status
-
-          def initialize(data: nil, error: nil, status: :ok)
-            @data = data
-            @error = error
-            @status = status
-          end
-
-          def success?
-            @error.nil?
-          end
-        end
+        attr_reader :params
 
         def initialize(params:)
           @params = params
         end
 
-        def call
-          token = @params[:token]
+        # Mengeksekusi proses pencabutan token.
+        # @return [Core::Result]
+        def execute
+          token = params[:token]
           if token.blank?
-            return Result.new(error: "missing_token", status: :bad_request)
+            return ::Core::Result.failure("missing_token", meta: { status: :bad_request })
           end
 
           # 1. Cek apakah ini refresh token di DB
@@ -36,12 +23,12 @@ module UseCases
           refresh_token = ::Identity::JwtRefreshToken.find_by(token_digest: token_digest)
           if refresh_token
             refresh_token.update!(revoked_at: Time.current)
-            return Result.new(data: { status: "revoked" })
+            return ::Core::Result.success({ status: "revoked" }, meta: { status: :ok })
           end
 
           # 2. Jika bukan refresh token, coba dekode sebagai JWT access token
           begin
-            payload, _header = Services::Identity::JwksManager.decode_jwt(token)
+            payload, _header = jwks_manager.decode_jwt(token)
             exp = payload["exp"]
             ttl = exp - Time.current.to_i
             if ttl > 0
@@ -54,7 +41,13 @@ module UseCases
             # Abaikan error jika token tidak valid/kadaluwarsa sesuai RFC 7009
           end
 
-          Result.new(data: { status: "revoked" })
+          ::Core::Result.success({ status: "revoked" }, meta: { status: :ok })
+        end
+
+        private
+
+        def jwks_manager
+          ::Services::Identity::JwksManager
         end
       end
     end

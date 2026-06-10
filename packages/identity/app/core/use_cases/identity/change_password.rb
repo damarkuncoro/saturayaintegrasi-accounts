@@ -14,7 +14,7 @@ module UseCases
     # @param tenant [System::Tenant] Tenant terkait
     # @param revoke_others [Boolean] Apakah akan mencabut sesi lain
     # @return [Core::Result]
-    def call(user:, password:, password_challenge:, tenant:, revoke_others: false)
+    def execute(user:, password:, password_challenge:, tenant:, revoke_others: false)
       # 1. Verifikasi password saat ini
       unless user.authenticate(password_challenge)
         return Core::Result.failure("Kata sandi saat ini salah.")

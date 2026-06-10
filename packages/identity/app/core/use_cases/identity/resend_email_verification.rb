@@ -15,7 +15,7 @@ module UseCases
     # @param user [Identity::User] User yang meminta verifikasi ulang
     # @param tenant [System::Tenant] Tenant terkait
     # @return [Core::Result]
-    def call(user:, tenant:)
+    def execute(user:, tenant:)
       @service.send_verification(user: user)
     rescue => e
       Rails.logger.error "[Identity::ResendEmailVerification] Error: #{e.message}"

@@ -19,7 +19,7 @@ module UseCases
     # @param params [Hash] Data user (email, password, name, dll)
     # @param tenant [System::Tenant] Tenant tempat user mendaftar
     # @return [Core::Result]
-    def call(params:, tenant:)
+    def execute(params:, tenant:)
       params[:email] = normalize_email(params[:email]) if params[:email]
       params[:first_name] = normalize_text(params[:first_name]) if params[:first_name]
       params[:last_name] = normalize_text(params[:last_name]) if params[:last_name]
@@ -41,7 +41,7 @@ module UseCases
         @verification_service.send_verification(user: user)
 
         # 3. Sinkronisasi Data User ke service lain
-        @sync_service.call(action: "created", user: user)
+        @sync_service.execute(action: "created", user: user)
 
         # 4. Catat Audit Log
         @audit_logger.log(

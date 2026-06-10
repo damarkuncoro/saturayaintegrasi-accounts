@@ -3,11 +3,11 @@ module Identity
   before_action :set_user
 
   def show
-    @user.prepare_2fa! unless @user.otp_required_for_login?
+    UseCases::Identity::Mfa::PrepareTwoFactor.new(user: @user).execute
   end
 
   def enable
-    result = UseCases::Identity::EnableMfa.new.call(
+    result = UseCases::Identity::Mfa::EnableTwoFactor.new.execute(
       user: @user,
       otp_code: params[:otp_code],
       password_challenge: params[:password_challenge],
@@ -25,7 +25,7 @@ module Identity
   end
 
   def disable
-    result = UseCases::Identity::DisableMfa.new.call(
+    result = UseCases::Identity::Mfa::DisableTwoFactor.new.execute(
       user: @user,
       otp_code: params[:otp_code],
       password_challenge: params[:password_challenge],

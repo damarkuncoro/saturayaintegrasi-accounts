@@ -6,7 +6,7 @@ module UseCases
       @jwt_service = jwt_service
     end
 
-    def call(email:, password:, tenant:)
+    def execute(email:, password:, tenant:)
       user = @user_repository.find_by_email(email, tenant: tenant)
 
       return Core::Result.failure("Invalid email or password") unless user
