@@ -12,6 +12,7 @@ module System
     belongs_to :auditable, polymorphic: true, optional: true
 
     validates :action, presence: true
+    validate :tenant_must_match_user
 
     # Hash Chain for Tamper-Proof Logs
     before_create :sign_log
@@ -68,6 +69,14 @@ module System
 
     def normalize_fields
       self.action = normalize_key(action)
+    end
+
+    def tenant_must_match_user
+      return if tenant_id.blank? || user.blank?
+
+      if user.tenant_id != tenant_id
+        errors.add(:user_id, "must belong to the same tenant")
+      end
     end
   end
 end

@@ -9,7 +9,22 @@ module Communication
 
     validates :event_name, presence: true
     validates :status, presence: true
+    validate :tenant_must_match_webhook_endpoint
+
+    before_validation do
+      self.tenant ||= webhook_endpoint&.tenant if has_attribute?(:tenant_id)
+    end
 
     enum :status, { pending: "pending", success: "success", failed: "failed" }, default: "pending"
+
+    private
+
+    def tenant_must_match_webhook_endpoint
+      return if tenant_id.blank? || webhook_endpoint.blank?
+
+      if webhook_endpoint.tenant_id != tenant_id
+        errors.add(:webhook_endpoint_id, "must belong to the same tenant")
+      end
+    end
   end
 end
