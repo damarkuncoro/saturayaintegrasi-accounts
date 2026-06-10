@@ -117,7 +117,7 @@ module SatuRayaUi
       end
 
       class FormInput
-        attr_reader :form, :field, :type, :placeholder, :prefix, :rows, :class_name, :data
+        attr_reader :form, :field, :type, :placeholder, :prefix, :rows, :class_name, :data, :errors
 
         def initialize(params = {})
           @form        = params[:form]
@@ -128,6 +128,7 @@ module SatuRayaUi
           @rows        = params[:rows] || 4
           @class_name  = params[:class_name]
           @data        = params[:data] || {}
+          @errors      = Array(params[:errors])
         end
 
         def has_errors?

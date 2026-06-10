@@ -1,41 +1,17 @@
 <div class="max-w-2xl mx-auto px-4 py-12">
   <div class="flex items-center justify-between mb-12">
     <div>
-      <%= render "shared/components/section_header", 
-                 title: t("passwords.edit.title"), 
-                 class_name: "mb-0" do %>
-        <%= t("passwords.edit.description") %>
-      <% end %>
+      <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2"><%= t("passwords.edit.title") %></h1>
+      <p class="text-slate-500 font-medium"><%= t("passwords.edit.description") %></p>
     </div>
     <%= link_to t("passwords.edit.back_button"), identity_dashboard_path, class: "text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors" %>
   </div>
 
-  <%= render "shared/components/card", padding: "p-10" do %>
+  <%= render "shared/components/card", padding: "10" do %>
     <%= form_with(url: password_path, method: :patch, class: "space-y-8") do |form| %>
-      <% if @user.errors.any? %>
-        <div class="bg-rose-50 border-l-4 border-rose-500 p-4 mb-8 rounded-r-xl">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <svg class="h-5 w-5 text-rose-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-              </svg>
-            </div>
-            <div class="ml-3">
-              <h3 class="text-sm font-bold text-rose-800"><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h3>
-              <div class="mt-2 text-sm text-rose-700">
-                <ul class="list-disc pl-5 space-y-1">
-                  <% @user.errors.full_messages.each do |message| %>
-                    <li><%= message %></li>
-                  <% end %>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      <% end %>
-
+      
       <%= render "shared/components/form_field", label: t("passwords.edit.password_challenge_label"), name: :password_challenge, required: true do %>
-        <%= render "shared/components/form_input", f: form, field: :password_challenge, type: :password, placeholder: "••••••••", data: { autofocus: true } %>
+        <%= render "shared/components/form_input", f: form, field: :password_challenge, type: :password, placeholder: "••••••••" %>
       <% end %>
 
       <%= render "shared/components/form_field", label: t("passwords.edit.password_label"), name: :password, required: true, hint: t("passwords.edit.password_hint") do %>
@@ -46,9 +22,8 @@
         <%= render "shared/components/form_input", f: form, field: :password_confirmation, type: :password, placeholder: "••••••••••••" %>
       <% end %>
 
-      <div>
-        <%= form.submit t("passwords.edit.submit"), 
-            class: "w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-lg text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all active:scale-95 uppercase tracking-widest font-heading cursor-pointer" %>
+      <div class="pt-4">
+        <%= render "shared/components/button", label: t("passwords.edit.submit"), path: "#", method: :submit, variant: :primary, class_name: "w-full py-4 shadow-xl shadow-indigo-100" %>
       </div>
     <% end %>
   <% end %>

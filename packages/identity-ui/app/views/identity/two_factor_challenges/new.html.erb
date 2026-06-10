@@ -1,42 +1,38 @@
 <div class="max-w-md w-full relative z-10">
   <div class="text-center mb-8">
     <div class="mx-auto h-16 w-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-200 mb-6">
-      <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+      </svg>
     </div>
     
-    <%= render "shared/components/section_header", 
-               title: t("two_factor_challenges.new.title"), 
-               align: :center do %>
-      <%= t("two_factor_challenges.new.description") %>
-    <% end %>
+    <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2"><%= t("two_factor_challenges.new.title") %></h1>
+    <p class="text-slate-500 font-medium"><%= t("two_factor_challenges.new.description") %></p>
   </div>
 
-  <%= render "shared/components/card", padding: "p-10" do %>
+  <%= render "shared/components/card", padding: "10" do %>
     <%= form_with url: two_factor_challenge_path, method: :post, class: "space-y-8" do |f| %>
       <%= render "shared/components/form_field", label: t("two_factor_challenges.new.otp_code_label"), name: :otp_code do %>
-        <%= f.text_field :otp_code, 
-                         autocomplete: "one-time-code", 
-                         inputmode: "numeric", 
-                         pattern: "[0-9]*", 
-                         placeholder: "000000",
-                         autofocus: true,
-                         maxlength: 6,
-                         class: "block w-full px-4 py-4 text-center text-2xl font-black tracking-[1em] border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 bg-slate-50/50 placeholder-slate-300 transition-all" %>
+        <%= render "shared/components/form_input", 
+                   f: f, 
+                   field: :otp_code, 
+                   placeholder: "000000",
+                   class_name: "text-center text-2xl font-black tracking-[1em]",
+                   data: { autocomplete: "one-time-code", inputmode: "numeric", autofocus: true } %>
       <% end %>
 
       <div class="flex items-center">
-        <%= f.check_box :remember_device, class: "h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 rounded-lg cursor-pointer" %>
-        <%= f.label :remember_device, t("two_factor_challenges.new.remember_device"), class: "ml-3 block text-sm font-semibold text-slate-600 cursor-pointer" %>
+        <%= f.check_box :remember_device, class: "h-4 w-4 text-indigo-600 focus:ring-indigo-100 border-slate-300 rounded-lg cursor-pointer transition-all" %>
+        <%= f.label :remember_device, t("two_factor_challenges.new.remember_device"), class: "ml-3 block text-sm font-bold text-slate-600 cursor-pointer" %>
       </div>
 
-      <div>
-        <%= f.submit t("two_factor_challenges.new.submit"), 
-            class: "w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-lg text-sm font-black text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all active:scale-95 uppercase tracking-widest font-heading cursor-pointer" %>
+      <div class="pt-2">
+        <%= render "shared/components/button", label: t("two_factor_challenges.new.submit"), path: "#", method: :submit, variant: :primary, class_name: "w-full py-4 shadow-xl shadow-indigo-100" %>
       </div>
     <% end %>
 
     <div class="mt-8 pt-8 border-t border-slate-100 text-center">
-      <%= link_to t("two_factor_challenges.new.back_to_login"), sign_in_path, class: "text-xs font-bold text-slate-400 hover:text-indigo-600 transition-colors uppercase tracking-widest font-heading" %>
+      <%= link_to t("two_factor_challenges.new.back_to_login"), sign_in_path, class: "text-xs font-black text-slate-400 hover:text-indigo-600 transition-colors uppercase tracking-widest" %>
     </div>
   <% end %>
 </div>

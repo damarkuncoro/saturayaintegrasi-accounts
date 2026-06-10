@@ -17,10 +17,24 @@
     prefix: prefix,
     rows: rows,
     class_name: class_name,
-    data: data,
-    errors: local_assigns[:errors]
+    data: data
   )
   skin = ::SatuRayaUi::UI::Skins::FormInput.new(form_input)
+
+  # Resilient error handling (handling stale code in memory)
+  has_errors = if form_input.respond_to?(:has_errors?)
+                 form_input.has_errors?
+               else
+                 form&.object&.errors&.include?(field) if form&.object.respond_to?(:errors)
+               end
+
+  error_messages = if form_input.respond_to?(:error_messages)
+                     form_input.error_messages
+                   else
+                     (form&.object&.errors&.full_messages_for(field) if form&.object.respond_to?(:errors)) || []
+                   end
+  
+  error_classes = skin.respond_to?(:error_classes) ? skin.error_classes : "mt-2 text-xs font-bold text-rose-600"
 %>
 
 <div>
@@ -38,9 +52,9 @@
     <% end %>
   </div>
 
-  <% if form_input.has_errors? %>
-    <% form_input.error_messages.each do |message| %>
-      <p class="<%= skin.error_classes %>"><%= message %></p>
+  <% if has_errors %>
+    <% error_messages.each do |message| %>
+      <p class="<%= error_classes %>"><%= message %></p>
     <% end %>
   <% end %>
 </div>
