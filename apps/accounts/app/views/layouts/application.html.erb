@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html class="h-full bg-slate-50">
   <head>
-    <title><%= content_for(:title) || "Accounts | #{brand_config.name}" %></title>
+    <title><%= content_for(:title) || "Accounts | #{brand_name}" %></title>
     <%= render "satu_raya_ui/layouts/head" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
 
     <style>
       :root {
-        --brand-primary: <%= System::Current.tenant&.settings&.dig("primary_color") || brand_config.primary_color %>;
+        --brand-primary: <%= brand_primary_color %>;
       }
     </style>
   </head>

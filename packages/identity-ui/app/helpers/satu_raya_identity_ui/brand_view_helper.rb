@@ -3,31 +3,31 @@ module SatuRayaIdentityUI
     # Mengembalikan nama brand dari konfigurasi.
     # @return [String]
     def brand_name
-      SatuRayaIdentityClient::Identity::BrandConfig.name
+      System::Current.tenant&.settings&.dig("brand_name") || SatuRayaIdentityClient::Identity::BrandConfig.name
     end
 
     # Mengembalikan URL logo brand.
     # @return [String, nil]
     def brand_logo_url
-      SatuRayaIdentityClient::Identity::BrandConfig.logo_url
+      System::Current.tenant&.settings&.dig("logo_url") || SatuRayaIdentityClient::Identity::BrandConfig.logo_url
     end
 
     # Mengembalikan warna primer brand.
     # @return [String]
     def brand_primary_color
-      SatuRayaIdentityClient::Identity::BrandConfig.primary_color
+      System::Current.tenant&.settings&.dig("primary_color") || SatuRayaIdentityClient::Identity::BrandConfig.primary_color
     end
 
     # Mengembalikan URL kebijakan privasi.
     # @return [String]
     def brand_privacy_url
-      SatuRayaIdentityClient::Identity::BrandConfig.privacy_url
+      System::Current.tenant&.settings&.dig("privacy_url") || SatuRayaIdentityClient::Identity::BrandConfig.privacy_url
     end
 
     # Mengembalikan URL syarat dan ketentuan.
     # @return [String]
     def brand_terms_url
-      SatuRayaIdentityClient::Identity::BrandConfig.terms_url
+      System::Current.tenant&.settings&.dig("terms_url") || SatuRayaIdentityClient::Identity::BrandConfig.terms_url
     end
 
     # Renders a brand-specific partial if it exists, otherwise falls back to the default brand partial.

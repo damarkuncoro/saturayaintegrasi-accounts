@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html class="h-full bg-slate-50">
   <head>
-    <title><%= content_for(:title) || "Accounts | #{brand_config.name}" %></title>
+    <title><%= content_for(:title) || "Accounts | #{brand_name}" %></title>
     <%= render "satu_raya_ui/layouts/head" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
 
     <style>
       :root {
-        --brand-primary: <%= System::Current.tenant&.settings&.dig("primary_color") || brand_config.primary_color %>;
+        --brand-primary: <%= brand_primary_color %>;
       }
     </style>
   </head>
@@ -48,9 +48,9 @@
 
     <footer class="py-6 px-4 sm:px-6 lg:px-8">
       <div class="flex justify-center space-x-6 text-sm text-slate-500">
-        <%= link_to t("common.privacy_policy"), brand_config.privacy_url || "#", class: "hover:text-slate-900" %>
-        <%= link_to t("common.terms_of_service"), brand_config.terms_url || "#", class: "hover:text-slate-900" %>
-        <span>&copy; <%= Time.current.year %> <%= brand_config.name %></span>
+        <%= link_to t("common.privacy_policy"), brand_privacy_url || "#", class: "hover:text-slate-900" %>
+        <%= link_to t("common.terms_of_service"), brand_terms_url || "#", class: "hover:text-slate-900" %>
+        <span>&copy; <%= Time.current.year %> <%= brand_name %></span>
       </div>
     </footer>
   </body>
