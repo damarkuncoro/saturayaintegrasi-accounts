@@ -274,10 +274,10 @@ module SatuRayaUi
       BUTTON_BASE = "inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-bold shadow-sm transition active:scale-[0.98]"
       
       BUTTON_VARIANTS = {
-        primary: "bg-indigo-600 text-white hover:bg-indigo-700",
-        secondary: "bg-white border border-slate-200 text-slate-700 hover:border-indigo-200 hover:text-indigo-700",
+        primary: "bg-brand-primary text-white hover:opacity-90",
+        secondary: "bg-white border border-slate-200 text-slate-700 hover:border-brand-primary hover:text-brand-primary",
         danger: "bg-rose-600 text-white hover:bg-rose-700",
-        outline: "border border-slate-200 bg-white text-slate-700 hover:border-indigo-200 hover:text-indigo-700"
+        outline: "border border-slate-200 bg-white text-slate-700 hover:border-brand-primary hover:text-brand-primary"
       }
 
       MODAL_BACKDROP = "fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
@@ -304,7 +304,7 @@ module SatuRayaUi
 
       PAGINATION_CONTAINER = "flex items-center justify-between border-t border-slate-100 px-4 py-3 sm:px-6"
       PAGINATION_ITEM_BASE = "relative inline-flex items-center px-4 py-2 text-sm font-medium transition"
-      PAGINATION_ITEM_ACTIVE = "z-10 bg-indigo-600 text-white rounded-lg"
+      PAGINATION_ITEM_ACTIVE = "z-10 bg-brand-primary text-white rounded-lg"
       PAGINATION_ITEM_INACTIVE = "text-slate-500 hover:bg-slate-50 rounded-lg"
 
       TABLE_CONTAINER = "overflow-x-auto rounded-2xl border border-slate-100"
@@ -335,7 +335,7 @@ module SatuRayaUi
       FORM_LABEL = "block text-sm font-black text-slate-700"
       FORM_HINT = "text-xs font-semibold leading-5 text-slate-500"
       
-      INPUT_BASE = "block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm transition-colors placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+      INPUT_BASE = "block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm transition-colors placeholder:text-slate-400 focus:border-brand-primary focus:outline-none focus:ring-4 focus:ring-brand-primary/20"
       INPUT_ERROR = "border-rose-300 text-rose-900 placeholder:text-rose-300 focus:border-rose-500 focus:ring-rose-100"
       INPUT_PREFIX_WRAPPER = "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-sm font-black text-slate-400"
       

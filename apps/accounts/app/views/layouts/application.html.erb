@@ -8,7 +8,7 @@
 
     <style>
       :root {
-        --brand-primary: <%= brand_config.primary_color %>;
+        --brand-primary: <%= System::Current.tenant&.settings&.dig("primary_color") || brand_config.primary_color %>;
       }
     </style>
   </head>

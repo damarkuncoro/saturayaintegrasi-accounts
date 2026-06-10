@@ -26,7 +26,7 @@
         },
         colors: {
           brand: {
-            primary: '<%= brand_config.primary_color %>',
+            primary: '<%= System::Current.tenant&.settings&.dig("primary_color") || brand_config.primary_color %>',
             secondary: '#7c3aed',
             success: '#059669',
             danger: '#e11d48',
@@ -39,7 +39,7 @@
 
 <style>
   :root {
-    --brand-primary: <%= brand_config.primary_color %>;
+    --brand-primary: <%= System::Current.tenant&.settings&.dig("primary_color") || brand_config.primary_color %>;
     --brand-secondary: #7c3aed;
   }
   
