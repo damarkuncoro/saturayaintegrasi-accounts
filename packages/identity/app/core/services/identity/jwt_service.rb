@@ -17,12 +17,23 @@ module Services
     end
 
     def self.decode(token)
-      decoded = JWT.decode(token, Rails.application.secret_key_base, true, algorithm: "HS256")[0]
-      payload = decoded.symbolize_keys
-      Domains::ValueObjects::Identity::JwtToken.new(
-        value: token,
-        expires_at: Time.at(payload[:exp])
-      )
+      keys = [ Rails.application.secret_key_base ]
+      if ENV["JWT_SECRET_FALLBACKS"].present?
+        keys += ENV["JWT_SECRET_FALLBACKS"].split(",").map(&:strip)
+      end
+
+      keys.each_with_index do |key, index|
+        begin
+          decoded = JWT.decode(token, key, true, algorithm: "HS256")[0]
+          payload = decoded.symbolize_keys
+          return Domains::ValueObjects::Identity::JwtToken.new(
+            value: token,
+            expires_at: Time.at(payload[:exp])
+          )
+        rescue JWT::DecodeError => e
+          raise e if index == keys.length - 1
+        end
+      end
     rescue JWT::DecodeError
       nil
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_10_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_10_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -68,6 +68,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_000000) do
     t.index ["tenant_id", "user_id", "used_at"], name: "index_email_verification_tokens_on_tenant_user_used"
     t.index ["token_digest"], name: "index_email_verification_tokens_on_token_digest", unique: true
     t.index ["user_id"], name: "index_email_verification_tokens_on_user_id"
+  end
+
+  create_table "jwt_refresh_tokens", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.uuid "family_id", null: false
+    t.string "ip_address"
+    t.uuid "replaced_by_id"
+    t.datetime "revoked_at"
+    t.string "scopes", default: [], null: false, array: true
+    t.uuid "sso_client_configuration_id", null: false
+    t.uuid "tenant_id", null: false
+    t.string "token_digest", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.uuid "user_id", null: false
+    t.index ["family_id"], name: "index_jwt_refresh_tokens_on_family_id"
+    t.index ["tenant_id", "user_id"], name: "index_jwt_refresh_tokens_on_tenant_id_and_user_id"
+    t.index ["token_digest"], name: "index_jwt_refresh_tokens_on_token_digest", unique: true
   end
 
   create_table "login_attempts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -153,6 +172,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_000000) do
     t.uuid "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.index ["tenant_id", "slug"], name: "index_roles_on_tenant_id_and_slug", unique: true
+  end
+
+  create_table "service_clients", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.string "allowed_ips", default: [], null: false, array: true
+    t.string "allowed_scopes", default: [], null: false, array: true
+    t.string "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "rotated_at"
+    t.string "secret_digest", null: false
+    t.string "service_name", null: false
+    t.uuid "tenant_id"
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_service_clients_on_client_id", unique: true
+    t.index ["tenant_id"], name: "index_service_clients_on_tenant_id"
   end
 
   create_table "sessions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -486,6 +520,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_000000) do
   add_foreign_key "audit_logs", "users", on_delete: :nullify
   add_foreign_key "email_verification_tokens", "tenants", on_delete: :cascade
   add_foreign_key "email_verification_tokens", "users", on_delete: :cascade
+  add_foreign_key "jwt_refresh_tokens", "jwt_refresh_tokens", column: "replaced_by_id", on_delete: :nullify
+  add_foreign_key "jwt_refresh_tokens", "sso_client_configurations", on_delete: :cascade
+  add_foreign_key "jwt_refresh_tokens", "tenants", on_delete: :cascade
+  add_foreign_key "jwt_refresh_tokens", "users", on_delete: :cascade
   add_foreign_key "login_attempts", "tenants"
   add_foreign_key "login_attempts", "users", on_delete: :nullify
   add_foreign_key "mfa_backup_codes", "tenants", on_delete: :cascade
@@ -496,6 +534,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_000000) do
   add_foreign_key "password_reset_tokens", "users", on_delete: :cascade
   add_foreign_key "role_permissions", "permissions", on_delete: :cascade
   add_foreign_key "role_permissions", "roles", on_delete: :cascade
+  add_foreign_key "service_clients", "tenants"
   add_foreign_key "sessions", "tenants", on_delete: :cascade
   add_foreign_key "sessions", "users", column: "revoked_by_id", on_delete: :nullify
   add_foreign_key "sessions", "users", on_delete: :cascade

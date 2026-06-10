@@ -41,6 +41,8 @@ module Identity
 
     has_many :sessions, class_name: "Identity::Session", dependent: :destroy
     has_many :user_permissions, class_name: "Identity::UserPermission", dependent: :destroy
+    has_many :user_roles, class_name: "Identity::UserRole", dependent: :destroy
+    has_many :roles, through: :user_roles, class_name: "Identity::Role"
 
     def can?(action, resource_type)
       user_permissions.can?(self, action, resource_type)

@@ -6,12 +6,13 @@ Dokumen ini menjelaskan kebijakan, kontrol, dan mekanisme keamanan yang diterapk
 
 ## 1. Rotasi Token & Refresh Token (Token Rotation)
 
-Penggunaan JSON Web Token (JWT) untuk autentikasi API membagi token menjadi dua kategori:
-- **`access_token`**: Berdurasi pendek (misal: 15 menit), digunakan untuk mengakses resource API secara langsung.
-- **`refresh_token`**: Berdurasi panjang (misal: 7 s.d. 30 hari), disimpan dengan aman di client dan digunakan untuk meminta `access_token` baru tanpa meminta pengguna login ulang.
+> [!NOTE]
+> Fitur database-backed Refresh Token Rotation (RTR) (menggunakan tabel `jwt_refresh_tokens`) telah **diimplementasikan secara penuh** pada Fase 4.
+>
+> Otentikasi user session yang berjalan di ekosistem Satu Raya dilindungi menggunakan **Wildcard Signed Session Cookies** terenkripsi, pelacakan sesi aktif (active session tracking), perangkat tepercaya (trusted device fingerprinting), audit logging yang ketat, dan **Refresh Token Rotation (RTR)** untuk klien OIDC/OAuth2.
 
 ### Skema Tabel `jwt_refresh_tokens`
-Refresh token harus disimpan di database Accounts dalam bentuk digest (hash) untuk mencegah penyalahgunaan apabila database bocor, serta untuk mendukung pembatalan token (revocation).
+Refresh token akan disimpan di database Accounts dalam bentuk digest (hash) untuk mencegah penyalahgunaan apabila database bocor, serta untuk mendukung pembatalan token (revocation).
 
 | Field | Tipe Data | Nullable | Deskripsi |
 | --- | --- | --- | --- |
@@ -20,6 +21,7 @@ Refresh token harus disimpan di database Accounts dalam bentuk digest (hash) unt
 | `user_id` | UUID | No | ID User pemilik token. |
 | `token_digest` | String | No | SHA256 hash dari refresh token. |
 | `family_id` | UUID | No | ID keluarga token untuk pelacakan rotasi (Token Rotation Family). |
+| `scopes` | Array[String] | No | Scope yang diberikan kepada token (misal: `["openid", "profile"]`). |
 | `expires_at` | DateTime | No | Tanggal kadaluarsa token. |
 | `revoked_at` | DateTime | Yes | Waktu token dicabut secara manual (jika ada). |
 | `replaced_by_id` | UUID | Yes | Referensi ke token pengganti (relasi rekursif ke `jwt_refresh_tokens.id`). |
@@ -40,25 +42,33 @@ Untuk mencegah serangan pencurian refresh token, Accounts mengimplementasikan me
 Sebagai pusat manajemen identitas, Accounts wajib mematuhi standar keamanan berikut:
 
 ### Kontrol Kredensial & Autentikasi
-- [ ] **Kekuatan Password**: Password minimal 12 karakter, mengandung kombinasi huruf besar, huruf kecil, angka, dan karakter spesial.
-- [ ] **Password History**: Mencegah penggunaan ulang password yang sama (menyimpan history hash password sebelumnya).
-- [ ] **Credential Digest**: Semua password disimpan menggunakan algoritma hashing yang aman (BCrypt dengan cost factor minimal 12).
-- [ ] **Pencabutan Session (Session Revocation)**: Pengguna memiliki kemampuan untuk melihat daftar session aktif dan mencabut session dari perangkat tertentu.
+- [x] **Kekuatan Password**: Password minimal 12 karakter, wajib divalidasi saat registrasi atau perubahan password.
+- [x] **Password History**: Mencegah penggunaan ulang password yang sama (menyimpan history hash password sebelumnya di tabel `password_histories`).
+- [x] **Credential Digest**: Semua password disimpan menggunakan algoritma hashing BCrypt dengan standard cost factor 12 (`has_secure_password`).
+- [x] **Pencabutan Session (Session Revocation)**: Pengguna memiliki kemampuan untuk melihat daftar session aktif dan mencabut (revoke) session tertentu dari dashboard perangkat.
 
 ### Multi-Factor Authentication (MFA)
-- [ ] **MFA 2FA**: Mendukung verifikasi dua langkah menggunakan Time-based One-time Password (TOTP) seperti Google Authenticator.
-- [ ] **Backup Codes**: Menyediakan kode cadangan (backup/recovery codes) yang disimpan dalam bentuk digest (hanya bisa dibaca sekali saat digenerate).
+- [x] **MFA 2FA**: Mendukung verifikasi dua langkah menggunakan Time-based One-time Password (TOTP) via library `rotp`.
+- [x] **Backup Codes**: Menyediakan kode cadangan (backup/recovery codes) sekali pakai yang disimpan dalam bentuk digest (`mfa_backup_codes`).
 
 ### Pertahanan Terhadap Serangan & Rate Limiting
-- [ ] **Login Attempt Limiter**: Akun terkunci otomatis (`locked`) setelah 5 kali gagal login berturut-turut untuk menahan serangan brute-force.
-- [ ] **Rate Limit API**: Menggunakan library seperti `Rack::Attack` untuk membatasi request pada endpoint sensitif (login, reset password, register).
-- [ ] **CORS Policy**: CORS policy dikonfigurasi ketat hanya memperbolehkan domain resmi yang terdaftar di `BrandConfig.cors_allowed_origins`.
-- [ ] **Redirect Safe Guard**: Validasi parameter redirect `return_to` agar tidak mengizinkan redirect ke domain penyerang (Open Redirect Vulnerability). Wajib menggunakan filter berbasis allowlist.
+- [x] **Login Attempt Limiter**: Akun terkunci otomatis (`locked_at`) setelah 5 kali gagal login berturut-turut untuk menahan serangan brute-force.
+- [x] **Rate Limit API**: Menggunakan `Rack::Attack` middleware untuk membatasi request pada endpoint sensitif:
+  - Login by IP: maks 60 request/menit.
+  - Login by Email: maks 10 attempt/menit.
+  - Registrasi by IP: maks 10 request/menit.
+  - Reset Password by IP: maks 10 request/menit.
+  - Reset Password by Email: maks 5 request/menit.
+  - API General by IP: maks 1000 request/menit.
+- [x] **CORS Policy**: CORS policy dikonfigurasi ketat hanya memperbolehkan domain resmi yang dibaca secara dinamis dari `SatuRayaIdentityClient::Identity::BrandConfig.app_domain`.
+- [x] **Redirect Safe Guard**: Validasi parameter redirect `return_to` agar tidak mengizinkan redirect ke domain penyerang (Open Redirect Vulnerability). Wajib menggunakan allowlist dinamis yang dibaca dari `SatuRayaIdentityClient::Identity::BrandConfig.allowed_redirect_hosts`.
 
 ### Keamanan Data & Audit
-- [ ] **Audit Logging**: Mencatat setiap perubahan sensitif (ganti password, perubahan email, aktivasi/deaktivasi 2FA, perubahan peran) ke dalam audit trail yang tidak dapat diubah (immutable).
-- [ ] **Rotasi Secret**: Mendukung rotasi berkala untuk `SECRET_KEY_BASE` dan JWT signing key tanpa mengganggu session pengguna (melalui key rotation fallback).
-- [ ] **HMAC Integration**: Komunikasi sinkronisasi user internal diamankan dengan enkripsi HMAC SHA256.
+- [x] **Audit Logging**: Setiap perubahan sensitif (ganti password, perubahan email, aktivasi/deaktivasi 2FA, perubahan peran) dicatat ke dalam audit trail.
+  - **Cryptographic Hash Chain**: Audit logging menggunakan rantai hash (seperti blockchain) di mana setiap entri log menyimpan `previous_hash` dari entri log sebelumnya dan menghitung signature SHA256 miliknya sendiri. Ini menjamin data log tidak dapat diubah (immutable/tamper-proof).
+  - **Integrity Verification**: Rantai hash divalidasi secara terjadwal/berkala menggunakan task `bin/rails system:audit:verify`.
+- [x] **Rotasi Secret**: Mendukung rotasi berkala untuk `SECRET_KEY_BASE` dan JWT signing key tanpa mengganggu session pengguna (melalui key rotation fallback).
+- [x] **HMAC Integration**: Komunikasi sinkronisasi user internal diamankan dengan enkripsi HMAC SHA256.
 
 ---
 

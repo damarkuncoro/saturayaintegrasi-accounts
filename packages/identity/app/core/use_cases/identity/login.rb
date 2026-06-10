@@ -63,9 +63,18 @@ module UseCases
 
       # 5. Cek MFA (Multi-Factor Authentication)
       if user.otp_required_for_login?
-        # Skip MFA jika perangkat terpercaya
+        # Skip MFA jika perangkat terpercaya dan tidak terdeteksi risiko
         is_trusted = false
-        if trusted_device_fingerprint.present?
+        is_risky = risky_login?(user, ip_address, user_agent)
+
+        if is_risky
+          @audit_logger.log(
+            action: "login_risk_detected",
+            auditable: user,
+            tenant: tenant,
+            metadata: { ip_address: ip_address, user_agent: user_agent }
+          )
+        elsif trusted_device_fingerprint.present?
           digest = Digest::SHA256.hexdigest(trusted_device_fingerprint.to_s)
           is_trusted = user.trusted_devices.for_tenant(tenant).active.exists?(device_fingerprint_digest: digest)
         end
@@ -100,6 +109,20 @@ module UseCases
         user_agent: ua,
         expires_at: 24.hours.from_now
       )
+    end
+
+    def risky_login?(user, ip_address, user_agent)
+      return false if ip_address.blank?
+
+      past_ips = user.sessions.where("created_at > ?", 30.days.ago).pluck(:ip_address).compact.uniq
+      past_ips += ::Identity::LoginAttempt.where(user: user, success: true).where("created_at > ?", 30.days.ago).pluck(:ip_address).compact.uniq
+      past_ips = past_ips.uniq
+
+      # Jika tidak ada riwayat login sukses sebelumnya (user baru), maka tidak dianggap mencurigakan
+      return false if past_ips.empty?
+
+      # Jika IP saat ini tidak ada dalam daftar IP sukses sebelumnya, berarti ini login mencurigakan/berisiko
+      !past_ips.include?(ip_address)
     end
   end
 end

@@ -39,7 +39,7 @@ sequenceDiagram
 
 ### Aturan & Implementasi Cookie
 1. **Domain Wildcard**: Cookie session harus disetel menggunakan domain wildcard, contohnya `.satu-raya.dev` (atau `.kacanggoreng.com` pada brand kustom), agar dapat dibaca oleh subdomain lain.
-2. **Kustomisasi Domain**: Nilai cookie domain dibaca secara dinamis dari konfigurasi `BrandConfig.app_domain` (menggunakan environment variable `APP_DOMAIN`).
+2. **Kustomisasi Domain**: Nilai cookie domain dibaca secara dinamis dari konfigurasi `SatuRayaIdentityClient::Identity::BrandConfig.app_domain` (menggunakan environment variable `APP_DOMAIN`).
 3. **Session Cookie Security**: Cookie wajib disetel dengan opsi:
    - `secure: true` (hanya dikirim via HTTPS).
    - `httponly: true` (mencegah pembacaan cookie via Javascript untuk menghindari XSS).
@@ -87,18 +87,18 @@ Untuk menjaga agar Accounts murni menjadi service IAM (Identity and Access Manag
 +-------------------------------------------------------------+
 ```
 
-### Klasifikasi Klien: `api_clients` vs `service_clients`
-Untuk memisahkan akses integrasi, Accounts membedakan dua jenis tipe klien:
+### Klasifikasi Klien: `sso_client_configurations` vs `api_clients`
+Untuk memisahkan akses integrasi, Accounts membedakan dua tipe konfigurasi klien:
 
-1. **`api_clients` (Eksternal / Publik)**
-   - Digunakan oleh aplikasi pihak ketiga atau integrasi eksternal.
-   - Menggunakan alur OAuth2 / OIDC standar (Authorization Code Flow).
-   - Memiliki scope akses terbatas dan memerlukan persetujuan eksplisit dari pengguna (consent screen).
+1. **`sso_client_configurations` (Single Sign-On / OIDC Clients)**
+   - Digunakan oleh internal services (Jobs, Business) atau partner eksternal untuk integrasi Single Sign-On (SSO).
+   - Menggunakan alur OAuth2 / OIDC standar (Authorization Code Flow dengan PKCE).
+   - Memerlukan persetujuan eksplisit dari pengguna (Consent Screen) saat pertama kali login dan validasi redirect URI yang ketat (allowlist).
 
-2. **`service_clients` (Internal Antar-Service)**
-   - Digunakan untuk komunikasi internal antar service Satu Raya (seperti Jobs, Payroll, Attendance, Contract).
-   - Menggunakan autentikasi internal (Client Credentials atau token bertandatangan HMAC).
-   - Memiliki izin untuk memanggil API internal Accounts (misal: token introspection endpoint) tanpa interaksi user.
+2. **`api_clients` (Machine-to-Machine Integration Clients)**
+   - Digunakan untuk komunikasi langsung programatik antar-service (Machine-to-Machine/M2M) atau integrasi API backend.
+   - Menggunakan autentikasi API Key & Secret (`api_key` dan `api_secret_digest` terenkripsi).
+   - Mendukung pembatasan akses IP (`allowed_ips`), hak akses API granular (`permissions` JSONB), dan rate limit per menit (`rate_limit_per_minute`) untuk keamanan optimal.
 
 ---
 

@@ -35,6 +35,7 @@ Rails.application.routes.draw do
     post "oauth/token",     to: "oauth#token"
     get  "oauth/userinfo",  to: "oauth#userinfo"
     post "oauth/revoke",    to: "oauth#revoke"
+    post "oauth/introspect", to: "oauth#introspect"
   end
 
   get    "dashboard",  to: "home#dashboard",       as: :identity_dashboard
