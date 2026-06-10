@@ -79,4 +79,54 @@ RSpec.describe "Rack::Attack Rate Limiting", type: :request do
       expect(response.status).to eq(429)
     end
   end
+
+  describe ".resolve_tenant_identifier" do
+    it "resolves from X-Tenant-ID header" do
+      req = double("Request", env: { "HTTP_X_TENANT_ID" => "tenant-uuid-123" })
+      expect(Rack::Attack.resolve_tenant_identifier(req)).to eq("tenant-uuid-123")
+    end
+
+    it "resolves from JWT Bearer token" do
+      user = create(:user, tenant: tenant)
+      token = user.generate_jwt_token
+      req = double("Request", env: { "HTTP_AUTHORIZATION" => "Bearer #{token}" })
+      expect(Rack::Attack.resolve_tenant_identifier(req)).to eq(tenant.id)
+    end
+
+    it "resolves from subdomain" do
+      req = double("Request", env: {}, host: "demo-tenant.satu-raya.dev")
+      expect(Rack::Attack.resolve_tenant_identifier(req)).to eq("demo-tenant")
+    end
+
+    it "resolves from custom domain" do
+      req = double("Request", env: {}, host: "mycustomdomain.com")
+      expect(Rack::Attack.resolve_tenant_identifier(req)).to eq("mycustomdomain.com")
+    end
+  end
+
+  describe "tenant-scoped throttles" do
+    it "logins/tenant tracks by tenant identifier" do
+      req = double("Request", path: "/login", post?: true, env: { "HTTP_X_TENANT_ID" => "tenant-123" })
+      discriminator = Rack::Attack.throttles["logins/tenant"].block.call(req)
+      expect(discriminator).to eq("tenant-123")
+    end
+
+    it "registrations/tenant tracks by tenant identifier" do
+      req = double("Request", path: "/register", post?: true, env: { "HTTP_X_TENANT_ID" => "tenant-123" })
+      discriminator = Rack::Attack.throttles["registrations/tenant"].block.call(req)
+      expect(discriminator).to eq("tenant-123")
+    end
+
+    it "password_resets/tenant tracks by tenant identifier" do
+      req = double("Request", path: "/identity/password_reset", post?: true, env: { "HTTP_X_TENANT_ID" => "tenant-123" })
+      discriminator = Rack::Attack.throttles["password_resets/tenant"].block.call(req)
+      expect(discriminator).to eq("tenant-123")
+    end
+
+    it "api/tenant tracks by tenant identifier" do
+      req = double("Request", path: "/api/v1/users", env: { "HTTP_X_TENANT_ID" => "tenant-123" })
+      discriminator = Rack::Attack.throttles["api/tenant"].block.call(req)
+      expect(discriminator).to eq("tenant-123")
+    end
+  end
 end
