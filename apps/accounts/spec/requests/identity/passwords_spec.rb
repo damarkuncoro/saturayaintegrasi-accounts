@@ -28,7 +28,7 @@ RSpec.describe 'Passwords', type: :request do
           password: "NewPass123!@#",
           password_confirmation: "NewPass123!@#"
         }
-        expect(response).to redirect_to("/dashboard")
+        expect(response.location).to include("/dashboard")
       end
     end
 

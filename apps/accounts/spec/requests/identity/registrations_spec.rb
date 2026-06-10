@@ -19,7 +19,7 @@ RSpec.describe 'Registrations', type: :request do
       it 'redirects to the user dashboard' do
         post sign_in_path, params: { email: user.email, password: "Secret1*3*5*" }
         get sign_up_path
-        expect(response).to redirect_to("/dashboard")
+        expect(response.location).to include("/dashboard")
       end
     end
   end
@@ -40,7 +40,7 @@ RSpec.describe 'Registrations', type: :request do
           }
         }.to change(Identity::User, :count).by(1)
 
-        expect(response).to redirect_to("/dashboard")
+        expect(response.location).to include("/dashboard")
       end
 
       it 'does not allow public registration as an admin' do

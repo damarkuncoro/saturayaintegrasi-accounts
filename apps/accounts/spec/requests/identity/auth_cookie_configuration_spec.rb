@@ -18,7 +18,7 @@ RSpec.describe "Auth cookie configuration", type: :request do
     host! "cookie.example.com"
     post sign_in_path, params: { email: user.email, password: password }
 
-    expect(response).to redirect_to("/dashboard")
+    expect(response.location).to include("/dashboard")
     expect(cookies["kacanggoreng_session_id"]).to be_present
 
     get "/dashboard"

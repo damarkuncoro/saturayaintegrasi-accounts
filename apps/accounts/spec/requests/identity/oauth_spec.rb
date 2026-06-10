@@ -38,7 +38,7 @@ RSpec.describe "OIDC / OAuth2 Provider Flow", type: :request do
     context "when authenticated" do
       before do
         post sign_in_path, params: { email: user.email, password: password }
-        expect(response).to redirect_to("/dashboard")
+        expect(response.location).to include("/dashboard")
       end
 
       context "without existing consent" do

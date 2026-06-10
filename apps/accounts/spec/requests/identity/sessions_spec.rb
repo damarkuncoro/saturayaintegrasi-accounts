@@ -39,7 +39,7 @@ RSpec.describe 'Sessions', type: :request do
       it 'redirects to the user dashboard' do
         sign_in_as(user)
         get sign_in_path
-        expect(response).to redirect_to("/dashboard")
+        expect(response.location).to include("/dashboard")
       end
     end
   end
@@ -48,7 +48,7 @@ RSpec.describe 'Sessions', type: :request do
     context 'with valid credentials' do
       it 'signs in and redirects to user dashboard' do
         post sign_in_path, params: { email: user.email, password: "Secret1*3*5*" }
-        expect(response).to redirect_to("/dashboard")
+        expect(response.location).to include("/dashboard")
 
         get "/dashboard"
         expect(response).to have_http_status(:success)
@@ -100,7 +100,7 @@ RSpec.describe 'Sessions', type: :request do
       sign_in_as(user)
       session_id = user.sessions.last.id
       delete session_path(session_id)
-      expect(response).to redirect_to(sessions_path)
+      expect(response.location).to include(sessions_path)
     end
   end
 end

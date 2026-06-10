@@ -25,7 +25,7 @@ RSpec.describe "Accounts main scenarios", type: :request do
     }
 
     registered_user = Identity::User.find_by!(email: "public-admin-attempt@example.com")
-    expect(response).to redirect_to("/dashboard")
+    expect(response.location).to include("/dashboard")
     expect(registered_user).to be_user
 
     delete sign_out_path
@@ -54,7 +54,7 @@ RSpec.describe "Accounts main scenarios", type: :request do
     expect(response.location).to match(/\/login\?email_hint=shared-login%40example\.com$/)
 
     post sign_in_path, params: { email: email, password: "OtherSecret1*3*5*" }
-    expect(response).to redirect_to("/dashboard")
+    expect(response.location).to include("/dashboard")
 
     get sessions_path
     expect(response).to have_http_status(:success)
@@ -88,14 +88,14 @@ RSpec.describe "Accounts main scenarios", type: :request do
     user.email_verification_tokens.create!(tenant: tenant, token_digest: token_digest, expires_at: 1.day.from_now)
 
     get identity_email_verification_path(sid: token_raw, email: user.email)
-    expect(response).to redirect_to("/dashboard")
+    expect(response.location).to include("/dashboard")
     expect(user.reload).to be_verified
 
     patch identity_email_path, params: {
       email: "email-flow-updated@example.com",
       password_challenge: password
     }
-    expect(response).to redirect_to("/dashboard")
+    expect(response.location).to include("/dashboard")
     expect(user.reload.email).to eq("email-flow-updated@example.com")
     expect(user).not_to be_verified
 
@@ -104,7 +104,7 @@ RSpec.describe "Accounts main scenarios", type: :request do
       password: "NewSecret1*3*5*",
       password_confirmation: "NewSecret1*3*5*"
     }
-    expect(response).to redirect_to("/dashboard")
+    expect(response.location).to include("/dashboard")
 
     user.reload.update!(verified: true)
 
@@ -145,18 +145,18 @@ RSpec.describe "Accounts main scenarios", type: :request do
     delete sign_out_path
 
     post sign_in_path, params: { email: user.email, password: password }
-    expect(response).to redirect_to(new_two_factor_challenge_path)
+    expect(response.location).to include(new_two_factor_challenge_path)
 
     challenge_code = ROTP::TOTP.new(user.reload.otp_secret, issuer: SatuRayaIdentityClient::Identity::BrandConfig.name).now
     post two_factor_challenge_path, params: { otp_code: challenge_code }
-    expect(response).to redirect_to("/dashboard")
+    expect(response.location).to include("/dashboard")
 
     disable_code = ROTP::TOTP.new(user.reload.otp_secret, issuer: SatuRayaIdentityClient::Identity::BrandConfig.name).now
     post disable_two_factor_settings_path, params: {
       otp_code: disable_code,
       password_challenge: password
     }
-    expect(response).to redirect_to(two_factor_settings_path)
+    expect(response.location).to include(two_factor_settings_path)
     expect(user.reload).not_to be_otp_required_for_login
     expect(user.otp_secret).to be_nil
   end

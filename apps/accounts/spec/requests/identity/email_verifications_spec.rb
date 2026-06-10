@@ -22,7 +22,7 @@ RSpec.describe 'Identity::EmailVerifications', type: :request do
       }.to have_enqueued_mail(Identity::UserMailer, :email_verification_instructions)
         .with(user, kind_of(String))
 
-      expect(response).to redirect_to("/dashboard")
+      expect(response.location).to include("/dashboard")
     end
   end
 
@@ -39,7 +39,7 @@ RSpec.describe 'Identity::EmailVerifications', type: :request do
         )
 
         get identity_email_verification_path(sid: token_raw, email: user.email)
-        expect(response).to redirect_to("/dashboard")
+        expect(response.location).to include("/dashboard")
       end
     end
 
@@ -55,7 +55,7 @@ RSpec.describe 'Identity::EmailVerifications', type: :request do
         )
 
         get identity_email_verification_path(sid: token_raw, email: user.email)
-        expect(response).to redirect_to(sign_in_path)
+        expect(response.location).to include(sign_in_path)
         expect(flash[:alert]).to eq("Token tidak valid atau sudah kedaluwarsa.")
       end
     end

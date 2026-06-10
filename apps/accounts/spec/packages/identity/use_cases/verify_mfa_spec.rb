@@ -27,7 +27,7 @@ RSpec.describe UseCases::Identity::Mfa::VerifyChallenge do
       it "returns failure immediately without checking the OTP code" do
         expect(mfa_service).not_to receive(:verify_login_code)
 
-        result = use_case.execute(user: user, otp_code: "123456", tenant: tenant)
+        result = use_case.execute(user: user, code: "123456", tenant: tenant)
 
         expect(result).not_to be_success
         expect(result.error).to eq("Akun Anda sedang terkunci. Silakan hubungi admin atau reset kata sandi.")
@@ -49,7 +49,7 @@ RSpec.describe UseCases::Identity::Mfa::VerifyChallenge do
       end
 
       it "resets failed attempts, creates a session, and returns success" do
-        result = use_case.execute(user: user, otp_code: "123456", tenant: tenant)
+        result = use_case.execute(user: user, code: "123456", tenant: tenant)
 
         expect(result).to be_success
         expect(user.reload.failed_attempts).to eq(0)
@@ -60,18 +60,18 @@ RSpec.describe UseCases::Identity::Mfa::VerifyChallenge do
     context "when the OTP code is invalid" do
       before do
         allow(mfa_service).to receive(:verify_login_code)
-          .with(user: user, code: "wrong_code", tenant: tenant)
+          .with(user: user, code: "000000", tenant: tenant)
           .and_return(Core::Result.failure("Kode MFA tidak valid."))
       end
 
       it "increments the failed attempts counter" do
         expect {
-          use_case.execute(user: user, otp_code: "wrong_code", tenant: tenant)
+          use_case.execute(user: user, code: "000000", tenant: tenant)
         }.to change { user.reload.failed_attempts }.by(1)
       end
 
       it "does not lock the account if attempts are under 5" do
-        use_case.execute(user: user, otp_code: "wrong_code", tenant: tenant)
+        use_case.execute(user: user, code: "000000", tenant: tenant)
         expect(user.reload).not_to be_locked
       end
 
@@ -80,7 +80,7 @@ RSpec.describe UseCases::Identity::Mfa::VerifyChallenge do
 
         result = nil
         expect {
-          result = use_case.execute(user: user, otp_code: "wrong_code", tenant: tenant)
+          result = use_case.execute(user: user, code: "000000", tenant: tenant)
         }.to change { System::AuditLog.count }.by(2)
 
         expect(user.reload).to be_locked

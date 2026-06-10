@@ -8,7 +8,7 @@
   </div>
 
   <%= render "shared/components/card", padding: "10" do %>
-    <%= form_with(url: password_path, method: :patch, class: "space-y-8") do |form| %>
+    <%= form_with(model: @user, url: password_path, method: :patch, class: "space-y-8") do |form| %>
       <%= render "shared/components/form_errors", f: form %>
       <%= render "shared/components/form_field", label: t("passwords.edit.password_challenge_label"), name: :password_challenge, required: true do %>
         <%= render "shared/components/form_input", f: form, field: :password_challenge, type: :password, placeholder: "••••••••" %>
