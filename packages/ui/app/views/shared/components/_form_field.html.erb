@@ -1,16 +1,26 @@
 <%
-  field_name = local_assigns.fetch(:name)
-  wrapper_classes = [
-    "space-y-2",
-    local_assigns[:class_name]
-  ].compact.join(" ")
+  # Menangani arguments dengan default values yang aman
+  name       = local_assigns[:name]
+  label      = local_assigns[:label]
+  required   = local_assigns[:required] || false
+  hint       = local_assigns[:hint]
+  class_name = local_assigns[:class_name]
+
+  form_field = ::SatuRayaUi::UI::Contract::FormField.new(
+    name: name,
+    label: label,
+    required: required,
+    hint: hint,
+    class_name: class_name
+  )
+  skin = ::SatuRayaUi::UI::Skins::FormField.new(form_field)
 %>
 
-<div class="<%= wrapper_classes %>">
+<div <%= skin.render_attributes %> class="<%= skin.wrapper_classes %>">
   <div class="flex items-center justify-between gap-3">
-    <label for="<%= field_name %>" class="block text-sm font-black text-slate-700">
-      <%= local_assigns.fetch(:label) %>
-      <% if local_assigns[:required] %>
+    <label for="<%= form_field.name %>" class="<%= skin.label_classes %>">
+      <%= form_field.label %>
+      <% if form_field.required %>
         <span class="text-rose-500">*</span>
       <% end %>
     </label>
@@ -18,7 +28,7 @@
 
   <%= yield %>
 
-  <% if local_assigns[:hint].present? %>
-    <p class="text-xs font-semibold leading-5 text-slate-500"><%= local_assigns[:hint] %></p>
+  <% if form_field.hint.present? %>
+    <p class="<%= skin.hint_classes %>"><%= form_field.hint %></p>
   <% end %>
 </div>

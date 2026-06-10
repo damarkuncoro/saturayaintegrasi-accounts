@@ -1,0 +1,28 @@
+<%
+  # Menangani arguments dengan default values yang aman
+  headers = local_assigns[:headers] || []
+  class_name = local_assigns[:class_name]
+
+  table = ::SatuRayaUi::UI::Contract::Table.new(
+    headers: headers,
+    class_name: class_name
+  )
+  skin = ::SatuRayaUi::UI::Skins::Table.new(table)
+%>
+
+<div class="<%= skin.container_classes %>">
+  <table class="<%= skin.table_classes %>">
+    <thead class="<%= skin.thead_classes %>">
+      <tr>
+        <% table.headers.each do |header| %>
+          <th scope="col" class="<%= skin.th_classes %>">
+            <%= header %>
+          </th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-slate-100">
+      <%= yield skin %>
+    </tbody>
+  </table>
+</div>

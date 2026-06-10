@@ -2,7 +2,13 @@
 
 module Core
   class BaseUseCase
-    # Method utama yang harus diimplementasikan oleh subclass.
+    # Method class untuk mempermudah pemanggilan use case.
+    # @example User::Register.call(params: { ... })
+    def self.call(*args, **kwargs)
+      new.execute(*args, **kwargs)
+    end
+
+    # Method utama yang menjalankan logika use case.
     def execute(*args, **kwargs)
       if self.class.transactional?
         ActiveRecord::Base.transaction do
@@ -11,10 +17,12 @@ module Core
       else
         perform_execute(*args, **kwargs)
       end
+    rescue => e
+      handle_exception(e)
     end
 
     def perform_execute(*args, **kwargs)
-      raise NotImplementedError, "#{self.class} harus mengimplementasikan method #perform_execute atau #execute"
+      raise NotImplementedError, "#{self.class} harus mengimplementasikan method #perform_execute"
     end
 
     def self.transactional?
@@ -26,6 +34,33 @@ module Core
     end
 
     protected
+
+    # Melakukan otorisasi aksi menggunakan Pundit.
+    # @param record [Object] Objek yang akan diperiksa aksesnya
+    # @param query [Symbol] Nama method policy (misal: :update?)
+    # @param user [Object] User yang melakukan aksi
+    # @raise [Pundit::NotAuthorizedError] jika tidak diizinkan
+    def authorize!(record, query, user: nil)
+      user ||= System::Current.user
+      policy = Pundit.policy!(user, record)
+      
+      unless policy.public_send(query)
+        raise Pundit::NotAuthorizedError, query: query, record: record, policy: policy
+      end
+    end
+
+    # Menangani exception secara standar jika tidak dihandle di subclass.
+    def handle_exception(e)
+      case e
+      when Pundit::NotAuthorizedError
+        failure("Anda tidak memiliki izin untuk melakukan aksi ini.", code: :forbidden, meta: { status: :forbidden })
+      else
+        Rails.logger.error "[#{self.class}] Error: #{e.message}"
+        Rails.logger.error e.backtrace.first(5).join("\n")
+        
+        failure("Terjadi kesalahan sistem.", code: :system_error)
+      end
+    end
 
     # Helper untuk logging audit jika tersedia.
     def audit_log(action:, auditable:, tenant:, metadata: {})

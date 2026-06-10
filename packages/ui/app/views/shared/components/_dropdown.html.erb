@@ -1,0 +1,32 @@
+<%
+  # Menangani arguments dengan default values yang aman
+  label = local_assigns[:label]
+  id = local_assigns[:id]
+  variant = local_assigns[:variant] || :outline
+  class_name = local_assigns[:class_name]
+
+  dropdown = ::SatuRayaUi::UI::Contract::Dropdown.new(
+    label: label,
+    id: id,
+    variant: variant,
+    class_name: class_name
+  )
+  skin = ::SatuRayaUi::UI::Skins::Dropdown.new(dropdown)
+%>
+
+<div <%= skin.render_attributes %> class="relative inline-block text-left">
+  <div>
+    <button type="button" class="<%= skin.button_classes %>" id="<%= dropdown.id %>-button" aria-expanded="true" aria-haspopup="true">
+      <%= dropdown.label %>
+      <svg class="-mr-1 ml-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="<%= skin.menu_classes %>" role="menu" aria-orientation="vertical" aria-labelledby="<%= dropdown.id %>-button" tabindex="-1">
+    <div class="py-1" role="none">
+      <%= yield skin %>
+    </div>
+  </div>
+</div>

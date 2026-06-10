@@ -11,6 +11,11 @@ module Identity
         attribute :last_name, :string
         attribute :phone, :string
 
+        normalize :email, with: :email
+        normalize :first_name, with: :text
+        normalize :last_name, with: :text
+        normalize :phone, with: :phone
+
         validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
         validates :password, presence: true, length: { minimum: 8 }
         validates :first_name, presence: true

@@ -1,15 +1,25 @@
 <%
-  button = SatuRayaCommons::UI::Contract::Button.new(
-    label: local_assigns.fetch(:label),
-    path: local_assigns.fetch(:path),
-    method: local_assigns.fetch(:method, :get),
-    variant: local_assigns.fetch(:variant, :primary),
-    target: local_assigns[:target],
-    aria_label: local_assigns[:aria_label],
-    class_name: local_assigns[:class_name],
-    data: local_assigns.fetch(:data, {})
+  # Menangani arguments dengan default values yang aman
+  label      = local_assigns[:label]
+  path       = local_assigns[:path]
+  method     = local_assigns[:method] || :get
+  variant    = local_assigns[:variant] || :primary
+  target     = local_assigns[:target]
+  aria_label = local_assigns[:aria_label]
+  class_name = local_assigns[:class_name]
+  data       = local_assigns[:data] || {}
+
+  button = ::SatuRayaUi::UI::Contract::Button.new(
+    label: label,
+    path: path,
+    method: method,
+    variant: variant,
+    target: target,
+    aria_label: aria_label,
+    class_name: class_name,
+    data: data
   )
-  skin = SatuRayaCommons::UI::Skins::Button.new(button)
+  skin = ::SatuRayaUi::UI::Skins::Button.new(button)
 %>
 
 <% if button.method.to_sym == :get %>

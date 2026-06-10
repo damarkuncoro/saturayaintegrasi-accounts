@@ -1,13 +1,19 @@
 <%
-  card_classes = [
-    "bg-white border border-slate-100 shadow-sm",
-    local_assigns.fetch(:rounded, "rounded-3xl"),
-    local_assigns.fetch(:padding, "p-6"),
-    ("transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/70" if local_assigns[:hover]),
-    local_assigns[:class_name]
-  ].compact.join(" ")
+  # Menangani arguments dengan default values yang aman
+  rounded   = local_assigns[:rounded] || "3xl"
+  padding   = local_assigns[:padding] || "6"
+  hover     = local_assigns[:hover] || false
+  class_name = local_assigns[:class_name]
+
+  card = ::SatuRayaUi::UI::Contract::Card.new(
+    rounded: rounded,
+    padding: padding,
+    hover: hover,
+    class_name: class_name
+  )
+  skin = ::SatuRayaUi::UI::Skins::Card.new(card)
 %>
 
-<div class="<%= card_classes %>">
+<div <%= skin.render_attributes %>>
   <%= yield %>
 </div>

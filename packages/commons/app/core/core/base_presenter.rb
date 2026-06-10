@@ -17,6 +17,31 @@ module Core
       raise NotImplementedError, "#{self.class} harus mengimplementasikan method #as_json"
     end
 
+    protected
+
+    # Format tanggal ke format standar (ID)
+    def format_date(date, format: "%d %b %Y")
+      return "-" if date.nil?
+      date.strftime(format)
+    end
+
+    # Format datetime ke format standar (ID)
+    def format_datetime(datetime, format: "%d %b %Y %H:%M")
+      return "-" if datetime.nil?
+      datetime.strftime(format)
+    end
+
+    # Format mata uang Rupiah
+    def format_currency(amount, unit: "Rp")
+      return "-" if amount.nil?
+      "#{unit} #{number_with_delimiter(amount.to_i, delimiter: '.')}"
+    end
+
+    # Helper untuk akses helper view Rails (seperti number_with_delimiter)
+    def number_with_delimiter(number, options = {})
+      ActionController::Base.helpers.number_with_delimiter(number, options)
+    end
+
     private
 
     def h

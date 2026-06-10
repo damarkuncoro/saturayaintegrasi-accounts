@@ -7,6 +7,8 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   # include Pagy::Backend
 
+  helper SatuRayaIdentityUi::BrandViewHelper
+
   allow_browser versions: :modern
 
   layout :resolve_layout

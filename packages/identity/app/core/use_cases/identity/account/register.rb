@@ -23,12 +23,8 @@ module UseCases
           command = validate_with(::Identity::Commands::Account::RegisterCommand, params)
           return failure(command.error_messages, code: :validation_error) if command.failure?
 
-          params[:email] = normalize_email(params[:email]) if params[:email]
-          params[:first_name] = normalize_text(params[:first_name]) if params[:first_name]
-          params[:last_name] = normalize_text(params[:last_name]) if params[:last_name]
-          params[:phone] = normalize_phone(params[:phone]) if params[:phone]
-
-          user = tenant.users.new(params)
+          # Atribut sudah dinormalisasi secara otomatis oleh RegisterCommand
+          user = tenant.users.new(command.attributes)
           
           # Set default role jika tidak diberikan
           user.role ||= :user

@@ -1,15 +1,7 @@
 puts "Loading user_repository.rb"
 module Repositories
   module Identity
-  class UserRepository
-    include Normalizable
-
-    def find(id)
-      user = ::Identity::User.find_by(id: id)
-      return nil unless user
-      to_entity(user)
-    end
-
+  class UserRepository < ::Core::BaseRepository
     def find_by_email(email, tenant:)
       user = tenant.users.find_by(email: normalize_email(email))
       return nil unless user
@@ -22,18 +14,11 @@ module Repositories
       to_entity(user)
     end
 
-    def create(attributes)
-      user = ::Identity::User.create!(attributes)
-      to_entity(user)
-    end
+    protected
 
-    def update(id, attributes)
-      user = ::Identity::User.find(id)
-      user.update!(attributes)
-      to_entity(user)
+    def model_class
+      ::Identity::User
     end
-
-    private
 
     def to_entity(user)
       ::Domains::Entities::Identity::UserEntity.new(

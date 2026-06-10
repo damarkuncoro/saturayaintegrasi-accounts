@@ -1,30 +1,46 @@
 <%
-  form = local_assigns.fetch(:f)
-  field = local_assigns.fetch(:field)
-  type = local_assigns.fetch(:type, :text).to_sym
-  input_classes = [
-    "block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm transition-colors",
-    "placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100",
-    ("pl-11" if local_assigns[:prefix].present?),
-    local_assigns[:class_name]
-  ].compact.join(" ")
-  options = {
-    class: input_classes,
-    placeholder: local_assigns[:placeholder],
-    data: local_assigns.fetch(:data, {})
-  }.compact
+  # Menangani arguments dengan default values yang aman
+  form        = local_assigns[:f]
+  field       = local_assigns[:field]
+  type        = local_assigns[:type] || :text
+  placeholder = local_assigns[:placeholder]
+  prefix      = local_assigns[:prefix]
+  rows        = local_assigns[:rows] || 4
+  class_name  = local_assigns[:class_name]
+  data        = local_assigns[:data] || {}
+
+  form_input = ::SatuRayaUi::UI::Contract::FormInput.new(
+    form: form,
+    field: field,
+    type: type,
+    placeholder: placeholder,
+    prefix: prefix,
+    rows: rows,
+    class_name: class_name,
+    data: data,
+    errors: local_assigns[:errors]
+  )
+  skin = ::SatuRayaUi::UI::Skins::FormInput.new(form_input)
 %>
 
-<div class="relative">
-  <% if local_assigns[:prefix].present? %>
-    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-sm font-black text-slate-400">
-      <%= local_assigns[:prefix] %>
-    </span>
-  <% end %>
+<div>
+  <div <%= skin.render_attributes %> class="relative">
+    <% if form_input.prefix.present? %>
+      <span class="<%= skin.prefix_wrapper_classes %>">
+        <%= form_input.prefix %>
+      </span>
+    <% end %>
 
-  <% if type == :area %>
-    <%= form.text_area field, options.merge(rows: local_assigns.fetch(:rows, 4)) %>
-  <% else %>
-    <%= form.public_send("#{type}_field", field, options) %>
+    <% if form_input.type == :area %>
+      <%= form_input.form.text_area form_input.field, skin.input_attributes.merge(rows: form_input.rows) %>
+    <% else %>
+      <%= form_input.form.public_send("#{form_input.type}_field", form_input.field, skin.input_attributes) %>
+    <% end %>
+  </div>
+
+  <% if form_input.has_errors? %>
+    <% form_input.error_messages.each do |message| %>
+      <p class="<%= skin.error_classes %>"><%= message %></p>
+    <% end %>
   <% end %>
 </div>
