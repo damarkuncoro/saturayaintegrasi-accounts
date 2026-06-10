@@ -4,6 +4,8 @@ module UseCases
   module Identity
     module Mfa
       class EnableTwoFactor < ::Core::BaseUseCase
+      transactional!
+
       def initialize(
         service: ::Identity::MfaService.new
       )
@@ -16,17 +18,17 @@ module UseCases
       # @param password_challenge [String] Password saat ini untuk keamanan
       # @param tenant [System::Tenant] Tenant terkait
       # @return [Core::Result]
-      def execute(user:, otp_code:, password_challenge:, tenant:)
+      def perform_execute(user:, otp_code:, password_challenge:, tenant:)
         # 1. Verifikasi password saat ini
         unless user.authenticate(password_challenge)
-          return failure("Kata sandi saat ini salah.")
+          return failure("Kata sandi saat ini salah.", code: :invalid_password)
         end
 
         # 2. Konfirmasi dan aktifkan MFA via Service
         @service.enable_totp(user: user, code: otp_code)
       rescue StandardError => e
         Rails.logger.error "[Identity::Mfa::EnableTwoFactor] Error: #{e.message}"
-        failure("Gagal mengaktifkan MFA.")
+        failure("Gagal mengaktifkan MFA.", code: :system_error)
       end
     end
     end

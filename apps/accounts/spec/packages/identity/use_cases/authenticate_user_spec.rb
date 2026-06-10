@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe UseCases::Identity::AuthenticateUser do
+RSpec.describe UseCases::Identity::Auth::AuthenticateUser do
   let(:tenant) { create(:tenant) }
   let(:user) { create(:user, tenant: tenant, password: 'password123456', password_confirmation: 'password123456') }
 
@@ -29,7 +29,7 @@ RSpec.describe UseCases::Identity::AuthenticateUser do
 
     context 'with invalid credentials' do
       it 'returns failure' do
-        result = described_class.new.call(
+        result = described_class.new.execute(
           email: user.email,
           password: 'wrongpassword123',
           tenant: tenant

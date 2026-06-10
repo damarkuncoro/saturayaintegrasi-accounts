@@ -59,7 +59,9 @@ module Identity
 
     # GET /oauth/userinfo
     def userinfo
-      result = UseCases::Identity::Oauth::GetUserInfo.new(request: request).execute
+      result = UseCases::Identity::Oauth::GetUserInfo.new(
+        request: request
+      ).execute
       handle_result(result)
     end
 

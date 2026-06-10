@@ -4,6 +4,8 @@ module UseCases
   module Identity
     module Mfa
       class DisableTwoFactor < ::Core::BaseUseCase
+      transactional!
+
       def initialize(
         service: ::Identity::MfaService.new
       )
@@ -16,7 +18,7 @@ module UseCases
       # @param password_challenge [String] Password saat ini untuk keamanan
       # @param tenant [System::Tenant] Tenant terkait
       # @return [Core::Result]
-      def execute(user:, otp_code:, password_challenge:, tenant:)
+      def perform_execute(user:, otp_code:, password_challenge:, tenant:)
         @service.disable_mfa(
           user: user,
           password: password_challenge,
@@ -24,7 +26,7 @@ module UseCases
         )
       rescue StandardError => e
         Rails.logger.error "[Identity::Mfa::DisableTwoFactor] Error: #{e.message}"
-        failure("Terjadi kesalahan sistem.")
+        failure("Terjadi kesalahan sistem.", code: :system_error)
       end
     end
     end

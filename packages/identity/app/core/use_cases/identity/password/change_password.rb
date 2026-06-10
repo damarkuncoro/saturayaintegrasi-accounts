@@ -4,6 +4,8 @@ module UseCases
   module Identity
     module Password
       class ChangePassword < ::Core::BaseUseCase
+        transactional!
+
         # Menjalankan proses perubahan password
         # @param user [Identity::User] User yang sedang login
         # @param password [String] Password baru
@@ -11,15 +13,15 @@ module UseCases
         # @param tenant [System::Tenant] Tenant terkait
         # @param revoke_others [Boolean] Apakah akan mencabut sesi lain
         # @return [Core::Result]
-        def execute(user:, password:, password_challenge:, tenant:, revoke_others: false)
+        def perform_execute(user:, password:, password_challenge:, tenant:, revoke_others: false)
           # 1. Verifikasi password saat ini
           unless user.authenticate(password_challenge)
-            return failure("Kata sandi saat ini salah.")
+            return failure("Kata sandi saat ini salah.", code: :invalid_password)
           end
 
           # 2. Cek apakah password baru sama dengan password lama (Security best practice)
           if SatuRayaCommons::Security::PasswordHasher.verify?(password, user.password_digest)
-            return failure("Kata sandi baru tidak boleh sama dengan kata sandi saat ini.")
+            return failure("Kata sandi baru tidak boleh sama dengan kata sandi saat ini.", code: :password_reused)
           end
 
           # 3. Update password
@@ -46,11 +48,11 @@ module UseCases
 
             success(user)
           else
-            failure(user.errors.full_messages.to_sentence)
+            failure(user.errors.full_messages.to_sentence, code: :validation_error)
           end
         rescue => e
           Rails.logger.error "[Identity::Password::ChangePassword] Error: #{e.message}"
-          failure("Gagal mengubah kata sandi.")
+          failure("Gagal mengubah kata sandi.", code: :system_error)
         end
       end
     end

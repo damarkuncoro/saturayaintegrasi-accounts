@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   include SatuRayaCommons::ErrorHandler
   include SatuRayaCommons::ApiResponder
+  include SatuRayaCommons::ResultHandler
   include SatuRayaIdentityClient::ControllerUtils
   include SatuRayaIdentityClient::Authentication
   include Pundit::Authorization

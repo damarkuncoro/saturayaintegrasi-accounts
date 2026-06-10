@@ -4,6 +4,8 @@ module UseCases
   module Identity
     module Account
       class VerifyEmail < ::Core::BaseUseCase
+        transactional!
+
         def initialize(
           service: ::Identity::EmailVerificationService.new,
           sync_service: SatuRayaIdentity.user_sync_publisher
@@ -16,7 +18,7 @@ module UseCases
         # @param token_digest [String] Token verifikasi yang diberikan
         # @param tenant [System::Tenant] Tenant terkait
         # @return [Core::Result]
-        def execute(token_digest:, tenant:)
+        def perform_execute(token_digest:, tenant:)
           result = @service.verify(token_raw: token_digest, tenant: tenant)
           
           if result.success?

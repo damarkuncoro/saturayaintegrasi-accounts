@@ -5,6 +5,7 @@ module UseCases
     module Account
       class Register < ::Core::BaseUseCase
         include Normalizable
+        transactional!
 
         def initialize(
           verification_service: ::Identity::EmailVerificationService.new,
@@ -18,7 +19,7 @@ module UseCases
         # @param params [Hash] Data user (email, password, name, dll)
         # @param tenant [System::Tenant] Tenant tempat user mendaftar
         # @return [Core::Result]
-        def execute(params:, tenant:)
+        def perform_execute(params:, tenant:)
           params[:email] = normalize_email(params[:email]) if params[:email]
           params[:first_name] = normalize_text(params[:first_name]) if params[:first_name]
           params[:last_name] = normalize_text(params[:last_name]) if params[:last_name]
@@ -52,11 +53,11 @@ module UseCases
 
             success(user)
           else
-            failure(user.errors.full_messages.to_sentence)
+            failure(user.errors.full_messages.to_sentence, code: :validation_error)
           end
         rescue => e
           Rails.logger.error "[Identity::Account::Register] Error: #{e.message}"
-          failure("Gagal mendaftarkan pengguna baru.")
+          failure("Gagal mendaftarkan pengguna baru.", code: :system_error)
         end
       end
     end

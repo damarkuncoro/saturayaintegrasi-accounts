@@ -2,17 +2,19 @@ module Core
   # Result Object Pattern untuk standarisasi return value dari Use Cases.
   # Menghindari penggunaan hash { success: true, ... } yang tidak konsisten.
   class Result
-    attr_reader :value, :error, :meta
+    attr_reader :value, :error, :code, :meta
 
     # Inisialisasi objek Result.
     # @param success [Boolean] Status keberhasilan.
     # @param value [Object] Data yang dikembalikan jika sukses.
     # @param error [String, Hash] Pesan error atau detail error jika gagal.
+    # @param code [Symbol, String] Kode error untuk identifikasi programatik.
     # @param meta [Hash] Metadata tambahan (misal: pagination, breadcrumbs).
-    def initialize(success, value: nil, error: nil, meta: {})
+    def initialize(success, value: nil, error: nil, code: nil, meta: {})
       @success = success
       @value = value
       @error = error
+      @code = code
       @meta = meta
     end
 
@@ -22,8 +24,8 @@ module Core
     end
 
     # Factory method untuk gagal.
-    def self.failure(error, meta: {})
-      new(false, error: error, meta: meta)
+    def self.failure(error, code: nil, meta: {})
+      new(false, error: error, code: code, meta: meta)
     end
 
     # Mengecek apakah operasi sukses.

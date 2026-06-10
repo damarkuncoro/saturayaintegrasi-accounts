@@ -15,7 +15,7 @@ class Identity::EmailVerificationsController < ApplicationController
   end
 
   def create
-    result = UseCases::Identity::ResendEmailVerification.new.execute(
+    result = UseCases::Identity::Account::ResendEmailVerification.new.execute(
       user: System::Current.user,
       tenant: System::Current.tenant
     )

@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe UseCases::Identity::Login, type: :model do
+RSpec.describe UseCases::Identity::Auth::Login, type: :model do
   let!(:tenant) { create(:tenant) }
   let!(:user) { create(:user, tenant: tenant, password: "SecurePassword123!", password_confirmation: "SecurePassword123!", otp_required_for_login: true) }
   let(:fingerprint) { "trusted_fingerprint_abc" }

@@ -9,18 +9,18 @@ module UseCases
           @jwt_service = jwt_service
         end
 
-        def execute(email:, password:, tenant:)
+        def perform_execute(email:, password:, tenant:)
           user = @user_repository.find_by_email(email, tenant: tenant)
 
-          return failure("Invalid email or password") unless user
+          return failure("Invalid email or password", code: :invalid_credentials) unless user
 
           # Check if user is active and not disabled
           if !user.active? || user.disabled?
-            return failure("Account is disabled")
+            return failure("Account is disabled", code: :account_disabled)
           end
 
           unless user.authenticate(password)
-            return failure("Invalid email or password")
+            return failure("Invalid email or password", code: :invalid_credentials)
           end
 
           token = @jwt_service.generate(user)

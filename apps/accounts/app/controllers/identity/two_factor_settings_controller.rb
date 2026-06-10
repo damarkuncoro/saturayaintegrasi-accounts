@@ -3,7 +3,7 @@ module Identity
   before_action :set_user
 
   def show
-    UseCases::Identity::Mfa::PrepareTwoFactor.new(user: @user).execute
+    @result = UseCases::Identity::Mfa::PrepareTwoFactor.new(user: @user).execute
   end
 
   def enable

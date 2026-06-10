@@ -4,6 +4,8 @@ module UseCases
   module Identity
     module Mfa
       class VerifyChallenge < ::Core::BaseUseCase
+      transactional!
+
       def initialize(
         service: ::Identity::MfaService.new
       )
@@ -18,7 +20,7 @@ module UseCases
       # @param user_agent [String] User agent request
       # @param remember_device [Boolean] Apakah akan mendaftarkan perangkat sebagai terpercaya
       # @return [Core::Result]
-      def execute(user:, otp_code:, tenant:, ip_address: nil, user_agent: nil, remember_device: false)
+      def perform_execute(user:, otp_code:, tenant:, ip_address: nil, user_agent: nil, remember_device: false)
         if user.locked?
           return failure("Akun Anda sedang terkunci. Silakan hubungi admin atau reset kata sandi.")
         end

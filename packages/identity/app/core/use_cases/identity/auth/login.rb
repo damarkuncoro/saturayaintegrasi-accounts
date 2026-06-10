@@ -5,6 +5,7 @@ module UseCases
     module Auth
       class Login < ::Core::BaseUseCase
         include Normalizable
+        transactional!
 
         # Menjalankan proses login
         # @param email [String] Email user
@@ -14,7 +15,7 @@ module UseCases
         # @param user_agent [String] User agent request
         # @param trusted_device_fingerprint [String] Fingerprint perangkat terpercaya (opsional)
         # @return [Core::Result]
-        def execute(email:, password:, tenant:, ip_address: nil, user_agent: nil, trusted_device_fingerprint: nil)
+        def perform_execute(email:, password:, tenant:, ip_address: nil, user_agent: nil, trusted_device_fingerprint: nil)
           email = normalize_email(email)
           user = tenant.users.find_by(email: email)
 
@@ -30,18 +31,18 @@ module UseCases
           # 2. Proteksi terhadap email yang tidak terdaftar (Timing attack mitigation)
           unless user
             attempt.update!(success: false, failure_reason: "user_not_found")
-            return failure("Email atau kata sandi salah.")
+            return failure("Email atau kata sandi salah.", code: :invalid_credentials)
           end
 
           # 3. Cek status akun (Lockable & Disabled)
           if user.locked?
             attempt.update!(success: false, failure_reason: "account_locked")
-            return failure("Akun Anda sedang terkunci. Silakan hubungi admin atau reset kata sandi.")
+            return failure("Akun Anda sedang terkunci. Silakan hubungi admin atau reset kata sandi.", code: :account_locked)
           end
 
           if user.disabled_at.present? || !user.active?
             attempt.update!(success: false, failure_reason: "account_disabled")
-            return failure("Akun Anda telah dinonaktifkan. Silakan hubungi dukungan pelanggan.")
+            return failure("Akun Anda telah dinonaktifkan. Silakan hubungi dukungan pelanggan.", code: :account_disabled)
           end
 
           # 4. Verifikasi Password
@@ -55,7 +56,7 @@ module UseCases
             end
 
             attempt.update!(success: false, failure_reason: "invalid_password")
-            return failure("Email atau kata sandi salah.")
+            return failure("Email atau kata sandi salah.", code: :invalid_credentials)
           end
 
           # 5. Cek MFA (Multi-Factor Authentication)
@@ -94,7 +95,7 @@ module UseCases
         rescue => e
           Rails.logger.error "[Identity::Auth::Login] Error: #{e.message}"
           raise e if Rails.env.test?
-          failure("Terjadi kesalahan sistem saat proses login.")
+          failure("Terjadi kesalahan sistem saat proses login.", code: :system_error)
         end
 
         private

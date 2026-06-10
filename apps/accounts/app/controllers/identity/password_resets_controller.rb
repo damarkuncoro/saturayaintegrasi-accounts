@@ -43,7 +43,7 @@ class Identity::PasswordResetsController < ApplicationController
 
     @user = token.user
 
-    result = UseCases::Identity::UpdatePassword.new.execute(
+    result = UseCases::Identity::Password::UpdatePassword.new.execute(
       token_digest: params[:sid],
       password: params[:password],
       tenant: System::Current.tenant
