@@ -7,7 +7,7 @@ RSpec.describe "User Sessions", type: :system do
   before do
     # Ensure there's a clean slate before each test run
     Capybara.reset_sessions!
-    Capybara.app_host = "http://company.satu-raya.test"
+    Capybara.app_host = "http://accounts.company.satu-raya.test"
   end
 
   after do

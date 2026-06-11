@@ -5,7 +5,7 @@ RSpec.describe "User Registrations", type: :system do
 
   before do
     Capybara.reset_sessions!
-    Capybara.app_host = "http://company.satu-raya.test"
+    Capybara.app_host = "http://accounts.company.satu-raya.test"
   end
 
   after do

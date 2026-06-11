@@ -6,7 +6,7 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
 
-    <style>
+    <style nonce="<%= content_security_policy_nonce %>">
       :root {
         --brand-primary: <%= brand_primary_color %>;
       }

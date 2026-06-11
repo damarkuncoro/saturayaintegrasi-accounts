@@ -25,8 +25,7 @@ Rails.application.configure do
   config.content_security_policy_nonce_directives = %w[script-src style-src]
   config.content_security_policy_nonce_auto = true
 
-  # Start in report-only mode because the shared UI package still contains a few
-  # inline style/script blocks. Enforcement can be enabled after those are moved
-  # behind nonces or external assets.
-  config.content_security_policy_report_only = true
+  # Start in report-only mode by default while CSP reports are monitored.
+  # Set CSP_ENFORCE=true when the remaining asset pipeline checks are clean.
+  config.content_security_policy_report_only = !ActiveModel::Type::Boolean.new.cast(ENV.fetch("CSP_ENFORCE", false))
 end

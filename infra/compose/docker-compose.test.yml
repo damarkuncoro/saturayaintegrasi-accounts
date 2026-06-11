@@ -7,6 +7,7 @@ services:
     container_name: satu-raya-accounts-test
     extra_hosts:
       - "company.satu-raya.test:127.0.0.1"
+      - "accounts.company.satu-raya.test:127.0.0.1"
     depends_on:
       db-test:
         condition: service_healthy

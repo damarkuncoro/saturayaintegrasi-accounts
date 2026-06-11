@@ -16,7 +16,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
 
 <script src="https://cdn.tailwindcss.com"></script>
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
   tailwind.config = {
     theme: {
       extend: {
@@ -37,7 +37,7 @@
   }
 </script>
 
-<style>
+<style nonce="<%= content_security_policy_nonce %>">
   :root {
     --brand-primary: <%= System::Current.tenant&.settings&.dig("primary_color") || brand_config.primary_color %>;
     --brand-secondary: #7c3aed;

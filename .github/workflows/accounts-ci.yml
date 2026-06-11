@@ -1,0 +1,36 @@
+name: Accounts CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: RSpec and security checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build test image
+        run: docker compose -f infra/compose/docker-compose.test.yml build accounts-app-test
+
+      - name: Run RuboCop
+        run: docker compose -f infra/compose/docker-compose.test.yml run --rm accounts-app-test bin/rubocop
+
+      - name: Run Brakeman
+        run: docker compose -f infra/compose/docker-compose.test.yml run --rm accounts-app-test bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
+
+      - name: Run Bundler Audit
+        run: docker compose -f infra/compose/docker-compose.test.yml run --rm accounts-app-test bin/bundler-audit
+
+      - name: Run RSpec
+        run: apps/accounts/bin/test
+
+      - name: Clean up containers
+        if: always()
+        run: docker compose -f infra/compose/docker-compose.test.yml down --volumes --remove-orphans

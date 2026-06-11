@@ -252,7 +252,7 @@
   </div>
 </div>
 
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
   document.addEventListener("DOMContentLoaded", () => {
     // 1. Color picker live preview
     const colorPicker = document.getElementById("branding-color-picker");
