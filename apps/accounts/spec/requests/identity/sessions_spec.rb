@@ -84,6 +84,12 @@ RSpec.describe 'Sessions', type: :request do
         post sign_in_path, params: { email: email, password: "OtherSecret1*3*5*" }
         expect(response.location).to match(/\/dashboard$/)
       end
+
+      it 'creates a user_login audit log' do
+        expect {
+          post sign_in_path, params: { email: user.email, password: "Secret1*3*5*" }
+        }.to change(System::AuditLog.where(action: "user_login"), :count).by(1)
+      end
     end
 
     context 'with invalid credentials' do
@@ -91,6 +97,12 @@ RSpec.describe 'Sessions', type: :request do
         post sign_in_path, params: { email: user.email, password: "wrongpassword" }
         expect(response.location).to match(/\/login\?email_hint=#{Regexp.escape(user.email).gsub('@', '%40')}$/)
         expect(flash[:alert]).to eq("Email atau kata sandi salah.")
+      end
+
+      it 'creates a user_login_failed audit log' do
+        expect {
+          post sign_in_path, params: { email: user.email, password: "wrongpassword" }
+        }.to change(System::AuditLog.where(action: "user_login_failed"), :count).by(1)
       end
     end
   end
@@ -101,6 +113,21 @@ RSpec.describe 'Sessions', type: :request do
       session_id = user.sessions.last.id
       delete session_path(session_id)
       expect(response.location).to include(sessions_path)
+    end
+  end
+
+  describe 'DELETE /logout' do
+    it 'signs out, revokes session, and creates session_revoked audit log' do
+      sign_in_as(user)
+      session_record = user.sessions.active.last
+      expect(session_record).to be_present
+
+      expect {
+        delete sign_out_path
+      }.to change(System::AuditLog.where(action: "session_revoked"), :count).by(1)
+
+      expect(response).to redirect_to(root_path)
+      expect(session_record.reload.revoked?).to be true
     end
   end
 end

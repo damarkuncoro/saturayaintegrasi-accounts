@@ -43,6 +43,21 @@ RSpec.describe 'Registrations', type: :request do
         expect(response.location).to include("/dashboard")
       end
 
+      it 'creates a user_registered audit log' do
+        expect {
+          post sign_up_path, params: {
+            user: {
+              email: 'lazaronixon@hey.com',
+              password: 'Secret1*3*5*',
+              password_confirmation: 'Secret1*3*5*',
+              first_name: 'Lazaro',
+              last_name: 'Nixon',
+              phone: '1234567890'
+            }
+          }
+        }.to change(System::AuditLog.where(action: "user_registered"), :count).by(1)
+      end
+
       it 'does not allow public registration as an admin' do
         expect {
           post sign_up_path, params: {

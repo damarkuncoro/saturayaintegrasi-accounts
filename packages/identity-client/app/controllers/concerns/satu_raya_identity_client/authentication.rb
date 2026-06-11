@@ -74,6 +74,14 @@ module SatuRayaIdentityClient
             reason: "user_logout"
           )
         end
+      else
+        session_record = ::Identity::Session.find_by(id: cookies.signed[auth_session_cookie_name]) if defined?(::Identity::Session)
+        if session_record && defined?(::UseCases::Identity::Auth::RevokeSession) && !session_record.revoked?
+          ::UseCases::Identity::Auth::RevokeSession.new.execute(
+            session: session_record,
+            reason: "user_logout"
+          )
+        end
       end
       cookies.delete(auth_session_cookie_name, domain: session_cookie_domain)
     end

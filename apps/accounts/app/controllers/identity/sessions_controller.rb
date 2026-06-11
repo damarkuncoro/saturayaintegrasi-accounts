@@ -76,9 +76,6 @@ module Identity
       UseCases::Identity::Auth::RevokeSession.new.execute(session: @session, reason: "user_logout")
       redirect_to sessions_path, notice: "That session has been logged out"
     else
-      if (session_record = Identity::Session.find_by(id: cookies.signed[auth_session_cookie_name]))
-        UseCases::Identity::Auth::RevokeSession.new.execute(session: session_record, reason: "user_logout")
-      end
       terminate_session
       redirect_to root_path, notice: "Signed out successfully"
     end
