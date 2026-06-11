@@ -45,11 +45,13 @@ module UseCases
           # 3. Cek status akun (Lockable & Disabled)
           if user.locked?
             attempt.update!(success: false, failure_reason: "account_locked")
+            audit_log(action: "user_login_failed", auditable: user, tenant: tenant, metadata: { reason: "account_locked", ip_address: ip_address })
             return failure("Akun Anda sedang terkunci. Silakan hubungi admin atau reset kata sandi.", code: :account_locked)
           end
 
           if user.disabled_at.present? || !user.active?
             attempt.update!(success: false, failure_reason: "account_disabled")
+            audit_log(action: "user_login_failed", auditable: user, tenant: tenant, metadata: { reason: "account_disabled", ip_address: ip_address })
             return failure("Akun Anda telah dinonaktifkan. Silakan hubungi dukungan pelanggan.", code: :account_disabled)
           end
 
@@ -62,6 +64,8 @@ module UseCases
               user.lock!
               audit_log(action: "account_locked", auditable: user, tenant: tenant)
             end
+
+            audit_log(action: "user_login_failed", auditable: user, tenant: tenant, metadata: { reason: "invalid_password", ip_address: ip_address })
 
             attempt.update!(success: false, failure_reason: "invalid_password")
             return failure("Email atau kata sandi salah.", code: :invalid_credentials)

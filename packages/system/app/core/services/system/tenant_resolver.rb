@@ -30,12 +30,17 @@ module Services
         # 2. Match accounts subdomain for a tenant domain
         # If host is accounts.satukerja.dev, check if satukerja.dev is a tenant
         if host.start_with?("#{accounts_subdomain}.")
-          tenant_domain = host.sub("#{accounts_subdomain}.", "")
+          tenant_domain = host.delete_prefix("#{accounts_subdomain}.")
           tenant = ::System::Tenant.active.find_by("lower(domain) = ?", tenant_domain)
           return tenant if tenant
         end
 
-        # 3. Match brand config (accounts host mapping to default tenant)
+        # 3. Match subdomain of a tenant's custom domain (e.g. sub.tenant.com matches tenant.com)
+        active_tenants = ::System::Tenant.active.where("domain IS NOT NULL AND domain != ''")
+        matching_tenant = active_tenants.find { |t| host.end_with?(".#{t.domain.downcase}") }
+        return matching_tenant if matching_tenant
+
+        # 4. Match brand config (accounts host mapping to default tenant)
         if host == normalize_host(accounts_host)
           return ::System::Tenant.active.find_by("lower(domain) = ?", normalize_host(app_domain))
         end

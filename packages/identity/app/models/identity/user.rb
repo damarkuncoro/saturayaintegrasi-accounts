@@ -127,7 +127,7 @@ module Identity
 
     enum :role, { user: 0, admin: 1, support: 2 }, default: :user
 
-    scope :active, -> { where(active: true) }
+    scope :active, -> { where(active: true).where(disabled_at: nil).where(deleted_at: nil) }
     scope :admins, -> { where(role: :admin) }
 
     before_validation :generate_username, on: :create
@@ -145,6 +145,14 @@ module Identity
 
     def full_name
       "#{first_name} #{last_name}".strip
+    end
+
+    def active?
+      active && !disabled? && !discarded?
+    end
+
+    def disabled?
+      disabled_at.present?
     end
 
     def email_verified?

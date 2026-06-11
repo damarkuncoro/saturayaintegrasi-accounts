@@ -68,7 +68,12 @@ module SatuRayaIdentityClient
 
     def terminate_session
       if defined?(System::Current) && System::Current.session
-        System::Current.session.destroy if System::Current.session.respond_to?(:destroy)
+        if defined?(::UseCases::Identity::Auth::RevokeSession) && !System::Current.session.revoked?
+          ::UseCases::Identity::Auth::RevokeSession.new.execute(
+            session: System::Current.session,
+            reason: "user_logout"
+          )
+        end
       end
       cookies.delete(auth_session_cookie_name, domain: session_cookie_domain)
     end
