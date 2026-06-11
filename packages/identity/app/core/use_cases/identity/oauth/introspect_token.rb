@@ -21,6 +21,11 @@ module UseCases
             return failure("invalid_client", meta: { status: :unauthorized })
           end
 
+          # Enforce that client has "introspect" scope to access this endpoint
+          unless client.allowed_scopes.include?("introspect")
+            return failure("forbidden", meta: { status: :forbidden, error_description: "Client does not have the 'introspect' scope" })
+          end
+
           token = params[:token]
           if token.blank?
             return failure("missing_token", meta: { status: :bad_request })
