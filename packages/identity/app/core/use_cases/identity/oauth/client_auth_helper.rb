@@ -19,6 +19,11 @@ module UseCases
         def authenticate_service_client(client, params, request)
           return false if client.nil?
 
+          # Validate allowed_ips whitelist if configured
+          if client.allowed_ips.present? && !client.allowed_ips.include?("*")
+            return false unless client.allowed_ips.include?(request.ip)
+          end
+
           if params[:client_secret].present?
             return client.authenticate_secret(params[:client_secret])
           end

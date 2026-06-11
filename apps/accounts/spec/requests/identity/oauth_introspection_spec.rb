@@ -173,5 +173,20 @@ RSpec.describe "OIDC Token Introspection", type: :request do
         expect(json["error"]).to eq("forbidden")
       end
     end
+
+    context "with service client request from unauthorized IP" do
+      before { service_client.update!(allowed_ips: ["192.168.1.1"]) }
+      let(:auth_header) do
+        { "Authorization" => "Basic " + Base64.encode64("test_service_client_id:super_secure_service_secret_123").strip }
+      end
+
+      it "returns unauthorized error" do
+        post oauth_introspect_path, params: { token: valid_token }, headers: auth_header
+
+        expect(response).to have_http_status(:unauthorized)
+        json = JSON.parse(response.body)
+        expect(json["error"]).to eq("invalid_client")
+      end
+    end
   end
 end
