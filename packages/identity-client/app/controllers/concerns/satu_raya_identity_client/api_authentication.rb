@@ -5,11 +5,11 @@ module SatuRayaIdentityClient
     included do
       include SatuRayaCommons::ApiResponder
       include Pundit::Authorization
-      
+
       set_current_tenant_through_filter
       before_action :set_current_request_details
       before_action :authenticate_api_user!
-      
+
       after_action :verify_authorized, except: :index
       after_action :verify_policy_scoped, only: :index
     end
@@ -31,19 +31,19 @@ module SatuRayaIdentityClient
       config = SatuRayaIdentityClient.configuration || SatuRayaIdentityClient::Configuration.new
       begin
         payload, _header = JWT.decode(token, config.jwt_secret, true, { algorithm: config.jwt_algorithm })
-        
+
         # Set Current user with data from token
         # This makes it independent of a local User model
         user_data = payload.with_indifferent_access
-        
+
         # If the app has an Identity::User model, we can try to find it
         user = if defined?(::Identity::User)
-                 ::Identity::User.find_by(id: user_data[:sub] || user_data[:user_id])
-               end
+          ::Identity::User.find_by(id: user_data[:sub] || user_data[:user_id])
+        end
 
         # Fallback to a Hashie::Mash or OpenStruct-like object if no local user model
         System::Current.user = user || Struct.new(*user_data.keys.map(&:to_sym)).new(*user_data.values)
-        
+
         # Handle tenancy if present in token
         tenant_id = user_data[:tenant_id] || user_data[:tid]
         if tenant_id && defined?(::System::Tenant)
@@ -52,15 +52,23 @@ module SatuRayaIdentityClient
           ActsAsTenant.current_tenant = tenant if defined?(ActsAsTenant)
         end
       rescue JWT::DecodeError => e
-        render_unauthorized("Invalid token: #{e.message}")
-      rescue => e
-        render_unauthorized("Authentication failed: #{e.message}")
+        log_authentication_failure(e)
+        render_unauthorized("Invalid or expired token")
+      rescue StandardError => e
+        log_authentication_failure(e)
+        render_unauthorized("Authentication failed")
       end
     end
 
     def set_current_request_details
       System::Current.user_agent = request.user_agent
       System::Current.ip_address = request.ip
+    end
+
+    def log_authentication_failure(exception)
+      Rails.logger.warn(
+        "[SatuRayaIdentityClient::ApiAuthentication] #{exception.class}: #{exception.message}"
+      )
     end
   end
 end

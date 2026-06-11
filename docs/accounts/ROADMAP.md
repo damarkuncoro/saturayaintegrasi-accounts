@@ -20,6 +20,17 @@ gantt
     Enterprise IAM           :f4, after f3, 30d
 ```
 
+## Status Kesiapan Operasional
+
+Checklist fase di bawah menunjukkan fitur yang sudah tersedia di kode. Sebelum dianggap siap production, setiap fase tetap perlu melewati kriteria operasional berikut.
+
+| Area | Status Saat Ini | Kriteria Production-Ready |
+| --- | --- | --- |
+| Core auth & tenancy | Implemented dan dilindungi request/system specs | CI menjalankan RSpec utama, seed test, dan smoke test login/register |
+| Security hardening | Implemented dengan rate limit, MFA, password history, dan audit log | CSP report-only bersih atau enforcement aktif, hasil Brakeman/bundler-audit bersih, runbook rotasi secret tersedia |
+| Integration & federation | Implemented untuk JWT, OIDC, introspection, consent, dan HMAC sync | Smoke test OIDC mencakup discovery, JWKS, token exchange, userinfo, introspection, refresh, dan revoke |
+| Enterprise IAM | Implemented untuk passkey/WebAuthn metadata, RTR, RBAC, audit integrity, dan risk scoring | Uji replay refresh token, uji permission lintas tenant, dan audit integrity verification masuk pipeline berkala |
+
 ---
 
 ## Detail Fase Implementasi
