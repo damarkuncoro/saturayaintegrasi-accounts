@@ -5,7 +5,8 @@ vendor/bundle/
 bundle_cache/
 
 # Rails specific
-/apps/accounts/log/*.log
+/apps/accounts/log/*
+!/apps/accounts/log/.keep
 /apps/accounts/tmp/
 /apps/accounts/public/assets
 /apps/accounts/public/packs
