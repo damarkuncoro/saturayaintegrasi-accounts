@@ -85,7 +85,15 @@ module UseCases
 
           # Replay attack check: if token is already revoked, revoke the whole family
           if refresh_token_record.revoked?
-            ::Identity::JwtRefreshToken.where(family_id: refresh_token_record.family_id).update_all(revoked_at: Time.current)
+            refresh_token_record.update!(
+              reused_detected_at: Time.current,
+              reused_from_ip: request.ip,
+              reused_user_agent: request.user_agent,
+              revocation_reason: "replay_attack"
+            )
+            ::Identity::JwtRefreshToken.where(family_id: refresh_token_record.family_id)
+                                       .where(revoked_at: nil)
+                                       .update_all(revoked_at: Time.current, revocation_reason: "family_compromised")
             return failure("invalid_grant", meta: { status: :bad_request })
           end
 
@@ -121,7 +129,8 @@ module UseCases
 
             refresh_token_record.update!(
               revoked_at: Time.current,
-              replaced_by_id: new_record.id
+              replaced_by_id: new_record.id,
+              revocation_reason: "refreshed"
             )
           end
 

@@ -94,6 +94,7 @@ RSpec.describe "OIDC Refresh Token Rotation (RTR)", type: :request do
         # Verify old refresh token is marked as revoked
         expect(refresh_token_record.reload).to be_revoked
         expect(refresh_token_record.replaced_by_id).to be_present
+        expect(refresh_token_record.revocation_reason).to eq("refreshed")
 
         # Verify new refresh token exists in DB with same family_id
         new_digest = Identity::JwtRefreshToken.digest(json["refresh_token"])
@@ -127,13 +128,20 @@ RSpec.describe "OIDC Refresh Token Rotation (RTR)", type: :request do
           client_secret: "supersecret",
           grant_type: "refresh_token",
           refresh_token: plain_token
-        }
+        }, headers: { "HTTP_USER_AGENT" => "Mozilla/5.0 (TestAgent)" }
         expect(response).to have_http_status(:bad_request)
         expect(JSON.parse(response.body)["error"]).to eq("invalid_grant")
 
         # Verify that all refresh tokens in the family are now revoked
         expect(refresh_token_record.reload).to be_revoked
         expect(new_record.reload).to be_revoked
+
+        # Verify audit trails and revocation reasons
+        expect(refresh_token_record.revocation_reason).to eq("replay_attack")
+        expect(refresh_token_record.reused_detected_at).to be_present
+        expect(refresh_token_record.reused_from_ip).to be_present
+        expect(refresh_token_record.reused_user_agent).to eq("Mozilla/5.0 (TestAgent)")
+        expect(new_record.revocation_reason).to eq("family_compromised")
       end
 
       it "fails if refresh token is expired" do

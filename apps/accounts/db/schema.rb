@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_10_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_11_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -76,6 +76,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_000002) do
     t.uuid "family_id", null: false
     t.string "ip_address"
     t.uuid "replaced_by_id"
+    t.datetime "reused_detected_at"
+    t.string "reused_from_ip"
+    t.string "reused_user_agent"
+    t.string "revocation_reason"
     t.datetime "revoked_at"
     t.string "scopes", default: [], null: false, array: true
     t.uuid "sso_client_configuration_id", null: false

@@ -27,6 +27,11 @@ Refresh token akan disimpan di database Accounts dalam bentuk digest (hash) untu
 | `replaced_by_id` | UUID | Yes | Referensi ke token pengganti (relasi rekursif ke `jwt_refresh_tokens.id`). |
 | `ip_address` | String | Yes | IP Address pengaju token. |
 | `user_agent` | String | Yes | User Agent aplikasi pengaju token. |
+| `revocation_reason` | String | Yes | Alasan pembatalan token (e.g. `refreshed`, `revoked`, `replay_attack`, `family_compromised`). |
+| `reused_detected_at` | DateTime | Yes | Waktu deteksi penyalahgunaan reuse/replay attack token ini. |
+| `reused_from_ip` | String | Yes | IP Address asal request reuse/replay attack. |
+| `reused_user_agent` | String | Yes | User Agent asal request reuse/replay attack. |
+
 
 ### Mekanisme Deteksi Penyalahgunaan (Refresh Token Rotation - RTR)
 Untuk mencegah serangan pencurian refresh token, Accounts mengimplementasikan mekanisme **Refresh Token Rotation (RTR)**:

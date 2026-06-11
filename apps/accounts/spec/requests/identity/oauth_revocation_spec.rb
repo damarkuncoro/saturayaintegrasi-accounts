@@ -112,6 +112,7 @@ RSpec.describe "OIDC / OAuth2 Token Revocation", type: :request do
 
         # Verify database record
         expect(refresh_token_record.reload.revoked?).to be true
+        expect(refresh_token_record.revocation_reason).to eq("revoked")
       end
 
       it "causes subsequent token exchange using the refresh token to fail" do

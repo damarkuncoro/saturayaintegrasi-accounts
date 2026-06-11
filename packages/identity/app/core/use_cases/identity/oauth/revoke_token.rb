@@ -22,7 +22,9 @@ module UseCases
           token_digest = ::Identity::JwtRefreshToken.digest(token)
           refresh_token = ::Identity::JwtRefreshToken.find_by(token_digest: token_digest)
           if refresh_token
-            refresh_token.update!(revoked_at: Time.current)
+            unless refresh_token.revoked?
+              refresh_token.update!(revoked_at: Time.current, revocation_reason: "revoked")
+            end
             return success({ status: "revoked" }, meta: { status: :ok })
           end
 
