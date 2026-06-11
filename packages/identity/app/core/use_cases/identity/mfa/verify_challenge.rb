@@ -53,7 +53,7 @@ module UseCases
           end
 
           audit_log(
-            action: "mfa_login_success",
+            action: "user_login",
             auditable: user,
             tenant: tenant,
             metadata: { session_id: session.id, remembered: remember_device, mfa_type: result.value }
@@ -71,7 +71,7 @@ module UseCases
           end
 
           audit_log(
-            action: "mfa_login_failed",
+            action: "user_login_failed",
             auditable: user,
             tenant: tenant,
             metadata: { ip_address: ip_address }

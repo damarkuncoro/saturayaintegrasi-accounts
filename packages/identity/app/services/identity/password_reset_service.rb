@@ -47,7 +47,7 @@ module Identity
         reset_token.mark_used!
         
         # Log audit
-        user.log_audit("password_reset_success", metadata: { token_id: reset_token.id })
+        user.log_audit("password_reset_completed", metadata: { token_id: reset_token.id })
       end
 
       Core::Result.success(user)

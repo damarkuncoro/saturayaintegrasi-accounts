@@ -88,7 +88,7 @@ RSpec.describe UseCases::Identity::Mfa::VerifyChallenge do
         expect(result.error).to eq("Akun Anda sedang terkunci. Silakan hubungi admin atau reset kata sandi.")
 
         audit_actions = System::AuditLog.order(created_at: :asc).last(2).map(&:action)
-        expect(audit_actions).to contain_exactly("account_locked", "mfa_login_failed")
+        expect(audit_actions).to contain_exactly("account_locked", "user_login_failed")
         expect(System::AuditLog.last.auditable_id).to eq(user.id)
       end
     end

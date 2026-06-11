@@ -97,7 +97,7 @@ module UseCases
           user.update!(last_login_at: Time.current, last_login_ip: ip_address)
           
           attempt.update!(success: true)
-          audit_log(action: "login_success", auditable: user, tenant: tenant, metadata: { session_id: session.id })
+          audit_log(action: "user_login", auditable: user, tenant: tenant, metadata: { session_id: session.id })
 
           success(user, meta: { status: :success, session: session })
         rescue => e

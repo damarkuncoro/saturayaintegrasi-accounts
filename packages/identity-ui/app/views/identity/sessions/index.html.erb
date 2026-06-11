@@ -67,12 +67,10 @@
               <%
                 # Select a badge color based on the log action
                 color = case log.action
-                        when "user_login" then :green
-                        when "user_login_failed" then :red
-                        when "password_changed", "password_reset_completed" then :indigo
-                        when "mfa_enabled" then :green
-                        when "mfa_disabled" then :yellow
-                        when "session_revoked" then :slate
+                        when "user_login", "mfa_enabled", "account_reactivated", "user_registered", "email_verified", "device_trusted", "mfa_verification_success" then :green
+                        when "user_login_failed", "mfa_disabled", "account_deactivated", "account_deleted", "device_revoked" then :yellow
+                        when "password_changed", "password_reset_completed", "email_verification_resent", "sso_client_created", "sso_client_secret_rotated" then :indigo
+                        when "account_locked", "mfa_verification_failed", "login_risk_detected" then :red
                         else :slate
                         end
                 

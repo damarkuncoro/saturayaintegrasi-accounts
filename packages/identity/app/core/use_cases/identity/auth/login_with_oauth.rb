@@ -46,7 +46,7 @@ module UseCases
 
             # Catat Audit Log
             audit_log(
-              action: "oauth_login_success",
+              action: "user_login",
               auditable: user,
               tenant: tenant,
               metadata: { provider: provider, session_id: session.id }

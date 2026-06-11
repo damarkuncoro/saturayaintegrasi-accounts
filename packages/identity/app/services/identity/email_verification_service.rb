@@ -44,7 +44,7 @@ module Identity
         verification_token.mark_used!
         
         # Log audit
-        user.log_audit("email_verified_success", metadata: { token_id: verification_token.id })
+        user.log_audit("email_verified", metadata: { token_id: verification_token.id })
       end
 
       Core::Result.success(user)
