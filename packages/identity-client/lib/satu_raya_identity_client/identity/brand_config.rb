@@ -70,7 +70,12 @@ module SatuRayaIdentityClient
         end
 
         def auth_session_cookie_name
-          env("AUTH_SESSION_COOKIE_NAME", "session_id")
+          name = env("AUTH_SESSION_COOKIE_NAME", "session_id")
+          if defined?(Rails) && Rails.respond_to?(:env) && Rails.env.production? && !name.start_with?("__Secure-")
+            "__Secure-#{name}"
+          else
+            name
+          end
         end
 
         def trusted_device_cookie_name

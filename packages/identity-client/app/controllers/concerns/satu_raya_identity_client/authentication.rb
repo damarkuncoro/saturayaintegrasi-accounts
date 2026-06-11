@@ -74,7 +74,8 @@ module SatuRayaIdentityClient
     end
 
     def session_cookie_options(value)
-      { value: value, httponly: true, same_site: :lax, domain: session_cookie_domain }
+      secure_val = defined?(Rails) && Rails.respond_to?(:env) && Rails.env.production?
+      { value: value, httponly: true, secure: secure_val, same_site: :lax, domain: session_cookie_domain }
     end
 
     def auth_session_cookie_name

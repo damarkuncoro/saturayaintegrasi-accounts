@@ -49,7 +49,7 @@ module UseCases
             sub: client.client_id,
             tenant_id: client.tenant_id.to_s,
             aud: client.client_id,
-            exp: 1.hour.from_now.to_i,
+            exp: 15.minutes.from_now.to_i,
             iat: now,
             scopes: requested_scopes.join(" "),
             client_credentials: true
@@ -60,7 +60,7 @@ module UseCases
           success({
             access_token: access_token,
             token_type: "Bearer",
-            expires_in: 3600,
+            expires_in: 900,
             scope: requested_scopes.join(" ")
           }, meta: { status: :ok })
         end

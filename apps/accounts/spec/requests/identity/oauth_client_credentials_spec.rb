@@ -36,7 +36,7 @@ RSpec.describe "OIDC / OAuth2 Client Credentials Grant (M2M)", type: :request do
         json = JSON.parse(response.body)
         expect(json["access_token"]).to be_present
         expect(json["token_type"]).to eq("Bearer")
-        expect(json["expires_in"]).to eq(3600)
+        expect(json["expires_in"]).to eq(900)
         expect(json["scope"]).to eq("introspect user.sync")
         expect(json["id_token"]).to be_nil
         expect(json["refresh_token"]).to be_nil
